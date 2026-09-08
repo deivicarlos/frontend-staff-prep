@@ -19,11 +19,17 @@
 
 ## Open questions (resolve by measuring, not asking)
 
-- Which React version/stack he last shipped on — inferred from calibration answers.
+- **Both lesson-1 offline tasks are still outstanding** — the 45-minute timed typeahead and the
+  20-minute spoken system design. Highest-value missing signal in the workspace. Chase them.
 - Whether he has ever done a frontend system design round.
-- TypeScript depth. "Senior React" in 2024 spanned "types the props" to "writes conditional
-  generics." The gap matters a lot for staff-level screens.
 - Whether he has a public GitHub project worth pointing at.
+
+## Resolved by calibration (2026-09-08)
+
+- TypeScript is a strength, not a gap: 3/4, single miss on generics. Do not build a TS track.
+- He is reasonably current on React 19 / RSC / compiler concepts (3/4) — skip "catch-up"
+  content. See [[learning-records/0002-calibration-results.md]] for why this matters.
+- The real gap is the core render/effect model (hooks 1/4), not recent ecosystem change.
 
 ## Teaching decisions
 

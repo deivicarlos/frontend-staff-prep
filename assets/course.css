@@ -205,3 +205,47 @@ blockquote {
   h2 { break-after: avoid; }
   .q { break-inside: avoid; }
 }
+
+/* ---------- Predict-then-reveal widget (assets/predict.js) ----------
+   Retrieval practice: you must commit an answer before you can see one. */
+
+.predict {
+  border: 1px solid var(--rule); border-left: 3px solid var(--accent);
+  border-radius: 0 6px 6px 0; padding: 1.2rem 1.3rem; margin: 1.8rem 0;
+  background: var(--bg-sunk);
+}
+.predict-label {
+  font-family: var(--sans); font-size: .72rem; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--accent); display: block; margin-bottom: .6rem;
+}
+.predict-prompt { font-family: var(--sans); font-size: .95rem; margin: 0 0 .9rem; }
+.predict-input {
+  font-family: var(--mono); font-size: .82rem; line-height: 1.5;
+  width: 100%; min-height: 4.5rem; resize: vertical;
+  background: var(--bg); color: var(--ink);
+  border: 1px solid var(--rule); border-radius: 4px; padding: .65rem .8rem;
+}
+.predict-input:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+.predict-btn {
+  font-family: var(--sans); font-size: .85rem; font-weight: 600; cursor: pointer;
+  margin-top: .7rem; padding: .5rem 1.1rem; border-radius: 4px;
+  background: var(--accent); color: var(--bg); border: 1px solid var(--accent);
+}
+.predict-btn:disabled { background: transparent; color: var(--ink-faint);
+  border-color: var(--rule); cursor: not-allowed; }
+.predict-answer {
+  font-family: var(--sans); font-size: .9rem; line-height: 1.6; margin-top: 1rem;
+  padding-top: 1rem; border-top: 1px solid var(--rule);
+}
+.predict-answer[hidden] { display: none !important; }
+.predict-answer pre { font-family: var(--mono); }
+
+/* ---------- Diagnosis strip ---------- */
+
+.diagnosis {
+  font-family: var(--sans); font-size: .88rem; line-height: 1.6;
+  display: grid; gap: .4rem; margin: 2rem 0;
+}
+.dx { display: grid; grid-template-columns: 3.2rem 1fr; gap: .8rem; align-items: baseline;
+  padding: .55rem .8rem; border-radius: 4px; background: var(--bg-sunk); }
+.dx-q { font-family: var(--mono); font-size: .78rem; color: var(--accent); font-weight: 700; }

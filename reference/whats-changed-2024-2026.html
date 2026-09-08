@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reference — What Changed, 2024–2026</title>
+<link rel="stylesheet" href="../assets/course.css">
+<style>
+  main { max-width: 46rem; }
+  table { width: 100%; border-collapse: collapse; font-family: var(--sans);
+    font-size: .86rem; margin: 1.2rem 0; }
+  th, td { text-align: left; padding: .6rem .7rem; border-bottom: 1px solid var(--rule);
+    vertical-align: top; }
+  th { font-size: .72rem; letter-spacing: .08em; text-transform: uppercase;
+    color: var(--ink-faint); border-bottom: 2px solid var(--ink); }
+  td code { font-size: .8em; }
+  .then { color: var(--ink-faint); }
+  .now { font-weight: 600; }
+  .wrap { overflow-x: auto; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>What changed, 2024–2026</h1>
+  <p class="subtitle">A cheat sheet for the gap. Not a lesson — something to skim before an
+  interview and to reread when a claim needs settling.</p>
+  <p class="meta">Reference · Verified against react.dev, September 2026</p>
+</header>
+
+<main>
+
+<div class="note">
+  <p>Closes calibration <strong>Q4</strong> (Server Components vs SSR) and <strong>Q11</strong>
+  (INP replacing FID). Both were knowledge gaps rather than reasoning gaps, which is why they
+  get a reference sheet instead of a lesson — there's nothing to derive, only something to know.</p>
+</div>
+
+<h2>Version facts</h2>
+
+<div class="wrap">
+<table>
+  <tr><th>Thing</th><th>Fact</th><th>Date</th></tr>
+  <tr><td>React 19.0</td><td>First stable 19 release</td><td>5 December 2024</td></tr>
+  <tr><td>React 19.2</td><td>Current minor line</td><td>1 October 2025</td></tr>
+  <tr><td>React (latest)</td><td><strong>19.2.7</strong></td><td>1 June 2026</td></tr>
+  <tr><td>React Compiler</td><td>Beta announced</td><td>21 October 2024</td></tr>
+  <tr><td>React Compiler</td><td><strong>v1.0 stable</strong></td><td>7 October 2025</td></tr>
+  <tr><td>Core Web Vitals</td><td>INP replaced FID</td><td>March 2024</td></tr>
+</table>
+</div>
+
+<p class="note" style="font-size:.85rem">Source: <a href="https://react.dev/versions">react.dev/versions</a>.
+If someone asks "what version are you on," <em>19</em> is the answer that sounds current;
+being able to name the compiler's 1.0 date is the answer that sounds like you follow the
+project.</p>
+
+<h2>The rendering strategies, disambiguated</h2>
+
+<p>This is the Q4 material, and it's the one most likely to be probed, because conflating RSC
+with SSR is the single most common tell that someone read the headlines rather than the docs.</p>
+
+<div class="wrap">
+<table>
+  <tr><th>Strategy</th><th>Runs where</th><th>Ships JS for itself?</th><th>Hydrates?</th></tr>
+  <tr>
+    <td><strong>CSR</strong><br>Client-side rendering</td>
+    <td>Browser only</td><td>Yes, all of it</td><td>N/A — it only ever renders on the client</td>
+  </tr>
+  <tr>
+    <td><strong>SSR</strong><br>Server-side rendering</td>
+    <td>Server, then browser</td><td>Yes</td>
+    <td><strong>Yes.</strong> HTML arrives first, then the same component's JS boots and attaches</td>
+  </tr>
+  <tr>
+    <td><strong>SSG / ISR</strong><br>Static generation</td>
+    <td>Build time (ISR: revalidated later)</td><td>Yes</td><td>Yes, same as SSR</td>
+  </tr>
+  <tr>
+    <td><strong>RSC</strong><br>React Server Components</td>
+    <td>Server only</td>
+    <td><strong>No.</strong> This is the whole point</td>
+    <td><strong>No.</strong> Emits a serialised payload the client renders into the tree</td>
+  </tr>
+</table>
+</div>
+
+<p><strong>The sentence to have ready:</strong> <em>"SSR renders on the server and then hydrates
+the same component on the client, so you pay for the JS twice. A Server Component runs only on
+the server and never hydrates — its dependencies never reach the browser at all. They compose:
+a Server Component can render a Client Component, not the other way round."</em></p>
+
+<div class="note warn">
+  <p><strong>The follow-up you should expect:</strong> "So when would you <em>not</em> use RSC?"
+  Good answers: anything needing interactivity, state, effects or browser APIs must be a Client
+  Component; RSC adds a server you now have to run and pay for; and a heavily interactive app may
+  get little benefit while inheriting real architectural complexity. Naming the cost unprompted
+  is the staff-level move.</p>
+</div>
+
+<h2>React 19 API changes worth naming</h2>
+
+<div class="wrap">
+<table>
+  <tr><th>Then (≤18)</th><th>Now (19)</th><th>Why it matters</th></tr>
+  <tr>
+    <td class="then"><code>forwardRef(Component)</code></td>
+    <td class="now"><code>ref</code> is a normal prop</td>
+    <td>Writing <code>forwardRef</code> unprompted dates you precisely</td>
+  </tr>
+  <tr>
+    <td class="then">Hooks only at the top level</td>
+    <td class="now"><code>use()</code> reads a promise or context, conditionally</td>
+    <td>Not a hook — can sit inside branches and loops</td>
+  </tr>
+  <tr>
+    <td class="then">Manual pending/error state around submits</td>
+    <td class="now"><strong>Actions</strong> + <code>useActionState</code>, <code>useFormStatus</code></td>
+    <td>Pending, error and optimistic states become built-in</td>
+  </tr>
+  <tr>
+    <td class="then">Hand-rolled optimistic updates</td>
+    <td class="now"><code>useOptimistic</code></td>
+    <td>The exact pattern from calibration Q19, now first-class</td>
+  </tr>
+  <tr>
+    <td class="then"><code>useMemo</code> / <code>useCallback</code> / <code>memo</code> everywhere</td>
+    <td class="now">React Compiler does it at build time</td>
+    <td>The biggest practical shift in the gap — see below</td>
+  </tr>
+</table>
+</div>
+
+<h2>The memoisation shift</h2>
+
+<p>In 2024, knowing when to reach for <code>useCallback</code> was a senior skill. Since
+Compiler 1.0 it largely isn't — the compiler inserts memoisation across the tree automatically.
+What did <em>not</em> get automated:</p>
+
+<ul style="font-family:var(--sans);font-size:.92rem;line-height:1.6">
+  <li><strong>Structural problems.</strong> Mounting 10,000 DOM nodes is still wrong; virtualise it.</li>
+  <li><strong>State architecture.</strong> A context holding one fat object still re-renders every consumer.</li>
+  <li><strong>Network waterfalls.</strong> Sequential dependent fetches are still the most common real cause of a slow page.</li>
+  <li><strong>Bundle size.</strong> The compiler doesn't delete the 300&nbsp;kB date library.</li>
+</ul>
+
+<p>So the interview question shifted from <em>"how do you optimise a React component?"</em> to
+<em>"how do you find out what's actually slow?"</em> — profile first, name the layer, then fix
+the layer. Reaching for React knobs before measuring is now the wrong-sounding answer.</p>
+
+<h2>Core Web Vitals, current</h2>
+
+<div class="wrap">
+<table>
+  <tr><th>Metric</th><th>Measures</th><th>Good</th></tr>
+  <tr><td><strong>LCP</strong><br>Largest Contentful Paint</td>
+      <td>Loading — when the main content appears</td><td>≤ 2.5s</td></tr>
+  <tr><td><strong>INP</strong><br>Interaction to Next Paint</td>
+      <td>Responsiveness — worst-case latency across <em>all</em> interactions</td><td>≤ 200ms</td></tr>
+  <tr><td><strong>CLS</strong><br>Cumulative Layout Shift</td>
+      <td>Visual stability — unexpected movement</td><td>≤ 0.1</td></tr>
+</table>
+</div>
+
+<p><strong>Why the FID → INP swap matters for a React candidate.</strong> FID only measured the
+delay before the <em>first</em> interaction's handler began — trivially good on most apps, and
+easy to game. INP measures the full latency from interaction to the resulting paint, across
+every interaction in the session. That makes it the metric that <em>punishes excessive
+re-rendering</em>, which puts it directly downstream of everything in
+<a href="../lessons/0002-render-is-a-snapshot.html">lesson 2</a>. Connecting those two out loud
+is a strong performance answer.
+<a href="https://web.dev/articles/inp">web.dev — INP</a></p>
+
+<h2>Ecosystem defaults, as of 2026</h2>
+
+<div class="wrap">
+<table>
+  <tr><th>Need</th><th>Reach for</th><th>Note</th></tr>
+  <tr><td>Server state</td><td>TanStack Query</td>
+      <td>Fetching in <code>useEffect</code> reads as dated. Caching, dedup, revalidation, cancellation come free</td></tr>
+  <tr><td>Client state</td><td><code>useState</code>, then Zustand</td>
+      <td>Redux is no longer the default answer; say why you'd still pick it if you would</td></tr>
+  <tr><td>Build tooling</td><td>Vite</td><td>Create React App is deprecated — don't mention it</td></tr>
+  <tr><td>Routing</td><td>React Router, TanStack Router, or a framework's</td>
+      <td>TanStack Router's draw is end-to-end type-safe routes</td></tr>
+  <tr><td>Testing</td><td>Vitest + Testing Library, Playwright for E2E</td>
+      <td>Enzyme is long dead; testing implementation details reads as dated</td></tr>
+</table>
+</div>
+
+<div class="note">
+  <p><strong>Hold these loosely.</strong> Version facts above are verified against primary
+  sources; this last table is ecosystem convention, which varies by team and shifts faster than
+  docs do. In an interview, describing a trade-off always beats naming a winner — "we used X
+  because Y" is senior; "X is the best" is not.</p>
+</div>
+
+<footer class="nav">
+  <ul>
+    <li><a href="../lessons/0001-calibration.html">Lesson 1 — Calibration</a></li>
+    <li><a href="../lessons/0002-render-is-a-snapshot.html">Lesson 2 — Render is a snapshot</a></li>
+    <li><a href="../RESOURCES.md">RESOURCES.md</a></li>
+  </ul>
+  <p>Prints cleanly — ⌘P if you want it on paper before a loop.</p>
+</footer>
+
+</main>
+</body>
+</html>

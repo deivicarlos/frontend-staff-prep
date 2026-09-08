@@ -1,0 +1,430 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lesson 2 — Render Is a Snapshot</title>
+<link rel="stylesheet" href="../assets/course.css">
+</head>
+<body>
+
+<header>
+  <h1>Render is a snapshot</h1>
+  <p class="subtitle">Four of your nine misses are the same misconception wearing four
+  different costumes. Fix the one idea and all four go away.</p>
+  <p class="meta">Lesson 02 · Core model · ~30 minutes</p>
+</header>
+
+<main>
+
+<h2>What the calibration actually said</h2>
+
+<p><strong>11 / 20.</strong> But the number is the least interesting part. Look at where the
+misses landed:</p>
+
+<div class="diagnosis">
+  <div class="dx"><span class="dx-q">Q8</span><span><code>setCount(count + 1)</code> three times gives 1, not 3</span></div>
+  <div class="dx"><span class="dx-q">Q9</span><span>A parent re-render re-renders its children, props or no props</span></div>
+  <div class="dx"><span class="dx-q">Q5</span><span>Effects are for external systems, not derived data</span></div>
+  <div class="dx"><span class="dx-q">Q6</span><span>StrictMode's double-mount is a cleanup audit</span></div>
+</div>
+
+<p>Those look like four topics. They are one: <strong>what a render <em>is</em></strong>.
+Everything else in your profile is fine — TypeScript 3/4, and 3/4 on the 2024–2026 changes,
+which is the genuinely surprising result.</p>
+
+<div class="note warn">
+  <p><strong>Your knowledge of what's new is better than your knowledge of what's old.</strong>
+  That is the reverse of what a two-year gap normally produces, and it tells us something
+  specific: you've been <em>reading</em> about React, not <em>writing</em> it. Reading builds
+  recognition. Only shipping builds the model that survives an interviewer asking "…and why?"</p>
+  <p>So the plan is not "catch up on React 19." You're already reasonably current there. The
+  plan is to rebuild the core model underneath it.</p>
+</div>
+
+<h2>The idea, once</h2>
+
+<blockquote>A render is a snapshot. Each render gets its own props, its own state values, its
+own event handlers, and its own effects — and none of them ever change. A re-render doesn't
+update the old snapshot. It makes a new one.</blockquote>
+
+<p>React's own docs put it this way:</p>
+
+<blockquote>"A state variable's value never changes within a render, even if its event handler's
+code is asynchronous… Every render (and functions inside it) will always 'see' the snapshot of
+the state that React gave to <em>that</em> render."
+<br>— <a href="https://react.dev/learn/state-as-a-snapshot">react.dev, State as a Snapshot</a></blockquote>
+
+<p>Hold that sentence. We're going to derive all four of your misses from it, and you should
+try to see each one coming before I explain it.</p>
+
+<h2>Derivation 1 — why three increments make one <span style="font-weight:400;color:var(--ink-faint)">(Q8)</span></h2>
+
+<pre><code>const [count, setCount] = useState(0);
+
+function handleClick() {
+  setCount(count + 1);
+  setCount(count + 1);
+  setCount(count + 1);
+}</code></pre>
+
+<div class="predict" data-predict data-key="0002-closure">
+  <span class="predict-label">Predict, then reveal</span>
+  <p class="predict-prompt">In the render where <code>count</code> is <code>0</code>, rewrite
+  those three lines substituting the actual value React gave that render. Then say what the
+  fix is.</p>
+  <textarea class="predict-input" placeholder="setCount( ... )&#10;setCount( ... )&#10;setCount( ... )&#10;&#10;Fix:"></textarea>
+  <button class="predict-btn">Reveal</button>
+  <div class="predict-answer" hidden>
+    <p>Substituting the snapshot value makes it obvious:</p>
+    <pre><code>setCount(0 + 1);
+setCount(0 + 1);
+setCount(0 + 1);</code></pre>
+    <p><code>count</code> is a <code>const</code> in that render. It is not a live reference to
+    "the current count" — it is the number <code>0</code>, baked in. So you queued "set it to 1"
+    three times.</p>
+    <p>The fix is the <strong>updater form</strong>, which asks React for the pending value
+    instead of reading the snapshot:</p>
+    <pre><code>setCount(c =&gt; c + 1);
+setCount(c =&gt; c + 1);
+setCount(c =&gt; c + 1);   // → 3</code></pre>
+    <p>Note which wrong answer you'd have given. In the calibration, option 4 said "React
+    deduplicates the identical calls." It arrives at the right number, <code>1</code>, through
+    a completely fictional mechanism. In an interview that's worse than answering 3, because
+    the follow-up question — "so what happens with the updater form?" — has nowhere to go.
+    <a href="https://react.dev/learn/queueing-a-series-of-state-updates">Queueing a series of state updates</a></p>
+  </div>
+</div>
+
+<div class="note">
+  <p><strong>The same snapshot rule explains async.</strong> If <code>handleClick</code> does
+  <code>setTimeout(() =&gt; alert(count), 3000)</code> and you click, then click four more times,
+  the alert still shows the count from the render that created that timeout. Interviewers love
+  this one because it looks like a bug and isn't.</p>
+</div>
+
+<h2>Derivation 2 — why the child re-renders anyway <span style="font-weight:400;color:var(--ink-faint)">(Q9)</span></h2>
+
+<p>If a render is "call the component function to produce a snapshot," then a re-render is
+literally <em>calling that function again</em>. And calling a function runs its whole body —
+including the lines that create the child elements.</p>
+
+<div class="predict" data-predict data-key="0002-rerender">
+  <span class="predict-label">Predict, then reveal</span>
+  <p class="predict-prompt"><code>Parent</code> re-renders. Which of these <code>Child</code>s
+  re-render, and why does the answer differ between them?</p>
+  <pre><code>function A() {                      function B({ children }) {
+  return &lt;div&gt;&lt;Child /&gt;&lt;/div&gt;;        return &lt;div&gt;{children}&lt;/div&gt;;
+}                                   }
+                                    // used as: &lt;B&gt;&lt;Child /&gt;&lt;/B&gt;</code></pre>
+  <textarea class="predict-input" placeholder="A: …&#10;B: …&#10;Because: …"></textarea>
+  <button class="predict-btn">Reveal</button>
+  <div class="predict-answer" hidden>
+    <p><strong>A re-renders its Child. B does not.</strong></p>
+    <p>In <code>A</code>, re-running the function body evaluates <code>&lt;Child /&gt;</code>
+    again, producing a <em>new</em> element object. React sees a new element and re-renders it.
+    Props never entered into it — "my component takes no props so it won't re-render" is the
+    misconception, and it's a very common one at senior level.</p>
+    <p>In <code>B</code>, <code>children</code> was created by <em>B's parent</em>, in a render
+    that didn't happen. So the element object is <strong>referentially identical</strong> to
+    last time, React bails out, and <code>Child</code> is skipped.</p>
+    <p>This is why "lift the expensive subtree into <code>children</code>" is a real
+    optimisation, and one worth naming out loud in a system design round — it costs no
+    <code>memo</code>, no dependency array, and no compiler.
+    <a href="https://www.developerway.com/posts/react-re-renders-guide">Developer Way — re-renders guide</a></p>
+    <p class="note" style="margin-bottom:0"><strong>Say this precisely in interviews:</strong>
+    re-rendering is the default and it is cheap. React re-renders the subtree, diffs the result,
+    and touches the DOM only where the output actually changed. Candidates who say "re-renders
+    are bad" get pushed on it; the correct framing is that re-renders are normal and only
+    <em>expensive</em> renders are worth preventing.</p>
+  </div>
+</div>
+
+<h2>Derivation 3 — what effects are actually for <span style="font-weight:400;color:var(--ink-faint)">(Q5)</span></h2>
+
+<p>If a render is a snapshot of your UI, then an effect is the step that runs <em>after</em>
+that snapshot reaches the screen, to make the outside world agree with it. React's words:</p>
+
+<blockquote>"Effects let you specify side effects that are caused by rendering itself, rather
+than by a particular event… This is a good time to synchronize the React components with some
+external system (like network or a third-party library)."
+<br>— <a href="https://react.dev/learn/synchronizing-with-effects">react.dev, Synchronizing with Effects</a></blockquote>
+
+<p>The word doing the work is <strong>external</strong>. If the thing you're syncing lives
+inside React, you don't need an effect — you need to compute it while rendering.</p>
+
+<div class="predict" data-predict data-key="0002-effects">
+  <span class="predict-label">Predict, then reveal</span>
+  <p class="predict-prompt">Both of these are common 2022-era code. Neither should use an
+  effect. Rewrite them.</p>
+  <pre><code>// 1
+const [fullName, setFullName] = useState('');
+useEffect(() =&gt; {
+  setFullName(first + ' ' + last);
+}, [first, last]);
+
+// 2 — reset the form when a different user is selected
+useEffect(() =&gt; {
+  setDraft('');
+}, [userId]);</code></pre>
+  <textarea class="predict-input" placeholder="1: &#10;2: "></textarea>
+  <button class="predict-btn">Reveal</button>
+  <div class="predict-answer" hidden>
+    <p><strong>1 — just calculate it.</strong> No state, no effect:</p>
+    <pre><code>const fullName = first + ' ' + last;</code></pre>
+    <p>The effect version renders twice for every change (once with stale data, once corrected)
+    and adds a state variable that can drift out of sync. If it's derivable from props or state,
+    derive it during render.</p>
+    <p><strong>2 — use a <code>key</code>.</strong> Resetting state on a prop change isn't an
+    effect, it's an identity change:</p>
+    <pre><code>&lt;UserForm key={userId} user={user} /&gt;</code></pre>
+    <p>A different <code>key</code> tells React this is a <em>different component instance</em>,
+    so all its state is thrown away and rebuilt. One line, no effect, no flash of the previous
+    user's draft.</p>
+    <p>Both patterns are on <a href="https://react.dev/learn/you-might-not-need-an-effect">You
+    Might Not Need an Effect</a>, which is the page I flagged in lesson 1 and which you should
+    now actually read — you'll recognise your own old code in it. That recognition is the
+    point.</p>
+    <p class="note" style="margin-bottom:0"><strong>The rule that fits in one breath:</strong>
+    events for things caused by an interaction; render for anything you can calculate; effects
+    <em>only</em> for synchronising with something outside React.</p>
+  </div>
+</div>
+
+<h2>Derivation 4 — why StrictMode mounts twice <span style="font-weight:400;color:var(--ink-faint)">(Q6)</span></h2>
+
+<p>If an effect's job is "sync the outside world to this snapshot," then when the snapshot goes
+away the effect must <em>un</em>-sync. Setup and cleanup have to be symmetrical — connect/disconnect,
+subscribe/unsubscribe, fetch/cancel.</p>
+
+<div class="predict" data-predict data-key="0002-strict">
+  <span class="predict-label">Predict, then reveal</span>
+  <p class="predict-prompt">In dev, this logs "Connecting…" twice and you get two live
+  connections. What is the bug, and what would a correct version look like?</p>
+  <pre><code>useEffect(() =&gt; {
+  const connection = createConnection(roomId);
+  connection.connect();
+}, [roomId]);</code></pre>
+  <textarea class="predict-input" placeholder="Bug: &#10;Fix: "></textarea>
+  <button class="predict-btn">Reveal</button>
+  <div class="predict-answer" hidden>
+    <p><strong>There is no cleanup.</strong> The effect opens a connection and never closes it,
+    so every remount — and every <code>roomId</code> change — leaks one.</p>
+    <pre><code>useEffect(() =&gt; {
+  const connection = createConnection(roomId);
+  connection.connect();
+  return () =&gt; connection.disconnect();
+}, [roomId]);</code></pre>
+    <p>React's framing:</p>
+    <blockquote style="margin:.6rem 0">"By remounting your component, React verifies that
+    navigating away and back would not break your code… When you implement the cleanup well,
+    there should be no user-visible difference between running the Effect once vs running it,
+    cleaning it up, and running it again."</blockquote>
+    <p>So the double-mount is not React being awkward in development. It is a free automated
+    test for the most common effect bug there is, and it only happens in development —
+    production mounts once.</p>
+    <p><strong>Why this matters in an interview:</strong> "StrictMode double-invokes, it's
+    annoying, I disable it" is a genuinely bad answer that some candidates give unprompted. The
+    good answer is one sentence: <em>it's probing whether my effects are symmetrical, and if it
+    breaks something, my cleanup is wrong.</em></p>
+  </div>
+</div>
+
+<h2>Retrieval check</h2>
+
+<p>Same four ideas, different clothes. Answer from the model, not from memory of what you just
+read — that's the difference between fluency and storage.</p>
+
+<div class="quiz" data-quiz data-lesson="0002">
+
+<div class="q" data-track="snapshot" data-answer="1">
+  <span class="q-num">Q1 · Snapshot</span>
+  <p class="q-stem">You click the button once, then immediately click it four more times.
+  Three seconds later, what does the alert show?</p>
+  <pre><code>const [count, setCount] = useState(0);
+
+&lt;button onClick={() =&gt; {
+  setCount(c =&gt; c + 1);
+  setTimeout(() =&gt; alert(count), 3000);
+}}&gt;</code></pre>
+  <ul class="opts">
+    <li><button class="opt">5, since the timeout reads the latest committed value</button></li>
+    <li><button class="opt">0, since the timeout closed over that render's count</button></li>
+    <li><button class="opt">1, since the updater ran before the timeout was set</button></li>
+    <li><button class="opt">5, since all five clicks share one timer instance</button></li>
+  </ul>
+  <div class="why" hidden><strong>0.</strong> The first click's handler belongs to the render
+  where <code>count</code> was <code>0</code>, and the closure captured that number. Later
+  renders make new handlers; they don't reach back and update this one. Note the updater form
+  in the same handler works fine — <code>c =&gt; c + 1</code> doesn't read the snapshot at all.</div>
+</div>
+
+<div class="q" data-track="rerender" data-answer="2">
+  <span class="q-num">Q2 · Re-render</span>
+  <p class="q-stem">React Compiler is enabled, so memoisation is automatic. Which of these still
+  needs you to think about it?</p>
+  <ul class="opts">
+    <li><button class="opt">A component re-rendering because its parent re-rendered</button></li>
+    <li><button class="opt">An object literal recreated in the body on each render</button></li>
+    <li><button class="opt">A 10,000-node list where every row mounts a real element</button></li>
+    <li><button class="opt">A callback prop whose identity changes on every render</button></li>
+  </ul>
+  <div class="why" hidden><strong>The list.</strong> The compiler handles referential identity —
+  that's exactly what automatic memoisation is. It cannot tell you that mounting 10,000 DOM
+  nodes is the wrong architecture. This is the durable distinction: tooling has absorbed the
+  mechanical optimisations, so what interviews now test is whether you can identify the
+  <em>structural</em> ones. Same lesson as Q12 in your calibration, which you got right.</div>
+</div>
+
+<div class="q" data-track="effects" data-answer="0">
+  <span class="q-num">Q3 · Effects</span>
+  <p class="q-stem">A search page holds <code>query</code> in state and shows filtered results.
+  Where does the filtering belong?</p>
+  <ul class="opts">
+    <li><button class="opt">Computed during render, straight from query and items</button></li>
+    <li><button class="opt">In an effect on [query], writing into a results state</button></li>
+    <li><button class="opt">In the input's onChange handler, before setting query</button></li>
+    <li><button class="opt">In a layout effect, so results paint without a flicker</button></li>
+  </ul>
+  <div class="why" hidden><strong>During render.</strong> It's derivable from state you already
+  have, so it isn't external, so it isn't an effect. Option 2 is the 2022 habit: it double-renders
+  and can show stale results for one frame. Option 3 splits one source of truth into two places
+  that can disagree. If the filtering is genuinely expensive, the answer is memoisation (or the
+  compiler), not relocation.</div>
+</div>
+
+<div class="q" data-track="effects" data-answer="1">
+  <span class="q-num">Q4 · Effects</span>
+  <p class="q-stem">Which of these is <em>not</em> symmetrical, and would therefore be caught by
+  StrictMode's remount?</p>
+  <ul class="opts">
+    <li><button class="opt">Adding a resize listener; removing it in the cleanup</button></li>
+    <li><button class="opt">Firing an analytics "purchase" event on mount, no cleanup</button></li>
+    <li><button class="opt">Opening a socket on mount; closing it in the cleanup</button></li>
+    <li><button class="opt">Starting an interval on mount; clearing it in the cleanup</button></li>
+  </ul>
+  <div class="why" hidden><strong>The analytics event.</strong> There's no "un-send" for it, so
+  the double-mount sends two purchases. That's the real tell: it isn't just missing a cleanup, it
+  is <em>uncleanable</em> — which means it was never an effect. Sending a purchase event is caused
+  by a user action, so it belongs in the event handler. StrictMode surfaces the design error, not
+  just the code error, and saying that out loud is a strong answer.</div>
+</div>
+
+<div class="q" data-track="snapshot" data-answer="2">
+  <span class="q-num">Q5 · Snapshot</span>
+  <p class="q-stem">Why does React give each render its own event handlers instead of reusing one?</p>
+  <ul class="opts">
+    <li><button class="opt">To let React garbage-collect handlers between commits</button></li>
+    <li><button class="opt">To let the compiler memoise them without a dep array</button></li>
+    <li><button class="opt">So each handler sees the props and state of its render</button></li>
+    <li><button class="opt">So React can batch multiple handlers into one update</button></li>
+  </ul>
+  <div class="why" hidden><strong>Consistency.</strong> A handler that fired during a given
+  render should behave according to what was on screen when the user clicked — not according to
+  whatever state has arrived since. The "stale closure" you keep hearing described as a footgun
+  is that guarantee, viewed from the wrong angle. Framing it as a deliberate consistency
+  guarantee rather than a gotcha is a noticeably senior answer.</div>
+</div>
+
+<div class="q" data-track="rerender" data-answer="0">
+  <span class="q-num">Q6 · Re-render</span>
+  <p class="q-stem">A context provider holds <code>{ user, theme }</code> in one value. Theme
+  changes. What happens to a component that only reads <code>user</code>?</p>
+  <ul class="opts">
+    <li><button class="opt">It re-renders — context consumers don't subscribe per field</button></li>
+    <li><button class="opt">It is skipped, since the user reference did not change</button></li>
+    <li><button class="opt">It re-renders only if it is not wrapped in React.memo</button></li>
+    <li><button class="opt">It is skipped, because React diffs the value object's keys</button></li>
+  </ul>
+  <div class="why" hidden><strong>It re-renders, and <code>memo</code> will not save it.</strong>
+  Context is all-or-nothing: any consumer re-renders when the provider's value changes identity,
+  regardless of which part it reads. This is the standard follow-up to "how would you scale this
+  context," and the answers are: split into multiple contexts by update frequency, or move to an
+  external store with selectors (Zustand, Redux, <code>useSyncExternalStore</code>). Worth having
+  ready — it comes up constantly in frontend system design.</div>
+</div>
+
+</div><!-- /quiz -->
+
+<div class="score" data-score>
+  <h3>Retrieval</h3>
+  <div class="track" data-track-row="snapshot" data-track-label="Snapshot &amp; closures">
+    <span class="track-name">Snapshot &amp; closures</span><span class="track-score">— / 2</span>
+    <span class="bar"><i></i></span>
+  </div>
+  <div class="track" data-track-row="rerender" data-track-label="Re-render rules">
+    <span class="track-name">Re-render rules</span><span class="track-score">— / 2</span>
+    <span class="bar"><i></i></span>
+  </div>
+  <div class="track" data-track-row="effects" data-track-label="Effects">
+    <span class="track-name">Effects</span><span class="track-score">— / 2</span>
+    <span class="bar"><i></i></span>
+  </div>
+  <p class="verdict" data-verdict>Answer all six.</p>
+  <p><button class="opt" data-copy-results style="width:auto">Copy results for Claude</button></p>
+  <textarea data-results-fallback hidden rows="6" style="width:100%;font-family:var(--mono);font-size:.8rem"></textarea>
+</div>
+
+<h2>Saying it out loud</h2>
+
+<p>Knowing this and <em>performing</em> it are different skills, and interviews only test the
+second. Rehearse these until they're one breath each:</p>
+
+<ul>
+  <li><strong>"Each render is a snapshot — props, state and handlers are frozen for that render."</strong>
+  This one sentence answers every stale-closure question you'll ever get.</li>
+  <li><strong>"Re-rendering is the default and it's cheap; React only touches the DOM where output changed."</strong>
+  Prevents the trap of sounding like you think re-renders are inherently bad.</li>
+  <li><strong>"Events for interactions, render for anything derivable, effects only for external systems."</strong></li>
+  <li><strong>"StrictMode's double-mount checks my effects are symmetrical."</strong></li>
+</ul>
+
+<div class="task">
+  <h3>Task — 20 minutes, hands on keyboard</h3>
+  <p>Open the typeahead you built for lesson 1's Task A (or build a stub if you didn't get far)
+  and audit every <code>useEffect</code> in it against the three-way rule. For each one, write a
+  one-line verdict in a comment: <em>external system</em>, <em>should be derived during render</em>,
+  or <em>should be an event handler</em>.</p>
+  <p>Then check the fetch effect specifically: does it cancel in flight when the query changes?
+  If not, you have the Q6 bug in your own code — which is the best possible way to learn it.</p>
+</div>
+
+<h2>Primary source</h2>
+
+<p><a href="https://react.dev/learn/state-as-a-snapshot"><strong>State as a Snapshot</strong></a>,
+then <a href="https://react.dev/learn/queueing-a-series-of-state-updates">Queueing a Series of
+State Updates</a> immediately after — they're two halves of one argument and take fifteen minutes
+together.</p>
+
+<p>When you want the deep version, Dan Abramov's
+<a href="https://overreacted.io/a-complete-guide-to-useeffect/">A Complete Guide to useEffect</a>
+is the canonical long read on why effects work the way they do. It's from 2019 and still the best
+thing written on the subject. Save it for a session where you have an hour.</p>
+
+<div class="ask">
+  <p><strong>Argue with me.</strong> If any derivation above felt like it skipped a step, say
+  which — that gap is worth more of our next session than new material. And if you got Q2 or Q6
+  of the retrieval check wrong, tell me: those two point at different next lessons (compiler-era
+  performance vs. state architecture), and I'd rather follow the evidence than guess.</p>
+</div>
+
+<footer class="nav">
+  <p><strong>This lesson closed:</strong> calibration Q5, Q6, Q8, Q9.</p>
+  <p><strong>Still open from calibration:</strong></p>
+  <ul>
+    <li>Q4 — Server Components vs SSR, and Q11 — INP replacing FID. Pure knowledge gaps; these get a <a href="../reference/">reference sheet</a>, not a lesson.</li>
+    <li>Q17 — event loop ordering, Q18 — accessible widget behaviour. Platform fundamentals; likely lesson 3 or 4.</li>
+    <li>Q14 — generics. Your only TypeScript miss; folded into a later lesson rather than given its own.</li>
+  </ul>
+  <ul>
+    <li><a href="0001-calibration.html">← Lesson 1 — Calibration</a></li>
+    <li><a href="../MISSION.md">MISSION.md</a> · <a href="../RESOURCES.md">RESOURCES.md</a></li>
+  </ul>
+</footer>
+
+</main>
+
+<script src="../assets/quiz.js"></script>
+<script src="../assets/predict.js"></script>
+</body>
+</html>
