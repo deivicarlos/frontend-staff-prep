@@ -21,3 +21,10 @@ open lessons/0001-calibration.html
 
 Answer all twenty questions from memory, then click **Copy results for Claude** and paste
 them into a session. Lesson 2 is chosen from that profile.
+
+## Exercises
+
+Timed practice builds live in `exercises/`. Each has a `START-HERE.md` briefing and an
+`AFTER-THE-TIMER.md` rubric that must not be opened until the clock runs out.
+
+- `0001-typeahead/` — 45 min. Debounce, cancellation, keyboard nav, loading and error states.
