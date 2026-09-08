@@ -1,0 +1,501 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lesson 1 — Calibration</title>
+<link rel="stylesheet" href="../assets/course.css">
+</head>
+<body>
+
+<header>
+  <h1>Where are you, actually?</h1>
+  <p class="subtitle">A diagnostic, not a lesson. Twenty questions and two tasks that
+  measure the gap between where you left React and where the Senior/Staff bar sits today.</p>
+  <p class="meta">Lesson 01 · Calibration · ~30 minutes</p>
+</header>
+
+<main>
+
+<p class="lede">You said you don't know how far you are. That's the single most important
+unknown in this workspace, and it isn't answerable by asking you — self-assessment after
+a two-year gap is unreliable in both directions. So we measure.</p>
+
+<p>Every question below is one an interviewer could plausibly ask a Senior frontend
+candidate. They are deliberately spread across five tracks, and deliberately not ordered
+by difficulty, so you can't coast. <strong>Answer from memory.</strong> Don't look anything
+up — a wrong answer here is worth more than a right one you googled, because it points at
+what lesson 2 should be.</p>
+
+<div class="note warn">
+  <p><strong>One shot per question.</strong> Options lock once clicked. That's on purpose:
+  recognising the right answer from a list you can retry is the illusion of mastery this
+  whole workspace is built to avoid. Guessing is fine — guess, then read why.</p>
+</div>
+
+<div class="quiz" data-quiz data-lesson="0001">
+
+<h2>Track 1 · What changed, 2024–2026</h2>
+
+<div class="q" data-track="react-modern" data-answer="1">
+  <span class="q-num">Q1 · What changed</span>
+  <p class="q-stem">React Compiler reached v1.0 in October 2025. What does it actually do?</p>
+  <ul class="opts">
+    <li><button class="opt">Compiles JSX into native browser components at build time</button></li>
+    <li><button class="opt">Memoises components and values automatically at build time</button></li>
+    <li><button class="opt">Replaces the virtual DOM with fine-grained signal reactivity</button></li>
+    <li><button class="opt">Splits bundles per route and preloads them at build time</button></li>
+  </ul>
+  <div class="why" hidden><strong>Automatic memoisation.</strong> The compiler analyses your
+  components at build time and inserts the memoisation you used to hand-write. The practical
+  consequence is large: <code>useMemo</code>, <code>useCallback</code> and <code>React.memo</code>
+  stop being the performance toolkit they were in 2024. If your instinct is still "wrap it in
+  useCallback," that instinct is now dated.
+  <a href="https://react.dev/learn/react-compiler">react.dev — React Compiler</a></div>
+</div>
+
+<div class="q" data-track="react-modern" data-answer="0">
+  <span class="q-num">Q2 · What changed</span>
+  <p class="q-stem">React 19 introduced <code>use()</code>. What can it do that no hook can?</p>
+  <ul class="opts">
+    <li><button class="opt">Be called conditionally, inside branches and loops</button></li>
+    <li><button class="opt">Subscribe to external stores without tearing on updates</button></li>
+    <li><button class="opt">Run its effect synchronously before the browser repaints</button></li>
+    <li><button class="opt">Cache a returned value across separate component trees</button></li>
+  </ul>
+  <div class="why" hidden><strong>It breaks the rules of hooks, on purpose.</strong>
+  <code>use()</code> reads a promise or a context and can sit inside an <code>if</code> or a
+  loop, because it isn't tied to the positional hook slot mechanism. That's why it's called
+  an API rather than a hook.
+  <a href="https://react.dev/blog/2024/12/05/react-19">React 19 release post</a></div>
+</div>
+
+<div class="q" data-track="react-modern" data-answer="2">
+  <span class="q-num">Q3 · What changed</span>
+  <p class="q-stem">What happened to <code>forwardRef</code> in React 19?</p>
+  <ul class="opts">
+    <li><button class="opt">Removed outright; refs now attach only via callback refs</button></li>
+    <li><button class="opt">Unchanged; it is still required for any function component</button></li>
+    <li><button class="opt">Deprecated; function components take <code>ref</code> as a prop</button></li>
+    <li><button class="opt">Renamed to <code>useImperativeRef</code>, a dedicated ref hook</button></li>
+  </ul>
+  <div class="why" hidden><strong>ref is just a prop now.</strong> Function components receive
+  <code>ref</code> in <code>props</code> directly, and <code>forwardRef</code> is on a
+  deprecation path with a codemod provided. Small change, but a reliable tell in interviews —
+  writing <code>forwardRef</code> unprompted dates you precisely.
+  <a href="https://react.dev/blog/2024/12/05/react-19">React 19 release post</a></div>
+</div>
+
+<div class="q" data-track="react-modern" data-answer="0">
+  <span class="q-num">Q4 · What changed</span>
+  <p class="q-stem">A React <em>Server</em> Component (not SSR — an actual RSC):</p>
+  <ul class="opts">
+    <li><button class="opt">Runs only on the server and ships no JS for itself</button></li>
+    <li><button class="opt">Renders on the server first, then hydrates on the client</button></li>
+    <li><button class="opt">Renders on the client but streams its data from a server</button></li>
+    <li><button class="opt">Runs on the server only during the production build step</button></li>
+  </ul>
+  <div class="why" hidden><strong>No hydration, no client bundle.</strong> This is the
+  distinction most people returning to React get wrong, and interviewers probe it precisely
+  because it separates people who read the headline from people who understand the model.
+  Classic SSR renders on the server <em>and</em> ships the component's JS to hydrate it. An
+  RSC never hydrates — it produces a serialised payload the client renders. Option 2 describes
+  SSR; option 4 describes SSG.
+  <a href="https://react.dev/reference/rsc/server-components">react.dev — Server Components</a></div>
+</div>
+
+<h2>Track 2 · Hooks &amp; effects</h2>
+
+<div class="q" data-track="hooks" data-answer="2">
+  <span class="q-num">Q5 · Hooks</span>
+  <p class="q-stem">Which of these is a <em>legitimate</em> use of <code>useEffect</code> in 2026?</p>
+  <ul class="opts">
+    <li><button class="opt">Transforming incoming props into a piece of derived state</button></li>
+    <li><button class="opt">Resetting local state whenever the <code>id</code> prop changes</button></li>
+    <li><button class="opt">Synchronising with a system outside of React's control</button></li>
+    <li><button class="opt">Recomputing a filtered list whenever the query text changes</button></li>
+  </ul>
+  <div class="why" hidden><strong>Effects are for synchronising with the outside world.</strong>
+  Subscriptions, browser APIs, non-React widgets. The other three are the canonical mistakes:
+  derived values should be computed during render, and resetting state on prop change is done
+  with a <code>key</code>, not an effect. This single page is the highest-value read for
+  someone returning from 2024 — most of what "everyone did" then is now explicitly
+  discouraged. <a href="https://react.dev/learn/you-might-not-need-an-effect">You Might Not Need an Effect</a></div>
+</div>
+
+<div class="q" data-track="hooks" data-answer="0">
+  <span class="q-num">Q6 · Hooks</span>
+  <p class="q-stem">In development, StrictMode mounts a component, unmounts it, then mounts it
+  again. Why does React do this?</p>
+  <ul class="opts">
+    <li><button class="opt">To surface effects that are missing correct cleanup</button></li>
+    <li><button class="opt">To measure the render cost twice and average timings</button></li>
+    <li><button class="opt">To warm the component cache ahead of the first paint</button></li>
+    <li><button class="opt">To verify that all of the state updates were batched</button></li>
+  </ul>
+  <div class="why" hidden><strong>It's a cleanup audit.</strong> If your effect is correctly
+  symmetrical, a double mount is invisible. If it isn't, you get a duplicated subscription or a
+  double fetch — which is the bug it's designed to expose. Candidates who describe this as
+  "React being annoying in dev" signal they've never reasoned about effect symmetry.
+  <a href="https://react.dev/reference/react/StrictMode">react.dev — StrictMode</a></div>
+</div>
+
+<div class="q" data-track="hooks" data-answer="0">
+  <span class="q-num">Q7 · Hooks</span>
+  <p class="q-stem">When do you genuinely need <code>useLayoutEffect</code> over <code>useEffect</code>?</p>
+  <ul class="opts">
+    <li><button class="opt">When you must measure or mutate layout before paint</button></li>
+    <li><button class="opt">When you must subscribe to a mutable external store</button></li>
+    <li><button class="opt">When the effect has to run before any child mounts</button></li>
+    <li><button class="opt">When the effect performs an asynchronous data request</button></li>
+  </ul>
+  <div class="why" hidden><strong>Before paint, to avoid a visible flicker.</strong>
+  Measuring a tooltip's height to position it is the standard example. It blocks paint, so it's
+  a performance cost you take only to prevent a flash of wrong layout — and it doesn't run
+  during SSR, which is its own trap.</div>
+</div>
+
+<div class="q" data-track="hooks" data-answer="1">
+  <span class="q-num">Q8 · Hooks</span>
+  <p class="q-stem">What is the value of <code>count</code> after one click?</p>
+  <pre><code>const [count, setCount] = useState(0);
+
+function handleClick() {
+  setCount(count + 1);
+  setCount(count + 1);
+  setCount(count + 1);
+}</code></pre>
+  <ul class="opts">
+    <li><button class="opt">3 — the three updates are queued and applied in order</button></li>
+    <li><button class="opt">1 — <code>count</code> is captured by that render's closure</button></li>
+    <li><button class="opt">3 — but only after an additional render has flushed</button></li>
+    <li><button class="opt">1 — React deduplicates the identical calls before flush</button></li>
+  </ul>
+  <div class="why" hidden><strong>1, because of the closure — not because of deduplication.</strong>
+  All three calls read <code>count</code> as <code>0</code> from the render they were created in,
+  so all three say "set it to 1". The fix is the updater form: <code>setCount(c => c + 1)</code>,
+  which reads the pending value instead. Option 4 gets the right number for the wrong reason,
+  which in an interview is worse than being wrong — it reveals the mental model.</div>
+</div>
+
+<h2>Track 3 · Rendering &amp; performance</h2>
+
+<div class="q" data-track="rendering" data-answer="0">
+  <span class="q-num">Q9 · Rendering</span>
+  <p class="q-stem">A parent re-renders. <code>&lt;Child /&gt;</code> is written directly in the
+  parent's JSX, is not memoised, and takes no props. Does Child re-render?</p>
+  <ul class="opts">
+    <li><button class="opt">Yes — React re-renders the subtree by default</button></li>
+    <li><button class="opt">No — with no props there is nothing to change</button></li>
+    <li><button class="opt">No — React compares the element identity first</button></li>
+    <li><button class="opt">Yes — but only when it also consumes a context</button></li>
+  </ul>
+  <div class="why" hidden><strong>Yes. Re-rendering is the default, top to bottom.</strong>
+  Props have nothing to do with it — "my component has no props so it won't re-render" is one of
+  the most common senior-level misconceptions. Option 3 is a real mechanism, but it only applies
+  when the element is passed <em>in</em> as <code>children</code> from a higher component, so its
+  identity is stable across the parent's render. That distinction is worth knowing cold.
+  <a href="https://www.developerway.com/posts/react-re-renders-guide">Developer Way — re-renders guide</a></div>
+</div>
+
+<div class="q" data-track="rendering" data-answer="1">
+  <span class="q-num">Q10 · Rendering</span>
+  <p class="q-stem">Using the array index as a <code>key</code> breaks what, specifically?</p>
+  <ul class="opts">
+    <li><button class="opt">Nothing, unless the list gets filtered or sorted remotely</button></li>
+    <li><button class="opt">State and DOM identity when items are inserted or moved</button></li>
+    <li><button class="opt">React's ability to batch the resulting DOM mutations together</button></li>
+    <li><button class="opt">The diff, which then falls back to replacing the whole list</button></li>
+  </ul>
+  <div class="why" hidden><strong>Identity.</strong> Keys tell the reconciler which element is
+  "the same" across renders. With index keys, inserting at the front means every element's key
+  shifts, so React matches the wrong DOM nodes and the wrong state — the classic symptom is a
+  typed-in input value or a checkbox jumping to the wrong row. Say <em>that</em> in an interview,
+  not "it's bad practice."</div>
+</div>
+
+<div class="q" data-track="rendering" data-answer="0">
+  <span class="q-num">Q11 · Rendering</span>
+  <p class="q-stem">Which metric replaced First Input Delay as a Core Web Vital?</p>
+  <ul class="opts">
+    <li><button class="opt">Interaction to Next Paint, covering every interaction</button></li>
+    <li><button class="opt">Total Blocking Time, measured across a whole session</button></li>
+    <li><button class="opt">Time to Interactive, measured once the thread goes idle</button></li>
+    <li><button class="opt">First Contentful Paint, measured at the initial render</button></li>
+  </ul>
+  <div class="why" hidden><strong>INP, since March 2024.</strong> A pure "were you away?"
+  question, and an easy one to fail. FID only measured the delay before the <em>first</em>
+  interaction's handler started. INP measures the full latency to the next paint, across all
+  interactions — much harder to game, and much more likely to expose a React app that
+  re-renders too much. <a href="https://web.dev/articles/inp">web.dev — INP</a></div>
+</div>
+
+<div class="q" data-track="rendering" data-answer="1">
+  <span class="q-num">Q12 · Rendering</span>
+  <p class="q-stem">A 10,000-row table janks badly on scroll. What is the <em>first</em> move?</p>
+  <ul class="opts">
+    <li><button class="opt">Memoise the row component so rows skip re-rendering</button></li>
+    <li><button class="opt">Virtualise the list so only visible rows are mounted</button></li>
+    <li><button class="opt">Debounce the scroll handler to cut the update frequency</button></li>
+    <li><button class="opt">Move row rendering to a worker, off the main thread</button></li>
+  </ul>
+  <div class="why" hidden><strong>Virtualisation — the problem is 10,000 DOM nodes, not React.</strong>
+  Memoising rows optimises the wrong layer: you'd be making re-renders of an already-fatal DOM
+  cheaper. This question separates people who reach for React knobs from people who diagnose the
+  actual bottleneck first, which is exactly the senior/staff line.</div>
+</div>
+
+<h2>Track 4 · TypeScript</h2>
+
+<div class="q" data-track="typescript" data-answer="0">
+  <span class="q-num">Q13 · TypeScript</span>
+  <p class="q-stem">What does <code>satisfies</code> give you that a plain annotation does not?</p>
+  <ul class="opts">
+    <li><button class="opt">It checks against a type while keeping the narrow one</button></li>
+    <li><button class="opt">It asserts a type with no structural checking at all</button></li>
+    <li><button class="opt">It validates the shape at runtime and throws on failure</button></li>
+    <li><button class="opt">It widens the value so it can be reassigned to the type</button></li>
+  </ul>
+  <div class="why" hidden><strong>Validation without widening.</strong> Annotating
+  <code>const routes: Record&lt;string, string&gt;</code> loses the literal keys.
+  <code>satisfies Record&lt;string, string&gt;</code> checks the same constraint but keeps
+  <code>routes</code> knowing its exact keys, so <code>routes.home</code> still type-checks.
+  <a href="https://www.totaltypescript.com/clarifying-the-satisfies-operator">Total TypeScript — satisfies</a></div>
+</div>
+
+<div class="q" data-track="typescript" data-answer="0">
+  <span class="q-num">Q14 · TypeScript</span>
+  <p class="q-stem">Why write this generically rather than typing <code>items</code> as <code>unknown[]</code>?</p>
+  <pre><code>function List&lt;T&gt;(props: {
+  items: T[];
+  render: (item: T) =&gt; ReactNode;
+}) { /* … */ }</code></pre>
+  <ul class="opts">
+    <li><button class="opt">It ties the item type to the render callback's parameter</button></li>
+    <li><button class="opt">It avoids a runtime cast when the array is later iterated</button></li>
+    <li><button class="opt">It makes the component compile faster in a large codebase</button></li>
+    <li><button class="opt">It permits the items array to hold mixed element types</button></li>
+  </ul>
+  <div class="why" hidden><strong>The generic carries the relationship.</strong> With
+  <code>unknown[]</code> the callback receives <code>unknown</code> and every call site has to
+  narrow or cast. The point of a type parameter is to express "these two things are the same
+  type" — that's the whole idea, and it's the foundation of every harder generics question
+  you'll get at staff level.</div>
+</div>
+
+<div class="q" data-track="typescript" data-answer="0">
+  <span class="q-num">Q15 · TypeScript</span>
+  <p class="q-stem">You model request state as a discriminated union rather than
+  <code>{ status; data?; error? }</code>. The main win is:</p>
+  <ul class="opts">
+    <li><button class="opt">Impossible states become unrepresentable in the type</button></li>
+    <li><button class="opt">The compiler emits noticeably smaller output for unions</button></li>
+    <li><button class="opt">Optional properties get validated at runtime by the union</button></li>
+    <li><button class="opt">Narrowing then works without any discriminant property</button></li>
+  </ul>
+  <div class="why" hidden><strong>You delete a class of bug at the type level.</strong>
+  The optional-fields version lets you write <code>status: 'loading'</code> alongside a populated
+  <code>error</code>, and forces <code>data!</code> assertions at every use. The union makes the
+  compiler prove <code>data</code> exists in the success branch. This is a genuinely
+  staff-flavoured answer — it's about designing away failure modes, not about syntax.</div>
+</div>
+
+<div class="q" data-track="typescript" data-answer="0">
+  <span class="q-num">Q16 · TypeScript</span>
+  <p class="q-stem">The difference between <code>unknown</code> and <code>any</code>:</p>
+  <ul class="opts">
+    <li><button class="opt"><code>unknown</code> must be narrowed; <code>any</code> disables checking</button></li>
+    <li><button class="opt"><code>unknown</code> exists at runtime; <code>any</code> is compile-only</button></li>
+    <li><button class="opt"><code>unknown</code> allows property access; <code>any</code> forbids it</button></li>
+    <li><button class="opt"><code>unknown</code> is assignable anywhere; <code>any</code> is not</button></li>
+  </ul>
+  <div class="why" hidden><strong><code>unknown</code> is the safe top type.</strong> Anything is
+  assignable <em>to</em> it, but you can do nothing <em>with</em> it until you narrow.
+  <code>any</code> switches the checker off and the unsoundness spreads through everything it
+  touches. "Use <code>unknown</code> at the boundary, narrow inward" is the answer that reads as
+  senior.</div>
+</div>
+
+<h2>Track 5 · Platform &amp; architecture</h2>
+
+<div class="q" data-track="platform" data-answer="0">
+  <span class="q-num">Q17 · Platform</span>
+  <p class="q-stem">What is logged, and in what order?</p>
+  <pre><code>console.log('a');
+setTimeout(() =&gt; console.log('b'), 0);
+Promise.resolve().then(() =&gt; console.log('c'));
+console.log('d');</code></pre>
+  <ul class="opts">
+    <li><button class="opt">a, d, c, b</button></li>
+    <li><button class="opt">a, d, b, c</button></li>
+    <li><button class="opt">a, b, c, d</button></li>
+    <li><button class="opt">a, c, d, b</button></li>
+  </ul>
+  <div class="why" hidden><strong>Synchronous, then microtasks, then macrotasks.</strong>
+  <code>a</code> and <code>d</code> run inline. The promise callback is a microtask and drains
+  as soon as the call stack empties. The <code>setTimeout</code> is a macrotask and waits for the
+  next tick, however small the delay. Being able to say "microtask queue drains before the next
+  macrotask" out loud is a standard senior checkpoint.</div>
+</div>
+
+<div class="q" data-track="platform" data-answer="0">
+  <span class="q-num">Q18 · Platform</span>
+  <p class="q-stem">You build a custom dropdown out of <code>div</code>s. What is the minimum
+  for it to be genuinely accessible?</p>
+  <ul class="opts">
+    <li><button class="opt">Keyboard focus management plus correct ARIA roles and state</button></li>
+    <li><button class="opt">An <code>aria-label</code> on the container and a visible focus ring</button></li>
+    <li><button class="opt">A <code>role="listbox"</code> on the container, which implies the rest</button></li>
+    <li><button class="opt">A <code>tabindex</code> on each option and a click handler per option</button></li>
+  </ul>
+  <div class="why" hidden><strong>Roles alone are not enough — behaviour is the hard half.</strong>
+  Arrow-key navigation, Escape to close, focus returning to the trigger, <code>aria-expanded</code>
+  and <code>aria-activedescendant</code> kept in sync. ARIA describes what a widget <em>is</em>;
+  it does not make it behave. Accessibility questions are an increasingly common senior filter and
+  a cheap place to stand out, because most candidates answer at the <code>aria-label</code> level.
+  <a href="https://www.w3.org/WAI/ARIA/apg/patterns/combobox/">ARIA Authoring Practices — Combobox</a></div>
+</div>
+
+<div class="q" data-track="platform" data-answer="0">
+  <span class="q-num">Q19 · Platform</span>
+  <p class="q-stem">In a feed, "optimistic update" on posting a comment means:</p>
+  <ul class="opts">
+    <li><button class="opt">Render it immediately, then reconcile with the server</button></li>
+    <li><button class="opt">Send the request first, then render on a 200 response</button></li>
+    <li><button class="opt">Batch it with other writes to reduce the request count</button></li>
+    <li><button class="opt">Cache it locally until the user next reloads the page</button></li>
+  </ul>
+  <div class="why" hidden><strong>Assume success, then roll back on failure.</strong>
+  The interesting half is what you say next, unprompted: how you key the temporary item, what
+  happens on failure, and how you avoid the flash when the real item replaces the fake one.
+  React 19 ships <code>useOptimistic</code> for exactly this.
+  <a href="https://tkdodo.eu/blog/optimistic-updates-in-react-query">TkDodo — optimistic updates</a></div>
+</div>
+
+<div class="q" data-track="platform" data-answer="0">
+  <span class="q-num">Q20 · Platform</span>
+  <p class="q-stem">The main <em>cost</em> of a micro-frontend architecture is:</p>
+  <ul class="opts">
+    <li><button class="opt">Duplicated dependencies and weaker cross-team consistency</button></li>
+    <li><button class="opt">They require server-side rendering to be switched off</button></li>
+    <li><button class="opt">They prevent each application from deploying independently</button></li>
+    <li><button class="opt">They force every team onto one shared framework version</button></li>
+  </ul>
+  <div class="why" hidden><strong>Payload and coherence.</strong> Independent deploys are the
+  benefit you're buying; the price is shipping React three times, drifting design systems, and a
+  UX that feels stitched together. Options 3 and 4 invert the trade-off entirely. Staff-level
+  answers name the cost <em>and</em> the org condition that justifies paying it — usually
+  "multiple teams whose release cadences genuinely conflict."</div>
+</div>
+
+</div><!-- /quiz -->
+
+<h2>Your profile</h2>
+
+<div class="score" data-score>
+  <h3>Calibration</h3>
+
+  <div class="track" data-track-row="react-modern" data-track-label="What changed 2024–2026">
+    <span class="track-name">What changed, 2024–2026</span>
+    <span class="track-score">— / 4</span>
+    <span class="bar"><i></i></span>
+  </div>
+  <div class="track" data-track-row="hooks" data-track-label="Hooks &amp; effects">
+    <span class="track-name">Hooks &amp; effects</span>
+    <span class="track-score">— / 4</span>
+    <span class="bar"><i></i></span>
+  </div>
+  <div class="track" data-track-row="rendering" data-track-label="Rendering &amp; performance">
+    <span class="track-name">Rendering &amp; performance</span>
+    <span class="track-score">— / 4</span>
+    <span class="bar"><i></i></span>
+  </div>
+  <div class="track" data-track-row="typescript" data-track-label="TypeScript">
+    <span class="track-name">TypeScript</span>
+    <span class="track-score">— / 4</span>
+    <span class="bar"><i></i></span>
+  </div>
+  <div class="track" data-track-row="platform" data-track-label="Platform &amp; architecture">
+    <span class="track-name">Platform &amp; architecture</span>
+    <span class="track-score">— / 4</span>
+    <span class="bar"><i></i></span>
+  </div>
+
+  <p class="verdict" data-verdict>Answer all twenty to get a profile.</p>
+
+  <p><button class="opt" data-copy-results style="width:auto">Copy results for Claude</button></p>
+  <textarea data-results-fallback hidden rows="9" style="width:100%;font-family:var(--mono);font-size:.8rem"></textarea>
+</div>
+
+<div class="note">
+  <p><strong>A low score here is the expected outcome, not a bad one.</strong> Four of these
+  twenty questions are specifically about things that changed after you stopped shipping. Missing
+  those means you were away, which we already knew. Missing the hooks and rendering questions is
+  the more interesting signal, because those are the ones interviews lean on hardest.</p>
+</div>
+
+<h2>Two things a quiz cannot measure</h2>
+
+<p>Multiple choice tests recognition. Interviews test production under pressure. These two tasks
+close that gap, and they matter more than the twenty questions above — do them before our next
+session.</p>
+
+<div class="task">
+  <h3>Task A — 45 minutes, timed, no AI</h3>
+  <p>Build a <strong>typeahead search input</strong> in React + TypeScript from a blank Vite app.
+  Requirements: debounced input, a fetch against any public API, a loading state, an error state,
+  keyboard navigation through results with arrow keys and Enter, and cancellation of stale
+  requests.</p>
+  <p><em>Set a real timer. Talk out loud the whole time, as you would in the interview.</em>
+  Do not look at reference implementations. If you don't finish, stop at 45 minutes anyway —
+  where you stopped is the measurement.</p>
+  <p>Report back: how far you got, what you had to look up, and where you stalled. "I couldn't
+  remember the AbortController API" and "I couldn't decide how to structure the state" are
+  completely different diagnoses and lead to different lessons.</p>
+</div>
+
+<div class="task">
+  <h3>Task B — 20 minutes, out loud</h3>
+  <p>Record yourself answering: <strong>"Design the frontend for a Twitter-style news feed."</strong>
+  Twenty minutes, speaking, no notes. Then listen back — that part is unpleasant and it is the
+  entire point.</p>
+  <p>Tell me: did you have a structure, or did you wander? Most people who have never done a
+  frontend system design round wander, and the fix is a framework
+  (<a href="https://www.frontendinterviewhandbook.com/front-end-system-design">RADIO</a>), not
+  more knowledge. Knowing which of those two problems you have determines the entire system
+  design track.</p>
+</div>
+
+<h2>Primary source for this lesson</h2>
+
+<p>One read, and it is the highest-leverage page on the internet for your exact situation:
+<a href="https://react.dev/learn/you-might-not-need-an-effect"><strong>You Might Not Need an
+Effect</strong></a> on react.dev. Most of the <code>useEffect</code> patterns that were normal
+in 2024 are on that page as anti-patterns. Reading it is the fastest way to stop writing 2024
+React.</p>
+
+<p>If you want the changelog instead, the <a href="https://react.dev/blog/2024/12/05/react-19">React 19
+release post</a> is the canonical account of what landed while you were managing.</p>
+
+<div class="ask">
+  <p><strong>I'm your teacher here, not a quiz machine.</strong> Anything above that felt unfair,
+  ambiguous, or wrong — say so. If an explanation didn't land, ask me to go deeper on it; that's
+  a better use of the next session than moving on. And if you disagree with an answer, argue it.
+  Sometimes the question is bad, and sometimes arguing it is how the concept sticks.</p>
+</div>
+
+<footer class="nav">
+  <p><strong>Workspace</strong></p>
+  <ul>
+    <li><a href="../MISSION.md">MISSION.md</a> — why we're doing this. Correct it if it's wrong.</li>
+    <li><a href="../RESOURCES.md">RESOURCES.md</a> — the trusted sources lessons draw from.</li>
+    <li><a href="../reference/">reference/</a> — cheat sheets, built as we go.</li>
+  </ul>
+  <p>Next: lesson 2 is chosen from your results. Paste them back to Claude.</p>
+</footer>
+
+</main>
+
+<script src="../assets/quiz.js"></script>
+</body>
+</html>

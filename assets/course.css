@@ -1,0 +1,207 @@
+/* ============================================================
+   Frontend Staff Prep — shared lesson stylesheet
+   Tufte-influenced: generous measure, sidenotes, serif body.
+   Linked by every lesson and reference doc. Edit here, not inline.
+   ============================================================ */
+
+:root {
+  --bg:         #fffef9;
+  --bg-sunk:    #f5f3ea;
+  --ink:        #12110d;
+  --ink-soft:   #5a564a;
+  --ink-faint:  #8b8778;
+  --rule:       #ddd8c6;
+  --accent:     #7a1f13;
+  --accent-bg:  #fdf1ee;
+  --good:       #1d5c33;
+  --good-bg:    #eef7f0;
+  --bad:        #8c1d1d;
+  --bad-bg:     #fdf0ef;
+  --code-bg:    #f4f2ea;
+
+  --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Charter, Georgia, serif;
+  --sans:  "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  --mono:  "SF Mono", ui-monospace, "JetBrains Mono", Menlo, Consolas, monospace;
+
+  --measure: 38rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg:        #16150f;
+    --bg-sunk:   #1e1d16;
+    --ink:       #eae6d9;
+    --ink-soft:  #a9a493;
+    --ink-faint: #7b7666;
+    --rule:      #34322a;
+    --accent:    #e8927c;
+    --accent-bg: #2a1a15;
+    --good:      #7fc99a;
+    --good-bg:   #16251b;
+    --bad:       #e88b84;
+    --bad-bg:    #2a1715;
+    --code-bg:   #1e1d16;
+  }
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--serif);
+  font-size: 19px;
+  line-height: 1.62;
+  margin: 0;
+  padding: 4rem 1.5rem 8rem;
+  -webkit-font-smoothing: antialiased;
+}
+
+main, header, footer { max-width: var(--measure); margin-inline: auto; }
+
+/* ---------- Typography ---------- */
+
+h1, h2, h3 { font-family: var(--sans); line-height: 1.2; font-weight: 600; }
+h1 { font-size: 2.1rem; margin: 0 0 .4rem; letter-spacing: -.02em; }
+h2 {
+  font-size: 1.28rem; margin: 3.5rem 0 1rem;
+  padding-top: 1rem; border-top: 1px solid var(--rule);
+}
+h3 { font-size: 1.05rem; margin: 2rem 0 .5rem; }
+
+p { margin: 0 0 1.15rem; }
+a { color: var(--accent); text-underline-offset: 2px; text-decoration-thickness: 1px; }
+
+.subtitle {
+  font-family: var(--sans); font-size: 1rem; color: var(--ink-soft);
+  margin: 0 0 .5rem; line-height: 1.5;
+}
+.meta {
+  font-family: var(--sans); font-size: .78rem; letter-spacing: .06em;
+  text-transform: uppercase; color: var(--ink-faint);
+  margin: 0 0 2.5rem; padding-bottom: 1.5rem; border-bottom: 2px solid var(--ink);
+}
+.lede { font-size: 1.12rem; color: var(--ink-soft); }
+
+code, kbd { font-family: var(--mono); font-size: .84em; background: var(--code-bg);
+  padding: .12em .38em; border-radius: 3px; }
+pre {
+  font-family: var(--mono); font-size: .8rem; line-height: 1.55;
+  background: var(--code-bg); border: 1px solid var(--rule); border-radius: 5px;
+  padding: 1rem 1.1rem; overflow-x: auto; margin: 0 0 1.15rem;
+}
+pre code { background: none; padding: 0; font-size: inherit; }
+
+blockquote {
+  margin: 1.5rem 0; padding: .2rem 0 .2rem 1.3rem;
+  border-left: 3px solid var(--rule); color: var(--ink-soft); font-style: italic;
+}
+
+/* ---------- Callouts ---------- */
+
+.note {
+  font-family: var(--sans); font-size: .88rem; line-height: 1.55;
+  background: var(--bg-sunk); border-left: 3px solid var(--ink-faint);
+  padding: .9rem 1.1rem; margin: 1.5rem 0; border-radius: 0 4px 4px 0;
+}
+.note.warn   { border-left-color: var(--accent); background: var(--accent-bg); }
+.note strong { font-weight: 600; }
+.note :last-child { margin-bottom: 0; }
+
+/* ---------- Quiz widget (assets/quiz.js) ---------- */
+
+.quiz { margin: 2rem 0; }
+
+.q {
+  border: 1px solid var(--rule); border-radius: 6px;
+  padding: 1.2rem 1.3rem; margin-bottom: 1.1rem; background: var(--bg-sunk);
+}
+.q[data-state="correct"] { border-color: var(--good); }
+.q[data-state="wrong"]   { border-color: var(--bad); }
+
+.q-num {
+  font-family: var(--sans); font-size: .72rem; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--ink-faint); display: block; margin-bottom: .5rem;
+}
+.q-stem { font-size: 1rem; margin: 0 0 1rem; }
+.q-stem pre { margin-top: .8rem; font-size: .76rem; }
+
+.opts { list-style: none; margin: 0; padding: 0; display: grid; gap: .45rem; }
+
+.opt {
+  font-family: var(--sans); font-size: .9rem; line-height: 1.45;
+  text-align: left; width: 100%; cursor: pointer;
+  background: var(--bg); color: var(--ink);
+  border: 1px solid var(--rule); border-radius: 4px; padding: .7rem .9rem;
+  transition: border-color .12s, background .12s;
+}
+.opt:hover:not(:disabled) { border-color: var(--ink-faint); }
+.opt:disabled { cursor: default; }
+.opt[data-mark="correct"] { border-color: var(--good); background: var(--good-bg); }
+.opt[data-mark="wrong"]   { border-color: var(--bad);  background: var(--bad-bg); }
+.opt[data-mark]::before {
+  font-family: var(--sans); font-weight: 700; margin-right: .5rem;
+}
+.opt[data-mark="correct"]::before { content: "✓"; color: var(--good); }
+.opt[data-mark="wrong"]::before   { content: "✕"; color: var(--bad); }
+
+.why {
+  font-family: var(--sans); font-size: .85rem; line-height: 1.55;
+  margin-top: .9rem; padding: .8rem .95rem; border-radius: 4px;
+  background: var(--bg); border: 1px solid var(--rule); color: var(--ink-soft);
+}
+.why[hidden] { display: none !important; }
+.why strong { color: var(--ink); }
+
+/* ---------- Score readout ---------- */
+
+.score {
+  font-family: var(--sans); border: 2px solid var(--ink);
+  border-radius: 6px; padding: 1.4rem 1.5rem; margin: 2.5rem 0;
+}
+.score h3 { margin-top: 0; font-size: 1rem; letter-spacing: .04em; text-transform: uppercase; }
+.track { display: grid; grid-template-columns: 1fr auto; gap: .3rem 1rem;
+  align-items: baseline; margin-bottom: .9rem; }
+.track-name { font-size: .9rem; font-weight: 600; }
+.track-score { font-family: var(--mono); font-size: .85rem; color: var(--ink-soft); }
+.bar { grid-column: 1 / -1; height: 6px; background: var(--rule); border-radius: 3px; overflow: hidden; }
+.bar > i { display: block; height: 100%; background: var(--accent); width: 0; transition: width .5s ease; }
+.verdict { font-size: .92rem; line-height: 1.6; margin-top: 1.2rem;
+  padding-top: 1.2rem; border-top: 1px solid var(--rule); }
+
+/* ---------- Task cards (offline / practical work) ---------- */
+
+.task {
+  border: 1px dashed var(--ink-faint); border-radius: 6px;
+  padding: 1.2rem 1.3rem; margin: 1.5rem 0; font-family: var(--sans); font-size: .92rem;
+}
+.task h3 { margin-top: 0; }
+.task :last-child { margin-bottom: 0; }
+
+/* ---------- Footer nav ---------- */
+
+.nav {
+  font-family: var(--sans); font-size: .88rem; margin-top: 4rem;
+  padding-top: 1.5rem; border-top: 1px solid var(--rule); color: var(--ink-soft);
+}
+.nav ul { padding-left: 1.1rem; margin: .5rem 0 0; }
+.nav li { margin-bottom: .35rem; }
+
+.ask {
+  font-family: var(--sans); font-size: .9rem; background: var(--accent-bg);
+  border-left: 3px solid var(--accent); padding: 1rem 1.2rem;
+  border-radius: 0 4px 4px 0; margin: 2.5rem 0 0;
+}
+.ask :last-child { margin-bottom: 0; }
+
+/* ---------- Print ---------- */
+
+@media print {
+  :root { --bg: #fff; --ink: #000; --bg-sunk: #fff; }
+  body { padding: 0; font-size: 11pt; }
+  .opt { border-color: #999; }
+  .why { display: block !important; }
+  .ask, .nav { border-color: #999; }
+  h2 { break-after: avoid; }
+  .q { break-inside: avoid; }
+}
