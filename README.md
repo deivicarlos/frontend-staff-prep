@@ -13,14 +13,19 @@ the learning lives in these files, so a session can resume cold weeks later.
 | `learning-records/` | What has actually been learned, and what that changes. |
 | `assets/` | Shared stylesheet and widgets. Reuse before writing new. |
 
-## Start here
+## Resume here
+
+**[STATE.md](./STATE.md)** — where we are, what's next, and what's outstanding. Start there.
+
+Right now that means exercise 0002: a hand-rolled typeahead rebuild, scaffolded and waiting
+on a 45-minute timer.
 
 ```sh
-open lessons/0001-calibration.html
+cd exercises/0002-typeahead-rebuild && npm run dev
 ```
 
-Answer all twenty questions from memory, then click **Copy results for Claude** and paste
-them into a session. Lesson 2 is chosen from that profile.
+A fresh Claude Code session in this directory picks up [CLAUDE.md](./CLAUDE.md) automatically
+and orients itself from these files — you shouldn't have to re-explain anything.
 
 ## Exercises
 
