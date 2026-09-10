@@ -1,56 +1,67 @@
 # Where we are
 
-_Last updated: 2026-09-08, end of session 1._
+_Last updated: 2026-09-09, session 2._
 
 ## Immediately next
 
-**Carlos owes exercise 0002 — the hand-rolled typeahead rebuild.** It is scaffolded,
-installed and ready. He starts a 45-minute timer and builds; nothing else is queued ahead
-of it.
+**Lesson 3 — keyboard and focus in composite widgets.** Not yet written; it is the next thing
+I build.
 
-```sh
-cd exercises/0002-typeahead-rebuild && npm run dev
-```
+Requirement 5 (arrow keys + Enter) has now gone unstarted in both timed exercises, and Carlos
+named the reason himself: he does not know how to do it. That makes it the only **knowledge**
+gap in a workspace otherwise full of retrieval gaps — see
+[LR-0005](learning-records/0005-cleanup-is-keyed-to-timers.md) — so it stops being assigned and
+gets taught. It also absorbs calibration **Q18** (accessible widget behaviour), still open.
 
-Briefing: `exercises/0002-typeahead-rebuild/START-HERE.md`.
-Rubric he opens after the buzzer: `AFTER-THE-TIMER.md` in the same folder.
+Scope: roving `tabIndex` vs `aria-activedescendant`, the listbox/combobox interaction contract
+(wrap vs clamp, highlight reset on results change, Escape returns focus), and scroll-into-view
+for the highlighted row. The retrieval check must test the keyboard contract itself — not
+adjacent topics. That rule exists because lesson 2 broke it ([LR-0004](learning-records/0004-lesson-2-retrieval.md)).
 
-**When he reports back**, he owes: his `src/`, a self-marked requirement table, what he looked
-up (*syntax or approach* — this is the question that changes the curriculum), where he
-stalled, whether he narrated, and how much faster the familiar parts felt.
+**Second thing the lesson must carry:** cleanup in a *non-timer* instance. LR-0005 found that
+Carlos writes symmetric cleanup flawlessly for `setTimeout` and not at all for an in-flight
+request — cleanup is pattern-matched to timers rather than held as a principle. The keyboard
+lesson has a natural vehicle (a `keydown` listener, or focus restoration on unmount), and the
+check must use a different surface than the teaching did.
 
-## What that exercise is testing
+## Open question to ask him in prose
 
-It is the **first real test of the identity gap**, which is the highest-confidence finding in
-this workspace (LR-0003, confirmed four separate ways) and which lesson 2 taught but never
-re-tested (LR-0004). Hand-rolled, the mechanism surfaces as the dependency array. Three
-checks: does the fetch effect depend on the debounced value, do list items carry a stable
-non-index `key`, does the debounce effect depend on the raw input.
+Did he **consider** a discriminated union for request state and reject it on time, or did it
+never come to mind? Same for the loading state. The code can't distinguish those and they are
+different findings. Ask plainly, don't build a grid.
 
-Also watching: whether he reaches for a discriminated union for request state unprompted
-(he can state the principle — calibration Q15 — but didn't apply it in exercise 0001), and
-whether cancellation gets written at all.
+Also still unanswered from the exercise 0002 report-back: what he looked up (syntax or
+approach), where he stalled, whether he narrated, and whether the familiar parts felt faster.
 
 ## Then
 
-**Lesson 3 — compiler-era performance.** His only lesson-2 retrieval miss was the boundary of
-what React Compiler automates: memoisation yes, structural and network problems no. Deferred
-deliberately behind the exercise so application doesn't keep losing to input. Partial cover
-already exists in `reference/whats-changed-2024-2026.html` under "The memoisation shift."
+**Lesson 4 — compiler-era performance.** Displaced from lesson 3 by the keyboard. Closes his
+single lesson-2 retrieval miss: the boundary of what React Compiler automates (memoisation yes,
+structural and network problems no). Partial cover already exists in
+`reference/whats-changed-2024-2026.html` under "The memoisation shift."
+
+**Exercise 0003** should be *small and surgical*, not another 45-minute typeahead. The typeahead
+has given up most of its signal across two runs. Candidate: a 20-minute build of just the
+keyboard layer over a results list that is handed to him already fetched — isolating the thing
+he's never written from the things he now can.
 
 **Still outstanding from lesson 1: Task B**, the 20-minute spoken system design attempt
-("design a Twitter-style news feed", recorded, listened back). Never done. It is the only
-instrument we have for how he *sounds* under pressure, and nothing else measures it.
+("design a Twitter-style news feed", recorded, listened back). Never done, twice deferred. It
+remains the only instrument for how he *sounds* under pressure.
 
 ## Standing gaps not yet scheduled
 
-- Calibration **Q17** (event loop ordering) and **Q18** (accessible widget behaviour) —
-  platform fundamentals, cluster naturally into one lesson.
+- Calibration **Q17** (event loop ordering) — was clustered with Q18; Q18 now goes to lesson 3,
+  so Q17 needs a new home. Fold into the compiler-performance lesson (task timing, INP) rather
+  than leaving it orphaned.
 - Calibration **Q14** (generics) — his only TypeScript miss against 3/4. Too thin alone; fold
   into a component-API lesson where generic props are the natural vehicle.
-- **No human feedback loop exists.** Everything here is asynchronous, and self-assessment
-  cannot measure how he sounds in a live interview. Flagged in `RESOURCES.md` under Gaps.
-  He has not said whether he wants to join communities — ask before pushing it again.
+- **`any` at the fetch boundary has now survived two exercises.** Q16 answered correctly, never
+  applied. Too small for a lesson; make it an explicit graded line in every future exercise
+  rubric so it stops being free.
+- **No human feedback loop exists.** Everything here is asynchronous, and self-assessment cannot
+  measure how he sounds live. Flagged in `RESOURCES.md` under Gaps. He has not said whether he
+  wants to join communities — ask before pushing it again.
 
 ## Progress so far
 
@@ -59,4 +70,8 @@ instrument we have for how he *sounds* under pressure, and nothing else measures
 | Lesson 1 — calibration | 11/20. Hooks 1/4, modern React 3/4 — an inverted profile: reading, not shipping |
 | Exercise 0001 — typeahead | ~2/6 in 45 min. Constant `queryKey` ate the run |
 | Lesson 2 — render is a snapshot | 5/6. Snapshot 2/2, effects 2/2 — the model landed |
-| Exercise 0002 | **pending** |
+| Exercise 0002 — rebuild | ~2/6 again, but recomposed: debounce correct, deps correct, `AbortController` reached for. Cancellation wired but never armed |
+
+**Identity is now mostly closed** (LR-0005) — dependency arrays right in both effects, `key`
+present but index-contaminated. Downgrade from "the open wound" to a spot-check in future
+exercises.
