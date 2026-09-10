@@ -24,14 +24,18 @@ request — cleanup is pattern-matched to timers rather than held as a principle
 lesson has a natural vehicle (a `keydown` listener, or focus restoration on unmount), and the
 check must use a different surface than the teaching did.
 
-## Open question to ask him in prose
+## Standing exercise protocol (new, from LR-0006)
 
-Did he **consider** a discriminated union for request state and reject it on time, or did it
-never come to mind? Same for the loading state. The code can't distinguish those and they are
-different findings. Ask plainly, don't build a grid.
+Every exercise brief from 0003 onward must carry these three lines, and every rubric must grade
+them. Carlos read the 0002 requirements once, never returned to them, and lost requirements 3
+and 4 to memory rather than to skill.
 
-Also still unanswered from the exercise 0002 report-back: what he looked up (syntax or
-approach), where he stalled, whether he narrated, and whether the familiar parts felt faster.
+1. **Transcribe the requirements into the file before the clock starts** — a comment block or a
+   checklist. Copying is the encoding step; reading isn't.
+2. **Re-read the list out loud at the halfway mark.** One planned interrupt; the failure mode is
+   having zero.
+3. **At the buzzer, name what's unmet and what you'd do next.** Silently missing a stated
+   requirement reads as "didn't listen"; naming it recovers most of the credit.
 
 ## Then
 
@@ -40,10 +44,11 @@ single lesson-2 retrieval miss: the boundary of what React Compiler automates (m
 structural and network problems no). Partial cover already exists in
 `reference/whats-changed-2024-2026.html` under "The memoisation shift."
 
-**Exercise 0003** should be *small and surgical*, not another 45-minute typeahead. The typeahead
-has given up most of its signal across two runs. Candidate: a 20-minute build of just the
-keyboard layer over a results list that is handed to him already fetched — isolating the thing
-he's never written from the things he now can.
+**Exercise 0003** — small and surgical, and **not another typeahead**. Two runs have extracted
+most of that prompt's signal, and LR-0006 confirms the familiar layer is now fast enough that a
+third run would mostly re-measure it. Shape: a 20-minute build of just the keyboard layer over a
+results list handed over already fetched. Hold the scaffolding constant, vary the unfamiliar
+layer. Carries the exercise protocol above.
 
 **Still outstanding from lesson 1: Task B**, the 20-minute spoken system design attempt
 ("design a Twitter-style news feed", recorded, listened back). Never done, twice deferred. It
@@ -56,6 +61,9 @@ remains the only instrument for how he *sounds* under pressure.
   than leaving it orphaned.
 - Calibration **Q14** (generics) — his only TypeScript miss against 3/4. Too thin alone; fold
   into a component-API lesson where generic props are the natural vehicle.
+- **Discriminated union for request state.** Do *not* build a lesson on this yet. LR-0006 found
+  loading and error were lost to a process gap, not a modelling gap — fix the protocol first and
+  re-measure whether the state-shape question survives it.
 - **`any` at the fetch boundary has now survived two exercises.** Q16 answered correctly, never
   applied. Too small for a lesson; make it an explicit graded line in every future exercise
   rubric so it stops being free.
@@ -71,6 +79,10 @@ remains the only instrument for how he *sounds* under pressure.
 | Exercise 0001 — typeahead | ~2/6 in 45 min. Constant `queryKey` ate the run |
 | Lesson 2 — render is a snapshot | 5/6. Snapshot 2/2, effects 2/2 — the model landed |
 | Exercise 0002 — rebuild | ~2/6 again, but recomposed: debounce correct, deps correct, `AbortController` reached for. Cancellation wired but never armed |
+
+**Reps are confirmed as the primary instrument** (LR-0006) — lesson 2 transferred into timed
+production, not just into a quiz, and the familiar layer is measurably faster. Keep exercises
+frequent; stop repeating the same prompt.
 
 **Identity is now mostly closed** (LR-0005) — dependency arrays right in both effects, `key`
 present but index-contaminated. Downgrade from "the open wound" to a spot-check in future
