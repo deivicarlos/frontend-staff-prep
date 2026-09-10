@@ -1,28 +1,55 @@
 # Where we are
 
-_Last updated: 2026-09-09, session 2._
+_Last updated: 2026-09-09, end of session 2._
 
 ## Immediately next
 
-**Lesson 3 — keyboard and focus in composite widgets.** Not yet written; it is the next thing
-I build.
+**Carlos owes lesson 3 — it is written and waiting.** Open it, work through it, do the retrieval
+check at the end, and paste the score back.
 
-Requirement 5 (arrow keys + Enter) has now gone unstarted in both timed exercises, and Carlos
-named the reason himself: he does not know how to do it. That makes it the only **knowledge**
-gap in a workspace otherwise full of retrieval gaps — see
-[LR-0005](learning-records/0005-cleanup-is-keyed-to-timers.md) — so it stops being assigned and
-gets taught. It also absorbs calibration **Q18** (accessible widget behaviour), still open.
+```sh
+open lessons/0003-the-keyboard-is-the-widget.html
+```
 
-Scope: roving `tabIndex` vs `aria-activedescendant`, the listbox/combobox interaction contract
-(wrap vs clamp, highlight reset on results change, Escape returns focus), and scroll-into-view
-for the highlighted row. The retrieval check must test the keyboard contract itself — not
-adjacent topics. That rule exists because lesson 2 broke it ([LR-0004](learning-records/0004-lesson-2-retrieval.md)).
+~30 minutes. It has two `predict.js` gates (derivations 1 and 3) that need a written prediction
+before they reveal, so it can't be skimmed.
 
-**Second thing the lesson must carry:** cleanup in a *non-timer* instance. LR-0005 found that
-Carlos writes symmetric cleanup flawlessly for `setTimeout` and not at all for an in-flight
-request — cleanup is pattern-matched to timers rather than held as a principle. The keyboard
-lesson has a natural vehicle (a `keydown` listener, or focus restoration on unmount), and the
-check must use a different surface than the teaching did.
+**What it covers, and why those two things are in one lesson:**
+
+- **The keyboard**, which is the actual gap. Requirement 5 has gone unwritten in both timed
+  exercises and he named the reason himself — he doesn't know how. Central claim is the
+  *two focuses* framing: DOM focus versus the widget's own active item, and every technique
+  reconciling the two. Covers `aria-activedescendant` vs roving `tabindex` and the rule for
+  choosing, the APG interaction contract, wrap-vs-clamp, `preventDefault` on the arrows, and the
+  scroll-into-view obligation. Absorbs calibration **Q18**.
+- **Cleanup on non-timer surfaces**, which is [LR-0005](learning-records/0005-cleanup-is-keyed-to-timers.md).
+  Listener, in-flight request, observer — one rule, three surfaces, plus the `AbortError`
+  filtering that his rebuild's `catch` couldn't have supported.
+
+Facts verified against the W3C APG (combobox pattern; developing a keyboard interface), not
+recalled. Both are cited in the lesson and quoted directly.
+
+**Reading the score when it comes back** — the tracks are deliberately diagnostic:
+
+| Track | If it comes back short |
+| --- | --- |
+| Focus model (Q1–2) | The two-focuses framing didn't land; do not start exercise 0003 until it does |
+| Interaction contract (Q3–4) | Knowledge gap, cheap to re-close; Q3 is also an identity spot-check |
+| Cleanup (Q5–6) | Q5 wrong → cleanup still isn't a principle. Q6 wrong → it is, but abort-vs-error isn't |
+
+Q5 and Q6 use surfaces the lesson did *not* teach from, on purpose. That rule exists because
+lesson 2 taught cleanup entirely through timers and the check never varied the surface — the
+error recorded in LR-0005.
+
+## Then — exercise 0003, not yet built
+
+Build it after the lesson 3 score lands, so its emphasis can follow the result. Spec already
+settled: **20 minutes, keyboard layer only**, over a results list handed over already fetched.
+Hold the scaffolding constant, vary the unfamiliar layer. Not another typeahead from scratch —
+two runs have taken most of that prompt's signal.
+
+Must carry the standing protocol below, and must grade `any` at the fetch boundary as an
+explicit line rather than leaving it free.
 
 ## Standing exercise protocol (new, from LR-0006)
 
@@ -37,18 +64,12 @@ and 4 to memory rather than to skill.
 3. **At the buzzer, name what's unmet and what you'd do next.** Silently missing a stated
    requirement reads as "didn't listen"; naming it recovers most of the credit.
 
-## Then
+## After that
 
-**Lesson 4 — compiler-era performance.** Displaced from lesson 3 by the keyboard. Closes his
-single lesson-2 retrieval miss: the boundary of what React Compiler automates (memoisation yes,
-structural and network problems no). Partial cover already exists in
+**Lesson 4 — compiler-era performance.** Displaced twice now, and genuinely next after exercise
+0003. Closes his single lesson-2 retrieval miss: the boundary of what React Compiler automates
+(memoisation yes, structural and network problems no). Partial cover already exists in
 `reference/whats-changed-2024-2026.html` under "The memoisation shift."
-
-**Exercise 0003** — small and surgical, and **not another typeahead**. Two runs have extracted
-most of that prompt's signal, and LR-0006 confirms the familiar layer is now fast enough that a
-third run would mostly re-measure it. Shape: a 20-minute build of just the keyboard layer over a
-results list handed over already fetched. Hold the scaffolding constant, vary the unfamiliar
-layer. Carries the exercise protocol above.
 
 **Still outstanding from lesson 1: Task B**, the 20-minute spoken system design attempt
 ("design a Twitter-style news feed", recorded, listened back). Never done, twice deferred. It

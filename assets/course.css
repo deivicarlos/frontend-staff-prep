@@ -249,3 +249,29 @@ blockquote {
 .dx { display: grid; grid-template-columns: 3.2rem 1fr; gap: .8rem; align-items: baseline;
   padding: .55rem .8rem; border-radius: 4px; background: var(--bg-sunk); }
 .dx-q { font-family: var(--mono); font-size: .78rem; color: var(--accent); font-weight: 700; }
+
+/* ---------- Tables ---------- */
+/* Introduced by lesson 3 for the keyboard interaction contract. Kept minimal and
+   rule-based rather than boxed, to match the rest of the sheet. */
+
+table {
+  width: 100%; max-width: var(--measure); margin: 1.6rem 0;
+  border-collapse: collapse;
+  font-family: var(--sans); font-size: .88rem; line-height: 1.5;
+}
+thead th {
+  text-align: left; font-weight: 600; font-size: .75rem;
+  text-transform: uppercase; letter-spacing: .05em; color: var(--ink-faint);
+  padding: 0 .8rem .5rem 0; border-bottom: 1px solid var(--ink-soft);
+}
+tbody td {
+  padding: .6rem .8rem .6rem 0; border-bottom: 1px solid var(--rule);
+  vertical-align: baseline;
+}
+tbody tr:last-child td { border-bottom: none; }
+tbody td:first-child { white-space: nowrap; }
+tbody td:last-child {
+  text-align: right; white-space: nowrap;
+  font-size: .78rem; color: var(--ink-faint);
+}
+tbody td:last-child strong { color: var(--accent); font-weight: 600; }

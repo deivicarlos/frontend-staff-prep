@@ -1,0 +1,526 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lesson 3 — The Keyboard Is the Widget</title>
+<link rel="stylesheet" href="../assets/course.css">
+</head>
+<body>
+
+<header>
+  <h1>The keyboard is the widget</h1>
+  <p class="subtitle">Requirement 5 has gone unwritten twice, and you named the reason: you
+  don't know how. Everything else in this workspace is a retrieval problem. This one is a plain
+  knowledge gap, so it gets taught.</p>
+  <p class="meta">Lesson 03 · Platform &amp; accessibility · ~30 minutes</p>
+</header>
+
+<main>
+
+<h2>Why this lesson, now</h2>
+
+<div class="diagnosis">
+  <div class="dx"><span class="dx-q">Ex 1</span><span>Arrow keys + Enter — not started</span></div>
+  <div class="dx"><span class="dx-q">Ex 2</span><span>Arrow keys + Enter — not started, self-reported as "didn't know how"</span></div>
+  <div class="dx"><span class="dx-q">Q18</span><span>Accessible widget behaviour — calibration miss, still open</span></div>
+  <div class="dx"><span class="dx-q">Ex 2</span><span><code>AbortController</code> built and threaded, effect returned nothing</span></div>
+</div>
+
+<p>The first three are one topic. The fourth is here because it is the sharpest thing your
+rebuild found, and this lesson is the natural place to close it — see
+<a href="#cleanup">derivation 5</a>.</p>
+
+<div class="note warn">
+  <p><strong>Why this is worth thirty minutes and not a footnote.</strong> In a typeahead brief,
+  keyboard navigation is the requirement that most separates senior from mid. Debounce, loading
+  and error are things every candidate writes. The keyboard is where people either produce a
+  coherent interaction model or produce <code>onKeyDown</code> with two <code>if</code>
+  statements and no idea what happens at the end of the list.</p>
+  <p>It is also the one place where the accessibility answer and the correct answer are the same
+  answer. You don't bolt ARIA on afterwards — the ARIA attributes <em>are</em> the state you had
+  to track anyway.</p>
+</div>
+
+<h2>The idea, once</h2>
+
+<blockquote>A composite widget has <strong>two</strong> focuses. There is DOM focus — where
+keystrokes actually go — and there is the widget's own idea of which item is active. In a
+typeahead these must be in different places at the same time, and every technique below exists
+to reconcile that.</blockquote>
+
+<p>That sentence is the whole lesson. Hold it, and the rest derives.</p>
+
+<h2>Derivation 1 — why you can't just call <code>.focus()</code></h2>
+
+<p>The obvious implementation of ArrowDown is "move focus to the next result." Try to see why
+that cannot work before reading on.</p>
+
+<div class="predict" data-predict data-key="0003-focus">
+  <span class="predict-label">Predict, then reveal</span>
+  <p class="predict-prompt">The user has typed <code>tolk</code> and eight results are showing.
+  They press ArrowDown, and you call <code>liRef.current.focus()</code> on the first result.
+  They now press <code>i</code>, meaning to continue typing <code>tolkien</code>. What happens,
+  and what does that tell you about where DOM focus has to live?</p>
+  <textarea class="predict-input" placeholder="What happens: …&#10;Therefore: …"></textarea>
+  <button class="predict-btn">Reveal</button>
+  <div class="predict-answer" hidden>
+    <p><strong>The <code>i</code> goes nowhere.</strong> DOM focus is on an
+    <code>&lt;li&gt;</code>, not the input, so the character is dropped — or worse, it triggers
+    the browser's type-ahead-to-select behaviour on the list. The user has to click back into
+    the field. You have broken typing in order to implement typing.</p>
+    <p>So the constraint is absolute: <strong>in a combobox, DOM focus never leaves the
+    input.</strong> Which leaves you needing to tell a screen reader that a different element is
+    the active one, without moving the browser's focus there. That is exactly the problem
+    <code>aria-activedescendant</code> exists to solve.</p>
+    <p>The APG is unambiguous about it:</p>
+    <blockquote>"DOM focus is maintained on the combobox and the assistive technology focus is
+    moved within the listbox using <code>aria-activedescendant</code>."<br>
+    — <a href="https://www.w3.org/WAI/ARIA/apg/patterns/combobox/">W3C ARIA Authoring Practices Guide, Combobox Pattern</a></blockquote>
+  </div>
+</div>
+
+<h2>Derivation 2 — the two techniques, and how to choose</h2>
+
+<p>There are exactly two sanctioned ways to manage focus inside a composite widget. Knowing both
+and knowing <em>why you picked one</em> is a strong interview answer; knowing one is a mid answer.</p>
+
+<h3>A · <code>aria-activedescendant</code> — focus stays put, a pointer moves</h3>
+
+<p>The container is in the tab sequence and carries an attribute naming the active child by
+<code>id</code>. Nothing is focused but the container.</p>
+
+<pre><code>&lt;input
+  role="combobox"
+  aria-expanded={open}
+  aria-controls="results"
+  aria-autocomplete="list"
+  aria-activedescendant={active &gt;= 0 ? `opt-${active}` : undefined}
+/&gt;
+&lt;ul id="results" role="listbox"&gt;
+  &lt;li id="opt-0" role="option" aria-selected={active === 0}&gt;…&lt;/li&gt;
+&lt;/ul&gt;</code></pre>
+
+<p>The cost is that <strong>you</strong> own everything the browser would normally have done for
+you. The APG spells out the obligation:</p>
+
+<blockquote>"When the container element receives DOM focus, draw a visual focus indicator on the
+active element and ensure the active element is scrolled into view."<br>
+— <a href="https://www.w3.org/WAI/ARIA/apg/practices/keyboard-interface/">APG, Developing a Keyboard Interface</a></blockquote>
+
+<p>Nothing is focused, so nothing gets <code>:focus</code> styling and nothing auto-scrolls. Both
+are on you.</p>
+
+<h3>B · Roving <code>tabindex</code> — real focus, one tab stop</h3>
+
+<p>Exactly one child has <code>tabindex="0"</code>; every sibling has <code>tabindex="-1"</code>.
+Arrow keys move the <code>0</code> and then call <code>.focus()</code>. The whole group is one
+tab stop, which is the point — a toolbar of twelve buttons shouldn't cost twelve tabs.</p>
+
+<blockquote>"…set <code>tabindex="0"</code> on the element that will initially be included in the
+tab sequence and set <code>tabindex="-1"</code> on all other focusable elements it contains."<br>
+— <a href="https://www.w3.org/WAI/ARIA/apg/practices/keyboard-interface/">APG, Developing a Keyboard Interface</a></blockquote>
+
+<p>And the reason to prefer it when you can:</p>
+
+<blockquote>"One benefit of using roving <code>tabindex</code> rather than
+<code>aria-activedescendant</code> to manage focus is that the user agent will scroll the newly
+focused element into view."</blockquote>
+
+<div class="note">
+  <p><strong>The decision rule, in one line:</strong> if the user must keep typing while
+  navigating, DOM focus can't move, so it's <code>aria-activedescendant</code> — combobox,
+  typeahead, autocomplete. If they don't need to type, move real focus with roving
+  <code>tabindex</code> and get focus styling and scrolling for free — toolbar, tabs, menu,
+  radio group, tree, grid.</p>
+  <p>So your typeahead is technique A. Say the trade-off out loud when you build it: <em>"I'm
+  using <code>aria-activedescendant</code> because focus has to stay in the input for typing —
+  which means I owe the highlight styling and the scroll-into-view myself."</em> That single
+  sentence demonstrates you know both techniques and chose.</p>
+</div>
+
+<h2>Derivation 3 — the state is one number, and it has an identity problem</h2>
+
+<p>The entire keyboard layer is one piece of state:</p>
+
+<pre><code>const [active, setActive] = useState(-1);   // -1 = nothing highlighted</code></pre>
+
+<p><code>-1</code> rather than <code>0</code> is deliberate: on a fresh set of results nothing is
+highlighted, so Enter does nothing rather than selecting a row the user never looked at.</p>
+
+<div class="predict" data-predict data-key="0003-reset">
+  <span class="predict-label">Predict, then reveal</span>
+  <p class="predict-prompt">The user has arrowed down to <code>active === 5</code>. They then type
+  one more character; the debounce fires and a new search returns <strong>two</strong> results.
+  What is on screen, and what is the bug class?</p>
+  <textarea class="predict-input" placeholder="On screen: …&#10;Bug class: …"></textarea>
+  <button class="predict-btn">Reveal</button>
+  <div class="predict-answer" hidden>
+    <p><code>active</code> is still <code>5</code>, the list has indices <code>0</code> and
+    <code>1</code>, so nothing is highlighted and <code>aria-activedescendant</code> points at an
+    <code>id</code> that no longer exists. Press Enter and you read
+    <code>results[5]</code> — <code>undefined</code> — and crash, or silently select nothing.</p>
+    <p><strong>This is an identity bug</strong>, and you should recognise the shape by now. An
+    index is a position, not a thing. When the list it indexes into is replaced, the number is
+    still valid and its meaning is gone — the same reason
+    <code>key={`${index}-${title}`}</code> in your rebuild wasn't a stable key, and the same
+    reason a constant <code>queryKey</code> broke attempt one.</p>
+    <p>The fix is to reset the highlight whenever the thing it points into changes:</p>
+    <pre><code>useEffect(() =&gt; { setActive(-1); }, [results]);</code></pre>
+    <p>Interview-grade follow-up, worth volunteering: <em>"if I wanted the highlight to survive a
+    refresh of the same search, I'd track the selected item's <strong>id</strong> instead of its
+    index and re-derive the position — an id keeps its meaning across a new array, an index
+    doesn't."</em></p>
+  </div>
+</div>
+
+<h2>Derivation 4 — the interaction contract</h2>
+
+<p>This is the part that is pure knowledge, so here it is as a table. The APG marks some of these
+optional; the ones you must have for a credible answer are marked <strong>required</strong>.</p>
+
+<table>
+<thead><tr><th>Key</th><th>Behaviour</th><th></th></tr></thead>
+<tbody>
+<tr><td><code>ArrowDown</code></td><td>Open the popup if closed; otherwise move to the next option</td><td><strong>required</strong></td></tr>
+<tr><td><code>ArrowUp</code></td><td>Move to the previous option; from nothing, opens at the last option</td><td><strong>required</strong></td></tr>
+<tr><td><code>Enter</code></td><td>Accept the active option, close the popup</td><td><strong>required</strong></td></tr>
+<tr><td><code>Escape</code></td><td>Dismiss the popup. <em>Optionally</em> also clear the input</td><td><strong>required</strong></td></tr>
+<tr><td><code>Home</code> / <code>End</code></td><td>Jump to first / last option</td><td>optional</td></tr>
+<tr><td><code>Alt</code>+<code>ArrowDown</code></td><td>Open the popup <em>without</em> moving the active option</td><td>optional</td></tr>
+</tbody>
+</table>
+
+<p>Three details that separate a considered implementation from a guessed one:</p>
+
+<ul>
+  <li><strong>Wrap or clamp — pick one on purpose.</strong> Wrapping (last → first) suits a short
+  result list; clamping suits a long one, where wrapping feels like the list broke. Either is
+  correct. Having no opinion is the wrong answer, and so is being surprised by the question.</li>
+  <li><strong><code>preventDefault()</code> on the arrows.</strong> Otherwise ArrowUp jumps the
+  text cursor to the start of the input while your highlight moves — two things happening per
+  keypress. This is the single most common bug in hand-rolled typeaheads.</li>
+  <li><strong>Escape's focus behaviour depends on the technique.</strong> The APG says Escape
+  "closes the popup and returns focus to the combobox" — but with
+  <code>aria-activedescendant</code>, focus never left, so there is nothing to return. That is
+  only a real step under roving <code>tabindex</code>. Noticing that the spec sentence doesn't
+  apply to your architecture is exactly the kind of remark that reads as senior.</li>
+</ul>
+
+<h2 id="cleanup">Derivation 5 — cleanup, away from timers</h2>
+
+<p>In your rebuild you wrote this, and it is flawless:</p>
+
+<pre><code>const timerId = setTimeout(() =&gt; setDebounced(txt), msDelay);
+return () =&gt; { clearTimeout(timerId); };</code></pre>
+
+<p>And in the same forty-five minutes, in the same codebase, you built an
+<code>AbortController</code>, destructured its <code>signal</code>, threaded it through your API
+module into <code>fetch</code> — and returned nothing from the effect. So nothing ever aborted.
+Ninety percent of the machinery, no trigger.</p>
+
+<p>Two data points make a pattern: <strong>you have stored cleanup as a thing you do after
+<code>setTimeout</code>, rather than as a property of effects.</strong> That's my fault as much as
+yours — lesson 2 taught the principle and every example I used was a timer. So here it is on
+three surfaces that aren't.</p>
+
+<pre><code>// 1 · A listener. Close the popup on an outside click.
+useEffect(() =&gt; {
+  const onDown = (e) =&gt; { if (!rootRef.current?.contains(e.target)) setOpen(false); };
+  document.addEventListener("pointerdown", onDown);
+  return () =&gt; document.removeEventListener("pointerdown", onDown);
+}, []);
+
+// 2 · An in-flight request. The one you missed.
+useEffect(() =&gt; {
+  const controller = new AbortController();
+  load(controller.signal);
+  return () =&gt; controller.abort();
+}, [debounced]);
+
+// 3 · An observer.
+useEffect(() =&gt; {
+  const ro = new ResizeObserver(measure);
+  ro.observe(listRef.current);
+  return () =&gt; ro.disconnect();
+}, []);</code></pre>
+
+<p>Same shape every time. Say it as one rule and it stops being three facts:</p>
+
+<blockquote>If the effect body <strong>started</strong> anything — a timer, a listener, a request,
+an observer, a subscription — the cleanup <strong>stops</strong> that same thing. React will
+re-run the effect, and the cleanup is what makes the previous run stop mattering.</blockquote>
+
+<p>One trap specific to the request case, which is why cancellation looked optional in your code.
+Aborting makes <code>fetch</code> <em>reject</em>, so it lands in your <code>catch</code>. If you
+treat that as a failure you will flash an error banner every time the user types a character:</p>
+
+<pre><code>catch (err) {
+  if (err instanceof DOMException &amp;&amp; err.name === "AbortError") return;  // expected, not a failure
+  setState({ status: "error", message: "Could not load results" });
+}</code></pre>
+
+<h2>The whole keyboard layer</h2>
+
+<p>Everything above, assembled. This is roughly twelve minutes of typing once you know it, which
+is the point of learning it now rather than discovering it on a clock.</p>
+
+<pre><code>function onKeyDown(e) {
+  if (!open || results.length === 0) return;
+
+  switch (e.key) {
+    case "ArrowDown":
+      e.preventDefault();
+      setActive(i =&gt; (i + 1) % results.length);          // wrap
+      break;
+    case "ArrowUp":
+      e.preventDefault();
+      setActive(i =&gt; (i &lt;= 0 ? results.length : i) - 1); // wrap, and -1 → last
+      break;
+    case "Home":
+      e.preventDefault();
+      setActive(0);
+      break;
+    case "End":
+      e.preventDefault();
+      setActive(results.length - 1);
+      break;
+    case "Enter":
+      if (active &gt;= 0) { e.preventDefault(); select(results[active]); }
+      break;
+    case "Escape":
+      setOpen(false);
+      setActive(-1);
+      break;
+  }
+}</code></pre>
+
+<p>Note <code>setActive(i =&gt; …)</code> rather than <code>setActive(active + 1)</code>. Holding
+ArrowDown fires repeat events faster than React re-renders, and the updater form is what stops
+them all reading the same snapshot — lesson 2's derivation 1, showing up somewhere it actually
+bites.</p>
+
+<p>Then the scroll obligation you took on by choosing <code>aria-activedescendant</code>:</p>
+
+<pre><code>useEffect(() =&gt; {
+  if (active &lt; 0) return;
+  document.getElementById(`opt-${active}`)
+    ?.scrollIntoView({ block: "nearest" });
+}, [active]);</code></pre>
+
+<p><code>block: "nearest"</code> matters — the default yanks the list even when the row is already
+visible.</p>
+
+<h2>Retrieval check</h2>
+
+<p>Six questions. Two on the focus model, two on the interaction contract, two on cleanup — the
+last pair deliberately on surfaces this lesson did <em>not</em> use as its examples, because that
+is the difference between holding a principle and having memorised a snippet.</p>
+
+<div class="quiz" data-quiz data-lesson="0003">
+
+<div class="q" data-track="focus" data-answer="2">
+  <span class="q-num">Q1 · Focus model</span>
+  <p class="q-stem">In a typeahead, why is calling <code>.focus()</code> on the highlighted
+  <code>&lt;li&gt;</code> wrong?</p>
+  <ul class="opts">
+    <li><button class="opt">An <code>&lt;li&gt;</code> can't receive focus without <code>tabindex</code></button></li>
+    <li><button class="opt">Screen readers ignore focus changes inside a <code>listbox</code></button></li>
+    <li><button class="opt">Focus must stay in the input or the user can't keep typing</button></li>
+    <li><button class="opt">It fires a re-render on every arrow keypress</button></li>
+  </ul>
+  <div class="why" hidden><strong>Typing breaks.</strong> The first option is true in isolation —
+  you would need <code>tabindex="-1"</code> — but it's a mechanical detail, not the reason. The
+  reason is behavioural: a combobox is a text field the user is still typing into, so DOM focus
+  cannot leave it, which is precisely why <code>aria-activedescendant</code> exists.</div>
+</div>
+
+<div class="q" data-track="focus" data-answer="1">
+  <span class="q-num">Q2 · Focus model</span>
+  <p class="q-stem">You're building a toolbar of twelve icon buttons with arrow-key navigation.
+  Which technique, and what do you get for free?</p>
+  <ul class="opts">
+    <li><button class="opt"><code>aria-activedescendant</code> — one tab stop instead of twelve</button></li>
+    <li><button class="opt">Roving <code>tabindex</code> — the browser scrolls the focused element into view</button></li>
+    <li><button class="opt">Roving <code>tabindex</code> — screen readers announce the group size</button></li>
+    <li><button class="opt"><code>aria-activedescendant</code> — <code>:focus-visible</code> styling still applies</button></li>
+  </ul>
+  <div class="why" hidden><strong>Roving <code>tabindex</code>, and you get real focus.</strong>
+  Nobody is typing into a toolbar, so DOM focus is free to move — and once it does, the user agent
+  scrolls the focused element into view and <code>:focus-visible</code> works, both of which you
+  would otherwise owe by hand. Both techniques give you one tab stop, so that isn't the
+  discriminator. Option 4 has it backwards: under
+  <code>aria-activedescendant</code> nothing is focused, so there is nothing to style.</div>
+</div>
+
+<div class="q" data-track="keyboard" data-answer="3">
+  <span class="q-num">Q3 · Contract</span>
+  <p class="q-stem"><code>active</code> is <code>5</code>. A new search returns two results. What
+  must happen, and why is it the same bug you've hit before?</p>
+  <ul class="opts">
+    <li><button class="opt">Clamp <code>active</code> to <code>results.length - 1</code> on every render</button></li>
+    <li><button class="opt">Nothing — React re-renders and the stale index is discarded</button></li>
+    <li><button class="opt">Move <code>active</code> into a ref so it survives the new results</button></li>
+    <li><button class="opt">Reset it to <code>-1</code> when <code>results</code> changes — an index is a position, not a thing</button></li>
+  </ul>
+  <div class="why" hidden><strong>Reset on change.</strong> Clamping keeps a highlight the user
+  never asked for on a row they never looked at, and Enter then selects it. Nothing is discarded
+  automatically — <code>active</code> is state and state persists across renders; that persistence
+  is the bug. This is the identity family again: an index stays numerically valid while its
+  meaning evaporates, exactly like an index-based <code>key</code> or a frozen
+  <code>queryKey</code>. Track the item's <em>id</em> if you want the highlight to survive.</div>
+</div>
+
+<div class="q" data-track="keyboard" data-answer="0">
+  <span class="q-num">Q4 · Contract</span>
+  <p class="q-stem">Your arrow handling works, but ArrowUp also jumps the text cursor to the start
+  of the input. What's missing, and what does that tell you about the class of bug?</p>
+  <ul class="opts">
+    <li><button class="opt"><code>e.preventDefault()</code> — the browser's native behaviour is still running alongside yours</button></li>
+    <li><button class="opt"><code>e.stopPropagation()</code> — the event is bubbling to a parent handler</button></li>
+    <li><button class="opt">The handler belongs on the <code>&lt;ul&gt;</code>, not the input</button></li>
+    <li><button class="opt">Switch to <code>onKeyUp</code>, which fires after the caret has moved</button></li>
+  </ul>
+  <div class="why" hidden><strong><code>preventDefault()</code>.</strong> The caret move is the
+  input's <em>default action</em>, not another listener, so stopping propagation does nothing —
+  that distinction is the point of the question. Moving the handler to the <code>&lt;ul&gt;</code>
+  is worse: it never receives the key, because focus is in the input.
+  <code>onKeyUp</code> fires after the browser has already acted. Whenever you implement a key
+  that the platform already means something by, you are overriding rather than adding.</div>
+</div>
+
+<div class="q" data-track="cleanup" data-answer="1">
+  <span class="q-num">Q5 · Cleanup</span>
+  <p class="q-stem">An effect creates an <code>IntersectionObserver</code>, calls
+  <code>.observe()</code> on a row, and returns nothing. The list re-renders on every keystroke.
+  What is the failure?</p>
+  <ul class="opts">
+    <li><button class="opt">None — observers are garbage-collected when the element unmounts</button></li>
+    <li><button class="opt">Observers accumulate, one per run, all still firing</button></li>
+    <li><button class="opt">The observer silently rebinds to the newest element each run</button></li>
+    <li><button class="opt">It throws on the second run, because the element is already observed</button></li>
+  </ul>
+  <div class="why" hidden><strong>They pile up.</strong> Each run constructs another observer and
+  none of the previous ones stop, so callbacks multiply with keystrokes. Nothing rebinds and
+  nothing throws — that's what makes it nasty: no error, just growing work. Cleanup is
+  <code>ro.disconnect()</code>. Same shape as <code>clearTimeout</code>, same shape as
+  <code>controller.abort()</code>, same shape as <code>removeEventListener</code>.
+  <em>If the body started it, the cleanup stops it.</em></div>
+</div>
+
+<div class="q" data-track="cleanup" data-answer="2">
+  <span class="q-num">Q6 · Cleanup</span>
+  <p class="q-stem">You add <code>return () =&gt; controller.abort()</code> to your fetch effect.
+  Now an error banner flashes on almost every keystroke. What did you get wrong?</p>
+  <ul class="opts">
+    <li><button class="opt">Abort must be called before the request starts, not in cleanup</button></li>
+    <li><button class="opt">The effect needs the debounced value in its dependency array</button></li>
+    <li><button class="opt">Aborting rejects the promise, and the <code>catch</code> treats <code>AbortError</code> as a real failure</button></li>
+    <li><button class="opt"><code>setState</code> is running after unmount and React is warning</button></li>
+  </ul>
+  <div class="why" hidden><strong>The <code>catch</code> can't tell cancellation from failure.</strong>
+  A successful abort <em>is</em> a rejection — it arrives as a <code>DOMException</code> named
+  <code>AbortError</code> — so it must be filtered out before you set an error state. This is the
+  half of requirement 6 that isn't the cleanup line, and it's why your rebuild's <code>catch</code>
+  couldn't have been extended into requirement 4 as written. React 18+ no longer warns about
+  setting state after unmount, so option 4 is out of date.</div>
+</div>
+
+</div><!-- /quiz -->
+
+<div class="score" data-score>
+  <h3>Retrieval</h3>
+  <div class="track" data-track-row="focus" data-track-label="Focus model">
+    <span class="track-name">Focus model</span><span class="track-score">— / 2</span>
+    <span class="bar"><i></i></span>
+  </div>
+  <div class="track" data-track-row="keyboard" data-track-label="Interaction contract">
+    <span class="track-name">Interaction contract</span><span class="track-score">— / 2</span>
+    <span class="bar"><i></i></span>
+  </div>
+  <div class="track" data-track-row="cleanup" data-track-label="Cleanup as a principle">
+    <span class="track-name">Cleanup as a principle</span><span class="track-score">— / 2</span>
+    <span class="bar"><i></i></span>
+  </div>
+  <p class="verdict" data-verdict>Answer all six.</p>
+  <p><button class="opt" data-copy-results style="width:auto">Copy results for Claude</button></p>
+  <textarea data-results-fallback hidden rows="6" style="width:100%;font-family:var(--mono);font-size:.8rem"></textarea>
+</div>
+
+<h2>Saying it out loud</h2>
+
+<p>Four sentences. Rehearse each until it's one breath — these are the ones that do work in a
+live round.</p>
+
+<ul>
+  <li><strong>"DOM focus stays in the input, so I move a pointer with
+  <code>aria-activedescendant</code> rather than moving focus."</strong> Answers the whole
+  architecture question in one line.</li>
+  <li><strong>"Roving <code>tabindex</code> when focus can move, <code>aria-activedescendant</code>
+  when it can't — and roving gives me scroll-into-view for free."</strong> Shows you chose rather
+  than knew one.</li>
+  <li><strong>"I'll reset the highlight when the results change, because an index is a position,
+  not a thing."</strong></li>
+  <li><strong>"If the effect body started it, the cleanup stops it."</strong> Timer, listener,
+  request, observer — one rule, four surfaces.</li>
+</ul>
+
+<div class="task">
+  <h3>Next — exercise 0003, 20 minutes</h3>
+  <p>Not another typeahead. The fetching layer is handed to you already working; you build only
+  the keyboard on top of it. That isolates the thing you've never written from the things you can
+  now do quickly.</p>
+  <p>It carries the new standing protocol, which exists because you lost two requirements in
+  exercise 0002 to memory rather than to skill: <strong>transcribe the requirements into the file
+  before starting the clock, re-read them out loud at the halfway mark, and name what's unmet at
+  the buzzer.</strong></p>
+  <p>Do the retrieval check above first and paste me the score. If the cleanup track comes back
+  2/2, that closes the finding from your rebuild and I'll stop teaching it.</p>
+</div>
+
+<h2>Primary sources</h2>
+
+<p><a href="https://www.w3.org/WAI/ARIA/apg/patterns/combobox/"><strong>APG — Combobox Pattern</strong></a>
+is the specification your typeahead is an implementation of. Read the "Keyboard Interaction" and
+"Roles, States, and Properties" sections; twenty minutes, and it is the actual answer to the
+interview question rather than a blog's paraphrase of it.</p>
+
+<p><a href="https://www.w3.org/WAI/ARIA/apg/practices/keyboard-interface/"><strong>APG — Developing a Keyboard Interface</strong></a>
+is where roving <code>tabindex</code> and <code>aria-activedescendant</code> are specified
+side by side, including the scroll-into-view trade-off quoted above.</p>
+
+<p>For the React-side mechanics of effects and cleanup on non-timer surfaces,
+<a href="https://react.dev/reference/react/useEffect#connecting-to-an-external-system">Connecting to an external system</a>
+is the canonical page — every example there is a subscription, a listener or a connection, which
+is exactly the framing this lesson needed and lesson 2 didn't give you.</p>
+
+<div class="ask">
+  <p><strong>Argue with me.</strong> If the two-focuses framing didn't land, say so before the
+  exercise — building the keyboard on a shaky model of where focus lives is how you end up with
+  the <code>.focus()</code> implementation from derivation 1. And if Q5 or Q6 came back wrong,
+  tell me which: Q5 wrong means cleanup still isn't a principle, Q6 wrong means it is but the
+  abort/error distinction isn't. Those need different follow-ups.</p>
+</div>
+
+<footer class="nav">
+  <p><strong>This lesson closes:</strong> calibration Q18 (accessible widget behaviour), the
+  twice-unbuilt requirement 5, and the timer-only cleanup reflex from LR-0005.</p>
+  <p><strong>Still open:</strong></p>
+  <ul>
+    <li>Q17 — event loop ordering. Folds into lesson 4 alongside task timing and INP.</li>
+    <li>Q2 of lesson 2's check — what React Compiler does and doesn't automate. That is lesson 4.</li>
+    <li>Q14 — generics. Folded into a later component-API lesson.</li>
+    <li>Lesson 1's Task B — the 20-minute spoken system design. Still never attempted, and still the only instrument for how you sound.</li>
+  </ul>
+  <ul>
+    <li><a href="0002-render-is-a-snapshot.html">← Lesson 2 — Render Is a Snapshot</a></li>
+    <li><a href="../MISSION.md">MISSION.md</a> · <a href="../RESOURCES.md">RESOURCES.md</a></li>
+  </ul>
+</footer>
+
+</main>
+
+<script src="../assets/quiz.js"></script>
+<script src="../assets/predict.js"></script>
+</body>
+</html>
