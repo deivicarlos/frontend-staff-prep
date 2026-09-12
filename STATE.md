@@ -1,6 +1,6 @@
 # Where we are
 
-_Last updated: 2026-09-09, end of session 2._
+_Last updated: 2026-09-12, session 3._
 
 ## Immediately next
 
@@ -71,9 +71,16 @@ and 4 to memory rather than to skill.
 (memoisation yes, structural and network problems no). Partial cover already exists in
 `reference/whats-changed-2024-2026.html` under "The memoisation shift."
 
-**Still outstanding from lesson 1: Task B**, the 20-minute spoken system design attempt
-("design a Twitter-style news feed", recorded, listened back). Never done, twice deferred. It
-remains the only instrument for how he *sounds* under pressure.
+**Lesson 5 — frontend system design, and it is a process lesson.** New, from
+[LR-0007](learning-records/0007-constraints-do-not-travel.md). Built on RADIO, weighted to
+requirements-gathering and to carrying a constraint forward across decisions — *not* to feed
+architecture, which he half-knows. Its retrieval check must plant a constraint early and offer a
+decision later that the constraint invalidates.
+
+**Lesson 1 Task B is retired.** He declined it — "im not concern about my speech, im more
+concerned in the design" — and then answered the prompt in prose anyway, which produced the
+finding the task existed for (opened at the stack, gathered no requirements). Do not chase it a
+fourth time. Revisit only if a real interview goes badly on delivery.
 
 ## Standing gaps not yet scheduled
 
@@ -88,6 +95,10 @@ remains the only instrument for how he *sounds* under pressure.
 - **`any` at the fetch boundary has now survived two exercises.** Q16 answered correctly, never
   applied. Too small for a lesson; make it an explicit graded line in every future exercise
   rubric so it stops being free.
+- **`useInfiniteQuery` shape** — he keys infinite feeds as `['posts','page3']`, one query per
+  page, rather than one cache entry holding `{ pages, pageParams }`. Clean-edged; it belongs in
+  lesson 5 alongside cursor-vs-offset, since the two errors compound. Verify against the TanStack
+  primary source rather than recalling it.
 - **No human feedback loop exists.** Everything here is asynchronous, and self-assessment cannot
   measure how he sounds live. Flagged in `RESOURCES.md` under Gaps. He has not said whether he
   wants to join communities — ask before pushing it again.
@@ -100,6 +111,7 @@ remains the only instrument for how he *sounds* under pressure.
 | Exercise 0001 — typeahead | ~2/6 in 45 min. Constant `queryKey` ate the run |
 | Lesson 2 — render is a snapshot | 5/6. Snapshot 2/2, effects 2/2 — the model landed |
 | Exercise 0002 — rebuild | ~2/6 again, but recomposed: debounce correct, deps correct, `AbortController` reached for. Cancellation wired but never armed |
+| Design probe — news feed | ~3/6. Scroll compensation strong, Tailwind correctly judged non-load-bearing; offset pagination chosen one question after describing what breaks it |
 
 **Reps are confirmed as the primary instrument** (LR-0006) — lesson 2 transferred into timed
 production, not just into a quiz, and the familiar layer is measurably faster. Keep exercises
