@@ -1,0 +1,92 @@
+:root {
+  color-scheme: light dark;
+  font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+}
+
+body {
+  margin: 0;
+  padding: 3rem 1.5rem;
+  background: #fbfbfa;
+  color: #1a1a1a;
+}
+
+main {
+  max-width: 34rem;
+  margin: 0 auto;
+}
+
+h1 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0 0 1.25rem;
+}
+
+.typeahead {
+  position: relative;
+}
+
+.input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.6rem 0.75rem;
+  font-size: 1rem;
+  border: 1px solid #c9c9c4;
+  border-radius: 6px;
+  background: #fff;
+}
+
+.input:focus-visible {
+  outline: 2px solid #3b5bdb;
+  outline-offset: 1px;
+}
+
+/* Deliberately shorter than the result list. Scroll-into-view is a real requirement here,
+   not a theoretical one. */
+.listbox {
+  list-style: none;
+  margin: 0.25rem 0 0;
+  padding: 0.25rem;
+  max-height: 11rem;
+  overflow-y: auto;
+  border: 1px solid #c9c9c4;
+  border-radius: 6px;
+  background: #fff;
+}
+
+.option {
+  padding: 0.45rem 0.6rem;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.option:hover {
+  background: #f0f0ee;
+}
+
+/* Use this for the keyboard-active row. Nothing is DOM-focused, so :focus won't fire. */
+.option.active {
+  background: #3b5bdb;
+  color: #fff;
+}
+
+.option.active .meta {
+  color: #d5dcf7;
+}
+
+.title {
+  font-size: 0.95rem;
+}
+
+.meta {
+  font-size: 0.8rem;
+  color: #6b6b66;
+}
+
+.selected {
+  margin-top: 1rem;
+  font-size: 0.9rem;
+  color: #6b6b66;
+}

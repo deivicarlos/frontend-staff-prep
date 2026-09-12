@@ -1,55 +1,27 @@
 # Where we are
 
-_Last updated: 2026-09-12, session 3._
+_Last updated: 2026-09-12, end of session 3._
 
 ## Immediately next
 
-**Carlos owes lesson 3 — it is written and waiting.** Open it, work through it, do the retrieval
-check at the end, and paste the score back.
+**Carlos owes exercise 0003 — it is built and waiting.**
 
 ```sh
-open lessons/0003-the-keyboard-is-the-widget.html
+cd exercises/0003-keyboard-layer && npm install && npm run dev
 ```
 
-~30 minutes. It has two `predict.js` gates (derivations 1 and 3) that need a written prediction
-before they reveal, so it can't be skimmed.
+Then `START-HERE.md`. 20 minutes, keyboard layer only, results handed over pre-fetched and
+synchronous so the debounce/request/cancellation layer can't absorb the clock. Carries the
+LR-0006 protocol as three graded lines, plants `any[]` as `search()`'s return type, and grades
+`preventDefault` explicitly (his lesson-3 Q4 miss, and a trap he will hit in the first five
+minutes). Scaffold verified — installs, typechecks, builds.
 
-**What it covers, and why those two things are in one lesson:**
+Score it against `AFTER-THE-TIMER.md`, opened only after the clock, and paste the result back
+with the three questions at the bottom answered.
 
-- **The keyboard**, which is the actual gap. Requirement 5 has gone unwritten in both timed
-  exercises and he named the reason himself — he doesn't know how. Central claim is the
-  *two focuses* framing: DOM focus versus the widget's own active item, and every technique
-  reconciling the two. Covers `aria-activedescendant` vs roving `tabindex` and the rule for
-  choosing, the APG interaction contract, wrap-vs-clamp, `preventDefault` on the arrows, and the
-  scroll-into-view obligation. Absorbs calibration **Q18**.
-- **Cleanup on non-timer surfaces**, which is [LR-0005](learning-records/0005-cleanup-is-keyed-to-timers.md).
-  Listener, in-flight request, observer — one rule, three surfaces, plus the `AbortError`
-  filtering that his rebuild's `catch` couldn't have supported.
-
-Facts verified against the W3C APG (combobox pattern; developing a keyboard interface), not
-recalled. Both are cited in the lesson and quoted directly.
-
-**Reading the score when it comes back** — the tracks are deliberately diagnostic:
-
-| Track | If it comes back short |
-| --- | --- |
-| Focus model (Q1–2) | The two-focuses framing didn't land; do not start exercise 0003 until it does |
-| Interaction contract (Q3–4) | Knowledge gap, cheap to re-close; Q3 is also an identity spot-check |
-| Cleanup (Q5–6) | Q5 wrong → cleanup still isn't a principle. Q6 wrong → it is, but abort-vs-error isn't |
-
-Q5 and Q6 use surfaces the lesson did *not* teach from, on purpose. That rule exists because
-lesson 2 taught cleanup entirely through timers and the check never varied the surface — the
-error recorded in LR-0005.
-
-## Then — exercise 0003, not yet built
-
-Build it after the lesson 3 score lands, so its emphasis can follow the result. Spec already
-settled: **20 minutes, keyboard layer only**, over a results list handed over already fetched.
-Hold the scaffolding constant, vary the unfamiliar layer. Not another typeahead from scratch —
-two runs have taken most of that prompt's signal.
-
-Must carry the standing protocol below, and must grade `any` at the fetch boundary as an
-explicit line rather than leaving it free.
+**Reading the score** — the protocol checkboxes are graded first on purpose. If all three are
+checked and the score is still short, that is a different and more useful finding than exercise
+0002's. If they are unchecked, the score doesn't measure what it claims to.
 
 ## Standing exercise protocol (new, from LR-0006)
 
@@ -82,6 +54,13 @@ concerned in the design" — and then answered the prompt in prose anyway, which
 finding the task existed for (opened at the stack, gathered no requirements). Do not chase it a
 fourth time. Revisit only if a real interview goes badly on delivery.
 
+## Closed
+
+- **Cleanup as a principle** — lesson 3 tested it on two surfaces the lesson never taught from and
+  both came back correct ([LR-0008](learning-records/0008-cleanup-closed-transfer-is-the-axis.md)).
+  Stop teaching it.
+- **Lesson 1 Task B** — retired, see above.
+
 ## Standing gaps not yet scheduled
 
 - Calibration **Q17** (event loop ordering) — was clustered with Q18; Q18 now goes to lesson 3,
@@ -99,6 +78,9 @@ fourth time. Revisit only if a real interview goes badly on delivery.
   page, rather than one cache entry holding `{ pages, pageParams }`. Clean-edged; it belongs in
   lesson 5 alongside cursor-vs-offset, since the two errors compound. Verify against the TanStack
   primary source rather than recalling it.
+- **Roving `tabindex`** — lesson 3 Q2 miss. He holds `aria-activedescendant` for the combobox and
+  not the choice between techniques. Too thin for a lesson; fold into a future composite-widget
+  exercise (tabs, menu, or a toolbar) where the other technique is the correct one.
 - **No human feedback loop exists.** Everything here is asynchronous, and self-assessment cannot
   measure how he sounds live. Flagged in `RESOURCES.md` under Gaps. He has not said whether he
   wants to join communities — ask before pushing it again.
@@ -110,6 +92,7 @@ fourth time. Revisit only if a real interview goes badly on delivery.
 | Lesson 1 — calibration | 11/20. Hooks 1/4, modern React 3/4 — an inverted profile: reading, not shipping |
 | Exercise 0001 — typeahead | ~2/6 in 45 min. Constant `queryKey` ate the run |
 | Lesson 2 — render is a snapshot | 5/6. Snapshot 2/2, effects 2/2 — the model landed |
+| Lesson 3 — keyboard | 4/6. Cleanup 2/2 on untaught surfaces closes LR-0005; missed roving `tabindex` and `preventDefault` |
 | Exercise 0002 — rebuild | ~2/6 again, but recomposed: debounce correct, deps correct, `AbortController` reached for. Cancellation wired but never armed |
 | Design probe — news feed | ~3/6. Scroll compensation strong, Tailwind correctly judged non-load-bearing; offset pagination chosen one question after describing what breaks it |
 
