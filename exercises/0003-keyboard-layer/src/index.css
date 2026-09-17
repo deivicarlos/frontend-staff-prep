@@ -1,6 +1,13 @@
 :root {
-  color-scheme: light dark;
-  font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+  /* The palette below is hardcoded light. Declaring "light dark" here let the UA
+     restyle the input for dark mode, which put light text on an explicit white
+     background and made typing invisible. */
+  color-scheme: light;
+  font-family:
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    sans-serif;
 }
 
 body {
@@ -33,6 +40,7 @@ h1 {
   border: 1px solid #c9c9c4;
   border-radius: 6px;
   background: #fff;
+  color: #1a1a1a;
 }
 
 .input:focus-visible {
