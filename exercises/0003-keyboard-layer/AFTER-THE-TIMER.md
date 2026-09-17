@@ -7,7 +7,7 @@ Score yourself honestly, then paste the result back. Partial credit is real: say
 | | |
 | --- | --- |
 | Requirements transcribed into the file before the clock | ☐ |
-| Re-read at the 10-minute mark | ☐ |
+| Re-read your transcribed list, mid-build, at the 10-minute mark | ☐ |
 | Unmet requirements named at the buzzer, in writing | ☐ |
 
 LR-0006 found you lost requirements to process, not skill. If these three are checked and the

@@ -28,6 +28,14 @@ contradict the obvious plan more than once.
 - **A lesson's retrieval check must re-test that lesson's own central claim.** Lesson 2 failed
   this (LR-0004) — it taught identity and then tested other things.
 - He is a senior engineer. No encouragement padding, no explaining what a hook is.
+- **Be concise — in chat and in artifacts.** He said verbosity makes him spend too long
+  reading. Lead with the answer, cut preamble and recap, drop anything he already knows.
+  This applies hardest to exercise briefs: every extra word is read against a clock.
+  Concision is about word count, *not* about removing ambiguity — do not flatten
+  scenario-shaped requirements into instructions (LR-0009).
+- **Every checklist row must name its object.** Exercise 0003's rubric row read "Re-read at
+  the 10-minute mark" with no object; he read it as "open AFTER-THE-TIMER.md at 10 minutes",
+  which contradicts START-HERE. A row he reads out of context must stand alone.
 
 ## Conventions
 
