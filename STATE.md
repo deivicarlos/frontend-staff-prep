@@ -1,16 +1,23 @@
 # Where we are
 
-_Last updated: 2026-09-16, end of session 4._
+_Last updated: 2026-09-21, session 5._
 
 ## Immediately next
 
-**Nothing is owed. Two things are ready to build, in this order.**
+**Exercise 0004 is built and unrun — `exercises/0004-finish-the-job/`.** 20 minutes, four
+requirements, binary scoring. The variable under test is completion
+([LR-0009](learning-records/0009-the-re-read-is-the-load-bearing-step.md) finding 2), not a new
+topic: the keyboard layer ships done and correct, and all four requirements — debounce,
+cancellation, error, loading — are things he has built before. `search()` is asynchronous, slow
+for `s` queries, rejects on `boom`, and honours an `AbortSignal`. A request-log panel is wired
+into the page so every done-condition is observable rather than believable. The revised protocol
+is carried: transcribe as actions, a literal 10-minute alarm, a buzzer table inside the file.
+Re-measures 0002's unarmed `AbortController` under a condition that version cannot pass. `any[]`
+planted a fourth time, argued as causal.
 
-### 1. `reference/combobox-aria.html` — a reference sheet, not a lesson
-
-From [LR-0009](learning-records/0009-the-re-read-is-the-load-bearing-step.md) finding 4. He
-selected `aria-activedescendant` for the right reason, derived from the right constraint, then
-put it on the `<ul>` instead of the input — the one placement that makes it inert — omitted
+**Then: `reference/combobox-aria.html`** — a reference sheet, not a lesson. From LR-0009 finding
+4. He selected `aria-activedescendant` for the right reason, derived from the right constraint,
+then put it on the `<ul>` instead of the input — the one placement that makes it inert — omitted
 `role="option"`, and shipped no combobox half at all. He named the cause himself: *"I forgot how
 the active descendants worked."*
 
@@ -19,20 +26,8 @@ convention. Build it from the [APG combobox pattern](https://www.w3.org/WAI/ARIA
 as primary source — verify, don't recall. Must cover: which element carries which attribute, why
 the DOM-focus holder is the one that carries `aria-activedescendant`, and the listbox/option
 pairing. Roving `tabindex` belongs beside it as the contrasting technique, which also picks up
-the lesson 3 Q2 miss.
-
-### 2. Exercise 0004 — targets completion criteria, not a new topic
-
-LR-0009 finding 2 is the most valuable unmeasured thing in the workspace. He worked requirements
-in order and scored full credit on requirement 6, so he reached the bottom of the list inside the
-clock — **the misses are scattered, not trailing, and time is not the explanation.** Each
-requirement got enough attention to look addressed and not enough to be finished. Same shape as
-exercise 0002's unarmed `AbortController`.
-
-Candidate design: a short requirement list where every item carries an explicit checkable
-done-condition, and the rubric grades **finished vs. attempted** rather than breadth. Hold the
-familiar scaffolding constant (LR-0006). Do not introduce a new topic layer — the variable under
-test is completion.
+the lesson 3 Q2 miss. Note 0004's scaffold now contains a correct combobox implementation — the
+sheet should not simply restate it.
 
 ## Standing exercise protocol (revised by LR-0009)
 
@@ -111,6 +106,7 @@ verify against the TanStack primary source.
 | Exercise 0002 — rebuild | ~2/6 again, but recomposed: debounce correct, deps correct, `AbortController` reached for. Cancellation wired but never armed |
 | Design probe — news feed | ~3/6. Scroll compensation strong, Tailwind correctly judged non-load-bearing; offset pagination chosen one question after describing what breaks it |
 | Exercise 0003 — keyboard layer | **4/6 in 20 min.** Arrow nav, focus model and scroll-into-view full; Enter guard and Escape absent, ARIA half-placed, stale index unreset. Protocol 1 of 3 |
+| Exercise 0004 — finish the job | built 2026-09-21, unrun. Binary scoring on four done-conditions |
 
 **Reps remain the primary instrument** (LR-0006, unchanged). Exercise 0003 is the first exercise
 to score above ~2/6 and the first where a lesson's central claim was visibly applied under a clock.
