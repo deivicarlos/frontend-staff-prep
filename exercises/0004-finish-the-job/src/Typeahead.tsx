@@ -1,5 +1,6 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { search } from "./data";
+import useDebounce from "./useDebounce";
 
 /**
  * The keyboard layer is done, and it is the version the exercise 0003 rubric asked for.
@@ -23,6 +24,36 @@ import { search } from "./data";
  * | 3 |  |  |
  * | 4 |  |  |
  * ---------------------------------------------------------------------------
+ * 
+ * ## Requirements
+
+**1 · One keystroke burst, one request.**
+Type `tolkien` at normal speed.
+**Done when:** the log shows exactly one request for that burst.
+
+**2 · A slow answer must not overwrite a newer one.**
+Queries beginning with `s` take 1.5s; everything else takes 250ms. Type `snow`, and then —
+without waiting for its results — select all and type `dune`. Somewhere in there a dead request
+is still in the air.
+**Done when:** the list shows Dune and never flickers to Snow Crash, and the log shows the
+`snow` request as `aborted` rather than `resolved`.
+
+**3 · The service falls over.**
+Any query containing `boom` rejects. The user needs to know, and then needs to be able to carry
+on.
+**Done when:** the message is on screen, the console has no unhandled rejection, and typing
+`dune` afterwards shows results with no trace of the error left behind.
+
+**4 · The user must know a request is in flight.**
+Use an `s` query — you have 1.5 seconds to see it.
+**Done when:** it appears while the request is open and is gone in *both* endings: after `dune`
+resolves, and after `boom` fails.
+
+## Also graded
+
+**`search()` returns `any[]`.** It has survived three exercises. In 0003 it was not hygiene —
+it was causal: with `Book[]`, the crash you shipped was a compile error. `any` is why nothing
+told you.
  */
 
 export function Typeahead() {
@@ -30,18 +61,31 @@ export function Typeahead() {
   const [selected, setSelected] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(-1);
+  const debounced = useDebounce(query);
 
   // The request layer. This is your half of the exercise.
   const [results, setResults] = useState<any[]>([]);
 
   useEffect(() => {
-    if (!query.trim()) {
+    const controller = new AbortController();
+
+    if (!debounced.trim()) {
       setResults([]);
       return;
     }
-    search(query).then(setResults);
-  }, [query]);
 
+    try {
+      search(debounced, controller.signal).then(setResults);
+    } catch (err) {
+      console.log(controller.signal.aborted);
+    }
+
+    return () => {
+      controller.abort();
+    };
+  }, [debounced]);
+
+  console.log({ debounced });
   // ---- keyboard layer: done, correct, not yours ----------------------------
 
   const listId = useId();
