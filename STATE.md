@@ -4,11 +4,12 @@ _Last updated: 2026-09-24, session 6._
 
 ## Immediately next
 
-**Sheet 1 shipped: [`reference/async-request-layer.html`](reference/async-request-layer.html).
-He owes the 3-minute cold rewrite at its foot** (delete the 0004 request effect, rewrite from
-memory, rerun done-conditions 2–4). Ask what stalled; that is the unstored part. Then sheet 2,
-then exercise 0005. The sheet adds one trap not in LR-0010: an aborted request's `.finally`
-clobbering the newer request's loading flag. Exercise 0005 should grade it.
+**Sheet 1 shipped and cold-rewrite done** — three passes to correct, see
+[LR-0011](learning-records/0011-placement-is-the-thin-layer.md). Nothing owed by him. Next is
+sheet 2, **with placement as its spine** (LR-0011 finding 1), then exercise 0005, which must:
+make him paste the log panel's output per requirement instead of ticking a box (finding 3), and
+grade the guarded `finally` with a done-condition that has more than one request in flight
+(teacher error in LR-0011).
 
 ### 1. `reference/async-request-layer.html` — SHIPPED 2026-09-24
 
@@ -65,7 +66,10 @@ to prevent no longer happens.
 
 ## After that
 
-**Lesson 4 — compiler-era performance.** Displaced three times and still the next lesson. Closes
+**Lesson 4 — compiler-era performance.** Displaced three times and still the next lesson.
+**The event-loop part (Q17) should be built on LR-0011 finding 2**: supersede a request and ask
+in what order the three writes to `isLoading` land. He tried to fix a microtask-ordering bug
+from the cleanup, so this is a model gap, not a recall gap. Closes
 the lesson-2 Q2 miss (the boundary of what React Compiler automates: memoisation yes, structural
 and network problems no) and is the home for orphaned calibration **Q17** (event loop / task
 timing / INP). Partial cover exists in `reference/whats-changed-2024-2026.html` under "The
@@ -107,7 +111,7 @@ verify against the TanStack primary source.
   (tabs, menu, toolbar) where roving is the correct answer.
 - Calibration **Q14** (generics) — only TypeScript miss against 3/4. Fold into a component-API
   lesson where generic props are the natural vehicle.
-- **`any` at the fetch boundary — survived four exercises now, and in 0003 it was causal.** With
+- **CLOSED 2026-09-24 (LR-0011 finding 5)** — ~~`any` at the fetch boundary~~ — survived four exercises, and in 0003 it was causal.** With
   `Book[]` and `noUncheckedIndexedAccess` the requirement-2 crash is a compile error. Keep it a
   graded line, but argue it as *"`any` is why nothing told you,"* not as hygiene.
 - **Discriminated union for request state.** Still parked, still unmeasured — 0004's error and
@@ -136,6 +140,7 @@ verify against the TanStack primary source.
 | Exercise 0002 — rebuild | ~2/6 again, but recomposed: debounce correct, deps correct, `AbortController` reached for. Cancellation wired but never armed |
 | Design probe — news feed | ~3/6. Scroll compensation strong, Tailwind correctly judged non-load-bearing; offset pagination chosen one question after describing what breaks it |
 | Exercise 0003 — keyboard layer | **4/6 in 20 min.** Arrow nav, focus model and scroll-into-view full; Enter guard and Escape absent, ARIA half-placed, stale index unreset. Protocol 1 of 3 |
+| Sheet 1 cold rewrite | Three passes. Controller out of cleanup's reach, then unguarded `finally`, then correct. `Book[]` at source |
 | Exercise 0004 — finish the job | **2/4 binary in 20 min.** Debounce and cancellation both pass — the 0002 `AbortController` is armed. Error and loading never started; clock went to an API lookup |
 
 **Reps remain the primary instrument** (LR-0006, unchanged). Exercise 0003 is the first exercise

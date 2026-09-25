@@ -1,5 +1,5 @@
 import { useEffect, useId, useRef, useState } from "react";
-import { search } from "./data";
+import { search, type Book } from "./data";
 import useDebounce from "./useDebounce";
 
 /**
@@ -64,28 +64,44 @@ export function Typeahead() {
   const debounced = useDebounce(query);
 
   // The request layer. This is your half of the exercise.
-  const [results, setResults] = useState<any[]>([]);
+  const [results, setResults] = useState<Book[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    const controller = new AbortController();
-
     if (!debounced.trim()) {
       setResults([]);
       return;
     }
+    const controller = new AbortController();
 
-    try {
-      search(debounced, controller.signal).then(setResults);
-    } catch (err) {
-      console.log(controller.signal.aborted);
-    }
+    const performSearch = async () => {
+      setIsLoading(true);
+      setError("");
+
+      try {
+        const response = await search(debounced, controller.signal);
+        setResults(response);
+      } catch (e) {
+        if (!controller.signal.aborted) {
+          setError("Search failed, try again later!");
+          setSelected(null);
+        }
+      } finally {
+        if (!controller.signal.aborted) {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    performSearch();
 
     return () => {
       controller.abort();
+      setIsLoading(false);
     };
   }, [debounced]);
 
-  console.log({ debounced });
   // ---- keyboard layer: done, correct, not yours ----------------------------
 
   const listId = useId();
@@ -155,6 +171,9 @@ export function Typeahead() {
           setOpen(true);
         }}
       />
+
+      {isLoading && <p>Loading ...</p>}
+      {error && <p className="failed">{error}</p>}
 
       {listVisible && (
         <ul className="listbox" id={listId} ref={listRef} role="listbox">

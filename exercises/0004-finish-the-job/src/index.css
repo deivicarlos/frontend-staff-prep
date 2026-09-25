@@ -163,7 +163,19 @@ h1 {
   font-variant-numeric: tabular-nums;
 }
 
-.status-in-flight .status { color: #8a6d1f; }
-.status-resolved .status { color: #2e6b3f; }
-.status-failed .status { color: #a3342b; }
-.status-aborted .status { color: #6b6b66; }
+.status-in-flight .status {
+  color: #8a6d1f;
+}
+.status-resolved .status {
+  color: #2e6b3f;
+}
+.status-failed .status {
+  color: #a3342b;
+}
+.status-aborted .status {
+  color: #6b6b66;
+}
+
+.failed {
+  color: #a3342b;
+}

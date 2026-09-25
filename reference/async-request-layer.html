@@ -121,6 +121,10 @@ useEffect(() =&gt; {
 function and not a promise. So you define an async function inside it and call it.</p>
 
 <pre><code>useEffect(() =&gt; {
+  if (!debounced.trim()) {
+    setResults([]); setError(null); setLoading(false);
+    return;                          // search("") matches everything
+  }
   const controller = new AbortController();
   const { signal } = controller;
 
