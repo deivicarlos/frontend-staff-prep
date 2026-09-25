@@ -1,0 +1,44 @@
+# Career: the job search
+
+Decisions from the 2026-09-24 grilling. Sources are in `research/2026-hiring-landscape.md` and
+`research/2026-canada-remote-eligibility.md`. Private files (resumes, drafts containing personal
+data) go in `career/private/`, which is gitignored. The repo has a GitHub remote.
+
+## Where the search breaks
+
+It breaks at the top of the funnel, not in interviews. Cold applications through JobBright,
+Indeed and LinkedIn produced about one recruiter call, with no progress after it. The one
+referral (a close friend at NinjaOne) got him through HR and two technical rounds, and then he
+failed the VP round with no feedback given. He has no other referral sources, so don't plan
+around referrals.
+
+The most likely cause, from the research: US postings marked "remote" mean US-resident, and ATS
+location questions reject him automatically. This is independent of visa sponsorship.
+
+## Decided
+
+- **Targets:** CAD 180k+ is the minimum for moving (he is at CAD 165k). Company size doesn't
+  matter. Senior loops are the prep target: Canada Senior bands already reach CAD 180k (Affirm,
+  Wealthsimple). Staff is upside.
+- **Role:** frontend or fullstack, whichever pays. His frontend depth is stronger.
+- **Where to apply:** Canada-eligible postings only. A US posting counts only if it names
+  Canada. Prefer the company's own Canada posting. About 5 good applications a week, not
+  volume.
+- **Title:** restore **Director** on the resume and LinkedIn. It had been relabelled "Lead".
+  Frame IC-first: hands-on work, systems he designed and shipped, plus one or two bullets on
+  scope (cross-team architecture, hiring bar). Background checks and references will confirm
+  the real title.
+- **The "why IC" answer.** It builds on: *closer to the code, more impact, and he wants to keep
+  mentoring as a senior IC*. It stays silent on boredom and on management politics (both true,
+  both read as risk to a VP). At NinjaOne he said only that he likes to code and solve
+  problems, which is too thin for a Director moving to IC.
+
+## Status
+
+| Item | State |
+| --- | --- |
+| Resume review | Next session |
+| LinkedIn review | Next session, together with the resume |
+| "Why IC" answer | Framing agreed. Not written yet |
+| Canada target list | Not started |
+| Staff stories (2–3) | Not started |

@@ -7,7 +7,9 @@ the learning lives in these files, so a session can resume cold weeks later.
 | --- | --- |
 | [MISSION.md](./MISSION.md) | Why this exists. Every lesson traces back to it. |
 | [RESOURCES.md](./RESOURCES.md) | Trusted sources. Lessons cite from here, not from guesses. |
-| [NOTES.md](./NOTES.md) | Teaching preferences and open questions. |
+| [HISTORY.md](./HISTORY.md) | Past scores and closed items. |
+| `career/` | The job search: decisions, status. Private files go in `career/private/` (gitignored). |
+| `research/` | Sourced research on the hiring market. |
 | `lessons/` | Self-contained HTML lessons, numbered in order. |
 | `reference/` | Cheat sheets worth revisiting. Lessons are read once; these are read often. |
 | `learning-records/` | What has actually been learned, and what that changes. |
@@ -15,17 +17,10 @@ the learning lives in these files, so a session can resume cold weeks later.
 
 ## Resume here
 
-**[STATE.md](./STATE.md)** — where we are, what's next, and what's outstanding. Start there.
-
-Right now that means exercise 0002: a hand-rolled typeahead rebuild, scaffolded and waiting
-on a 45-minute timer.
-
-```sh
-cd exercises/0002-typeahead-rebuild && npm run dev
-```
-
-A fresh Claude Code session in this directory picks up [CLAUDE.md](./CLAUDE.md) automatically
-and orients itself from these files — you shouldn't have to re-explain anything.
+**[STATE.md](./STATE.md)** holds what's next. A fresh Claude Code session reads
+[CLAUDE.md](./CLAUDE.md), then STATE.md, and loads everything else only when the task needs it:
+skills in `.claude/skills/`, evidence through `learning-records/INDEX.md`, and the job search in
+`career/`.
 
 ## Exercises
 

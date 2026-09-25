@@ -35,10 +35,15 @@ what makes this phase work: you can only direct and review what you understand.
 
 ## Constraints
 
-- Employed full-time; study time is irregular and energy-dependent. Some weeks are 10+ hours, some are 1.
-- Because pace varies, every lesson must be self-contained and completable in one sitting (~30 min). No multi-session cliffhangers.
+- Employed full-time. **40–60 minutes a day** is the reliable base (set 2026-09-24), with occasional days off. Every session is self-contained. No multi-session cliffhangers.
+- **Located in Canada.** He targets Canada-eligible remote roles at CAD 180k+. Prep is built for Senior loops, with Staff as upside (`career/CAREER.md`).
 - Two years since last shipping React. Assume conceptual rust, not conceptual absence.
 - Starting point is unmeasured — LR-0001 (the calibration) sets the real floor.
+
+## Also in scope: getting interviews
+
+Added 2026-09-24. The search breaks at the top of the funnel, so resume, LinkedIn, where he
+applies, and the "why IC" answer are in scope (`career/CAREER.md`). Salary negotiation is not.
 
 ## Out of scope (for now)
 
@@ -46,4 +51,3 @@ what makes this phase work: you can only direct and review what you understand.
 - LeetCode-style algorithms as a primary focus. Frontend loops rarely lead with them; revisit only if a target company demands it.
 - Accessibility/ARIA as a study track. Real, but screens grade working logic first (LR-0012).
 - React Native, mobile, and non-React frameworks (Vue, Svelte, Angular).
-- Resume/LinkedIn/salary negotiation. Real work, but not *learning*, and not this workspace.
