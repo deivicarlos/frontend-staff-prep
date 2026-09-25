@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reference — The Async Request Layer</title>
+<link rel="stylesheet" href="../assets/course.css">
+<style>
+  main { max-width: 46rem; }
+  table { width: 100%; border-collapse: collapse; font-family: var(--sans);
+    font-size: .86rem; margin: 1.2rem 0; }
+  th, td { text-align: left; padding: .6rem .7rem; border-bottom: 1px solid var(--rule);
+    vertical-align: top; }
+  th { font-size: .72rem; letter-spacing: .08em; text-transform: uppercase;
+    color: var(--ink-faint); border-bottom: 2px solid var(--ink); }
+  td code { font-size: .8em; }
+  .wrap { overflow-x: auto; }
+  pre { overflow-x: auto; }
+  ol.traps { font-family: var(--sans); font-size: .92rem; line-height: 1.6; padding-left: 1.2rem; }
+  ol.traps li { margin-bottom: .9rem; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>The async request layer</h1>
+  <p class="subtitle">Debounced query → cancellable request → results, error, loading. The
+  whole thing, so that writing it costs no lookups.</p>
+  <p class="meta">Reference · Verified against MDN and the WHATWG DOM and Fetch standards, September 2026</p>
+</header>
+
+<main>
+
+<div class="note">
+  <p>From exercise 0004: you chose the right technique, and then the clock went on
+  looking up <code>AbortController</code>. You don't need to understand anything new here. You need
+  to be able to write it cold.</p>
+</div>
+
+<h2>The whole layer</h2>
+
+<pre><code>const [results, setResults] = useState&lt;Book[]&gt;([]);
+const [error, setError]     = useState&lt;string | null&gt;(null);
+const [loading, setLoading] = useState(false);
+
+useEffect(() =&gt; {
+  if (!debounced.trim()) {
+    setResults([]); setError(null); setLoading(false);
+    return;
+  }
+
+  const controller = new AbortController();   // one per run of the effect
+  setError(null);                             // new query clears the old failure
+  setLoading(true);
+
+  search(debounced, controller.signal)        // signal goes INTO the call
+    .then(setResults)
+    .catch(() =&gt; {
+      if (controller.signal.aborted) return;  // superseded, not failed: swallow
+      setError("Search failed. Try again.");
+    })
+    .finally(() =&gt; {
+      if (!controller.signal.aborted) setLoading(false);  // see trap 3
+    });
+
+  return () =&gt; controller.abort();            // abort() lives in the cleanup
+}, [debounced]);</code></pre>
+
+<h2>Where each piece goes</h2>
+
+<div class="wrap">
+<table>
+  <tr><th>Piece</th><th>Where</th><th>Why there</th></tr>
+  <tr><td><code>new AbortController()</code></td><td>Inside the effect body</td>
+    <td>Each run needs its own. If you share one, an abort kills the next request too, and a signal can't be un-aborted.</td></tr>
+  <tr><td><code>controller.signal</code></td><td>Passed as an argument to <code>search()</code> / <code>fetch(url, { signal })</code></td>
+    <td>The call subscribes to it. If you create the signal but never pass it, nothing can be cancelled.</td></tr>
+  <tr><td><code>controller.abort()</code></td><td>The cleanup function</td>
+    <td>React runs the cleanup just before the next run of the effect and on unmount, which is exactly when a request becomes stale. This is the half you didn't wire in 0002.</td></tr>
+  <tr><td><code>signal.aborted</code></td><td>Inside <code>.catch</code> and <code>.finally</code></td>
+    <td>This is how the handlers tell "superseded" apart from "failed".</td></tr>
+</table>
+</div>
+
+<h2>The traps</h2>
+
+<ol class="traps">
+  <li><strong><code>try/catch</code> around a promise you don't <code>await</code> catches
+  nothing.</strong> <code>search()</code> returns straight away. The rejection happens later,
+  after the <code>try</code> block has already exited. Use either <code>.catch()</code> on the chain,
+  or <code>await</code> inside the <code>try</code>. <em>(You closed this one in 0004. It's here for
+  the record.)</em></li>
+
+  <li><strong>Aborting rejects the promise, so your <code>.catch</code> runs on every
+  keystroke that supersedes a request.</strong> If you don't guard it, the user sees an error
+  message for a request they never saw fail. Check <code>controller.signal.aborted</code>
+  rather than <code>err.name === "AbortError"</code>. The rejection value is the signal's
+  <em>reason</em>, and that is only an <code>AbortError</code> when <code>abort()</code> is called
+  without an argument. <code>abort(reason)</code> rejects with whatever you passed.</li>
+
+  <li><strong>The aborted request's <code>.finally</code> fires <em>after</em> the new request
+  has started.</strong> Here is the order within a single commit: the cleanup aborts request A, then the new
+  effect calls <code>setLoading(true)</code> for request B. A's rejection handlers are microtasks,
+  so they run afterwards. If A's <code>finally</code> does <code>setLoading(false)</code>
+  unconditionally, the spinner disappears while B is still in flight. The same guard fixes it.</li>
+
+  <li><strong><code>fetch</code> doesn't reject on 404 or 500.</strong> It only rejects when
+  the request itself fails: a network error, a bad URL, or an abort. For an HTTP error it
+  resolves with <code>res.ok === false</code>, so you have to throw that yourself:
+  <code>if (!res.ok) throw new Error(`HTTP ${res.status}`)</code>. (The <code>search()</code> in
+  the exercises rejects directly, so this trap only appears once you use real <code>fetch</code>.)</li>
+
+  <li><strong>The error has to clear when the next query starts</strong>, not when a request
+  succeeds. Otherwise it sits on screen under the new results. Clear it in the effect body, next to
+  <code>setLoading(true)</code>.</li>
+</ol>
+
+<h2>Same layer with <code>async/await</code></h2>
+
+<p>An effect can't be <code>async</code> itself, because its return value has to be the cleanup
+function and not a promise. So you define an async function inside it and call it.</p>
+
+<pre><code>useEffect(() =&gt; {
+  const controller = new AbortController();
+  const { signal } = controller;
+
+  async function run() {
+    setError(null);
+    setLoading(true);
+    try {
+      setResults(await search(debounced, signal));   // await INSIDE the try
+    } catch {
+      if (!signal.aborted) setError("Search failed. Try again.");
+    } finally {
+      if (!signal.aborted) setLoading(false);
+    }
+  }
+
+  run();
+  return () =&gt; controller.abort();
+}, [debounced]);</code></pre>
+
+<h2>Facts, if asked</h2>
+
+<div class="wrap">
+<table>
+  <tr><th>Question</th><th>Answer</th></tr>
+  <tr><td>Calling <code>abort()</code> twice, or after the request finished?</td>
+    <td>No-op. The first step of the spec's algorithm is "if signal is aborted, return". Once the promise has
+    fulfilled, rejecting it does nothing. So an unconditional abort in the cleanup is safe.</td></tr>
+  <tr><td>What does <code>abort()</code> with no argument reject with?</td>
+    <td>A new <code>DOMException</code> named <code>"AbortError"</code>.</td></tr>
+  <tr><td>Abort after the headers have arrived but while the body is still being read?</td>
+    <td>The body stream errors, so <code>res.json()</code> rejects with the same reason. One abort covers the whole
+    request.</td></tr>
+  <tr><td>Timeout?</td>
+    <td><code>AbortSignal.timeout(ms)</code> rejects with <code>"TimeoutError"</code>, not
+    <code>"AbortError"</code>. That is deliberate: you should show a timeout to the user and swallow a cancel.</td></tr>
+  <tr><td>Timeout <em>and</em> cancellation together?</td>
+    <td><code>AbortSignal.any([controller.signal, AbortSignal.timeout(5000)])</code></td></tr>
+  <tr><td>Can you skip <code>AbortController</code> and use a boolean instead?</td>
+    <td>Yes, and it fixes what gets rendered. react.dev's own example uses an <code>ignore</code> flag set in the cleanup. It
+    doesn't cancel the request, though: the response still downloads and your server still does the work. Say that
+    trade-off out loud.</td></tr>
+</table>
+</div>
+
+<div class="note warn">
+  <p><strong>Sentence to have ready:</strong> <em>"Each run of the effect owns a controller.
+  The cleanup aborts it, so a superseded request can't overwrite newer results. Its
+  rejection gets swallowed rather than shown, and its <code>finally</code> doesn't touch the
+  loading flag, because by then a newer request owns that flag."</em></p>
+</div>
+
+<div class="task">
+  <p><strong>Before you close this, 3 minutes:</strong> open
+  <code>exercises/0004-finish-the-job/src/Typeahead.tsx</code>, delete your request effect, and
+  write "The whole layer" back from memory without looking at this page. Then run requirements 2–4
+  from the 0004 <code>START-HERE.md</code> in the browser. Wherever you had to stop and think, that
+  part isn't stored yet. Re-read that part only.</p>
+</div>
+
+<h2>Sources</h2>
+<ul style="font-family:var(--sans);font-size:.88rem;line-height:1.6">
+  <li><a href="https://dom.spec.whatwg.org/#abortsignal-signal-abort">WHATWG DOM: signal abort</a> (idempotence, default reason)</li>
+  <li><a href="https://fetch.spec.whatwg.org/#abort-fetch">WHATWG Fetch: abort a fetch() call</a> (promise rejected with the reason, body stream errored)</li>
+  <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal">MDN: AbortSignal</a> (<code>timeout</code>, <code>any</code>, <code>TimeoutError</code>)</li>
+  <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/fetch">MDN: fetch()</a> (no rejection on HTTP error status)</li>
+  <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/finally">MDN: Promise.prototype.finally()</a></li>
+  <li><a href="https://react.dev/learn/synchronizing-with-effects#fetching-data">react.dev: fetching data in an effect</a> (the <code>ignore</code> flag)</li>
+</ul>
+
+</main>
+</body>
+</html>

@@ -1,16 +1,16 @@
 # Where we are
 
-_Last updated: 2026-09-21, end of session 5._
+_Last updated: 2026-09-24, session 6._
 
 ## Immediately next
 
-**Nothing is owed. Exercise 0004 ran: 2 of 4, and
-[LR-0010](learning-records/0010-completion-closed-the-cost-moved-to-triage.md) changes what comes
-next.** Two reference sheets, in this order — they are now the highest-yield artifact per minute
-of his time (LR-0010 finding 3: two exercises running have lost clock to API recall on techniques
-he selected correctly).
+**Sheet 1 shipped: [`reference/async-request-layer.html`](reference/async-request-layer.html).
+He owes the 3-minute cold rewrite at its foot** (delete the 0004 request effect, rewrite from
+memory, rerun done-conditions 2–4). Ask what stalled; that is the unstored part. Then sheet 2,
+then exercise 0005. The sheet adds one trap not in LR-0010: an aborted request's `.finally`
+clobbering the newer request's loading flag. Exercise 0005 should grade it.
 
-### 1. `reference/async-request-layer.html`
+### 1. `reference/async-request-layer.html` — SHIPPED 2026-09-24
 
 He lost requirements 3 and 4 of exercise 0004 to looking up `AbortController` — *"I needed to
 search again for AbortController and how to use it as I forgot."* He has now built this layer in
