@@ -6,9 +6,11 @@ _Last updated: 2026-09-24, session 6._
 
 **Sheet 1 shipped and cold-rewrite done** — three passes to correct, see
 [LR-0011](learning-records/0011-placement-is-the-thin-layer.md). Sheet 2 shipped too:
-[`reference/combobox-aria.html`](reference/combobox-aria.html). **He owes its 3-minute task**
-(strip and restore the ARIA in 0004, fix the scaffold's missing label and dangling
-`aria-controls`, one-line toolbar answer; roving with `tabindex="0"` on Bold is correct). Check the diff, then exercise 0005, which must:
+[`reference/combobox-aria.html`](reference/combobox-aria.html). Its task is done: ARIA restored correctly, scaffold label and
+`aria-controls` fixed after one prompt each, and the toolbar question answered in his words:
+*"the nav bar doesn't have to keep focus like the input so you use tabindex"*. **That closes
+the lesson 3 Q2 direction (roving wins when nothing must hold focus)**; the composite-widget
+exercise is now a confirmation, not a gap. Next: exercise 0005, which must:
 make him paste the log panel's output per requirement instead of ticking a box (finding 3), and
 grade the guarded `finally` with a done-condition that has more than one request in flight
 (teacher error in LR-0011).

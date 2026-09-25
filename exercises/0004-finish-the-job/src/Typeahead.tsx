@@ -158,12 +158,12 @@ export function Typeahead() {
       <input
         className="input"
         type="text"
-        placeholder="Search books…"
         role="combobox"
         aria-expanded={listVisible}
-        aria-controls={listId}
+        aria-controls={listVisible ? listId : undefined}
         aria-autocomplete="list"
         aria-activedescendant={active >= 0 ? optionId(active) : undefined}
+        aria-label="Search books"
         value={query}
         onKeyDown={onKeyDown}
         onChange={(e) => {
