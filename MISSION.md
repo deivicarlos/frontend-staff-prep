@@ -19,6 +19,19 @@ depth comes first: get to genuinely strong there, then widen.
 - Has a current mental model of what changed 2024–2026: React 19, Server Components, React Compiler, the death of manual memoisation, TanStack Query as default server state.
 - Has 4–6 staff-level stories ready that convert the management years into an asset (influence, technical strategy, mentoring) rather than a gap to explain.
 - Has one substantial public project that survives being read by an interviewer.
+- Can debug an unfamiliar, broken multi-component app under a clock, fixing bugs in
+  sequence and narrating each fix. This is the format he has actually faced (LR-0012).
+- Can explain auth end to end (login, sessions vs JWT, cookies, CSRF/XSS) and what workers
+  are for, at the level of mechanism.
+
+## Phase 2: engineering with AI
+
+Added 2026-09-24 at his request (LR-0012). Lead and Senior roles now expect engineers who
+direct AI agents, not engineers who paste their output. The goal is to separate himself from
+vibe coding: controlling context, planning before generating, writing skills, reviewing
+generated code against the architecture, and keeping security and design sound. *"AI makes a
+good engineer even better but a bad engineer worse."* Starts after the frontend track, which is
+what makes this phase work: you can only direct and review what you understand.
 
 ## Constraints
 
@@ -31,5 +44,6 @@ depth comes first: get to genuinely strong there, then widen.
 
 - Backend depth beyond what a fullstack screen touches. Revisit once frontend is strong.
 - LeetCode-style algorithms as a primary focus. Frontend loops rarely lead with them; revisit only if a target company demands it.
+- Accessibility/ARIA as a study track. Real, but screens grade working logic first (LR-0012).
 - React Native, mobile, and non-React frameworks (Vue, Svelte, Angular).
 - Resume/LinkedIn/salary negotiation. Real work, but not *learning*, and not this workspace.

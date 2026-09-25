@@ -1,54 +1,39 @@
 # Where we are
 
-_Last updated: 2026-09-24, session 6._
+_Last updated: 2026-09-24, session 6 (re-planned, LR-0012)._
 
 ## Immediately next
 
-**Sheet 1 shipped and cold-rewrite done** — three passes to correct, see
-[LR-0011](learning-records/0011-placement-is-the-thin-layer.md). Sheet 2 shipped too:
-[`reference/combobox-aria.html`](reference/combobox-aria.html). Its task is done: ARIA restored correctly, scaffold label and
-`aria-controls` fixed after one prompt each, and the toolbar question answered in his words:
-*"the nav bar doesn't have to keep focus like the input so you use tabindex"*. **That closes
-the lesson 3 Q2 direction (roving wins when nothing must hold focus)**; the composite-widget
-exercise is now a confirmation, not a gap. Next: exercise 0005, which must:
-make him paste the log panel's output per requirement instead of ticking a box (finding 3), and
-grade the guarded `finally` with a done-condition that has more than one request in flight
-(teacher error in LR-0011).
+**Direction changed by [LR-0012](learning-records/0012-reweight-to-what-screens-grade.md).**
+Both reference sheets shipped and their tasks are done (LR-0011). From here the plan is weighted
+to what real screens grade: working logic under a clock, debugging a broken app, system design,
+and auth. ARIA/a11y is no longer scheduled.
 
-### 1. `reference/async-request-layer.html` — SHIPPED 2026-09-24
+1. **Exercise 0005: debug a broken app.** Modelled on the device-list screen he described. A
+   multi-component app with TanStack Query and a chain of bugs, each fix revealing the next:
+   the API call, then filters, then a `queryKey` or identity bug, then loading/error, including
+   the unguarded `finally`. More bugs than fit in the clock, and the brief says so, so triage
+   is the graded act (LR-0010). The brief makes him paste log output per requirement (LR-0011
+   finding 3). He also narrates each fix in one line, as he would to an interviewer.
+2. **Lesson 5: frontend system design process (RADIO)**, pulled ahead of lesson 4. Scope as
+   before (LR-0007): requirements gathering, carrying a constraint across decisions,
+   `useInfiniteQuery`, cursor vs offset.
+3. **Auth end to end: calibrate first.** A short diagnostic on login flow, sessions vs JWT,
+   cookie flags (`HttpOnly`/`Secure`/`SameSite`), token storage, refresh, CSRF/XSS. Then a
+   lesson built from what it shows. Verify against OWASP and MDN.
+4. **Exercise 0006: build from scratch, roomba-shaped.** Grid, arrow keys, rotate on wall. The
+   graded axes are state modelling (a reducer and the direction as data) and finishing the logic
+   before any polish. 45 minutes, the MISSION's format.
+5. **Lesson 4: rendering and the event loop** (Q17, LR-0011 finding 2), plus the Compiler
+   boundary. Hooks deep-dive questions live here.
+6. **Workers:** Web Worker vs Service Worker, what each is for. Reference sheet unless the
+   diagnostic in step 3 shows a model gap.
 
-He lost requirements 3 and 4 of exercise 0004 to looking up `AbortController` — *"I needed to
-search again for AbortController and how to use it as I forgot."* He has now built this layer in
-three exercises and still cannot write it without a lookup. Nothing to derive; pure recall.
+**Phase 2, after the frontend track: engineering with AI** (MISSION). Skills, plans, context
+control, review discipline. He wants this after frontend, not interleaved.
 
-Must cover, verified against MDN/WHATWG primary sources rather than recalled: `AbortController`
-/ `signal` / `abort()` and where each one goes in an effect; `AbortError` and why it is swallowed
-rather than rendered; `try/catch` around a promise-returning call catching nothing unless the
-call is awaited inside it (LR-0010 finding 4 — he closed this in one sentence, so the sheet is a
-record, not instruction); `.finally()` for the loading flag that must clear on both endings.
-
-### 2. `reference/combobox-aria.html` — SHIPPED 2026-09-24
-
-From [LR-0009](learning-records/0009-the-re-read-is-the-load-bearing-step.md) finding 4. He
-selected `aria-activedescendant` for the right reason, derived from the right constraint, then
-put it on the `<ul>` instead of the input — the one placement that makes it inert — omitted
-`role="option"`, and shipped no combobox half at all. Same axis as sheet 1, one exercise earlier.
-
-Build it from the [APG combobox pattern](https://www.w3.org/WAI/ARIA/apg/patterns/combobox/) as
-primary source — verify, don't recall. Must cover: which element carries which attribute, why the
-DOM-focus holder is the one that carries `aria-activedescendant`, and the listbox/option pairing.
-Roving `tabindex` belongs beside it as the contrasting technique, which also picks up the lesson 3
-Q2 miss. Note 0004's scaffold contains a correct combobox implementation — the sheet should not
-simply restate it.
-
-### 3. Exercise 0005 — triage
-
-LR-0010 finding 2. **More requirements than fit in the clock, and the brief says so.** Choosing
-what not to finish becomes the graded act; a requirement deliberately skipped and named costs
-nothing, one silently untouched is the failure. Grade the cheap first pass: a `useState(false)`
-and a `.catch()` that sets a string are ninety seconds and convert two zeros into two partials.
-Keep binary scoring per requirement. Reject the shape only if a sheet above has not shipped —
-the async layer is the natural vehicle and it should stop costing him lookups first.
+**Ask him:** where the clock went in the Shopify roomba round. It is the best available evidence
+for step 4.
 
 ## Standing exercise protocol (revised by LR-0010)
 
