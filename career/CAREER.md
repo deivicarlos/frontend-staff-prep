@@ -34,12 +34,18 @@ location questions reject him automatically. This is independent of visa sponsor
   both read as risk to a VP). At NinjaOne he said only that he likes to code and solve
   problems, which is too thin for a Director moving to IC.
 
+## How he wants career work done
+
+The resume (DEV v1.06 plus the new title line) is the source of truth. LinkedIn doesn't have to
+match it point by point. Only flag hard contradictions (title, a number), once, and don't
+re-raise declined suggestions.
+
 ## Status
 
 | Item | State |
 | --- | --- |
 | Resume review | Done 2026-09-25. He sends the DEV resume (v1.06) as is, with only the title changed. Optional: hiring bullet, vary the "Built" openings |
-| LinkedIn review | Done 2026-09-25. Title change only |
+| LinkedIn review | Done 2026-09-25. Headline: "Senior/Staff Frontend Engineer (React/TypeScript, Node.js) \| Data-heavy 3D and geospatial web apps". VEERUM title as on the resume. About left as he wrote it (manager-leaning; his call). Flagged once: Playwright ~15% on LinkedIn vs 70-80% on resume |
 | "Why IC" answer | Done 2026-09-25, his wording, in `why-ic.md` |
 | Canada target list | Dropped 2026-09-25. He searches every couple of days himself. Filters: CAD 180k+, Senior/Staff, his stack, **posting open to Canada** |
 | Staff stories (2–3) | Not started |
