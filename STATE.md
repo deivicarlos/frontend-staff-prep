@@ -6,9 +6,9 @@ and `career/CAREER.md`)._
 
 ## Next session
 
-**Career: write the "why IC" answer.** Skill `career-session`. Framing is in `career/CAREER.md`.
-Now load-bearing: the resume discloses "official title: Director", so it is the first question on
-every screen. About 60 s spoken; he rehearses it out loud and reports where he stumbled.
+**Career: rehearse the "why IC" answer.** Skill `career-session`. Draft in `career/why-ic.md`.
+He says it aloud 3× on a timer and reports the third run's time and the beat he stumbled on; log
+it there. Then run it once live in chat as a cold screen question. Next after that: Canada target list.
 
 ## Week 1: getting interviews (career comes first)
 

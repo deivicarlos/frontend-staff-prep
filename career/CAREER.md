@@ -40,6 +40,6 @@ location questions reject him automatically. This is independent of visa sponsor
 | --- | --- |
 | Resume review | Done 2026-09-25. He sends the DEV resume (v1.06) as is, with only the title changed. Optional: hiring bullet, vary the "Built" openings |
 | LinkedIn review | Done 2026-09-25. Title change only |
-| "Why IC" answer | Next. Framing agreed |
+| "Why IC" answer | Drafted 2026-09-25 in `why-ic.md`. He rehearses 3× aloud, reports time and stumble beat |
 | Canada target list | Not started |
 | Staff stories (2–3) | Not started |
