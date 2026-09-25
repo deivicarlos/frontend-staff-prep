@@ -6,14 +6,17 @@ and `career/CAREER.md`)._
 
 ## Next session
 
-**Career: resume and LinkedIn review.** Skill `career-session`. He brings both versions of the
-resume (into `career/private/`, which is gitignored) and his LinkedIn text. The goals: restore
-the Director title with IC-first framing, get it through an ATS, and make it read as his own
-writing rather than AI-generated.
+**Career: finish the resume, then LinkedIn.** Skill `career-session`. Draft and LinkedIn change
+list: `career/private/2026-09-25-resume-draft.md`. Blocked on him: the official title as HR
+records it, citizenship (TN line), the `[?]` facts (TTI measurement, bundle size, bug-drop
+number, libraries), which doubtful skills to cut, and his own rewrite of every bullet. Review his
+rewrite for AI voice and for claims he can't defend. Findings: format passes ATS (single column,
+no tables/text boxes, empty header/footer); the problems were title, date and employer mismatches
+across the three documents, and the DEV version merging both Veerum titles into one bullet list.
 
 ## Week 1: getting interviews (career comes first)
 
-1. Resume and LinkedIn review. ← next
+1. Resume and LinkedIn review. ← in progress (draft done)
 2. The "why IC" answer: write it with him, then he rehearses it out loud. The framing is agreed in
    `career/CAREER.md`.
 3. A list of Canada-eligible target companies, built from `research/2026-canada-remote-eligibility.md`.

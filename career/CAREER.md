@@ -37,8 +37,8 @@ location questions reject him automatically. This is independent of visa sponsor
 
 | Item | State |
 | --- | --- |
-| Resume review | Next session |
-| LinkedIn review | Next session, together with the resume |
+| Resume review | 2026-09-25: draft in `private/2026-09-25-resume-draft.md`. ATS format passes. Waiting on his `[?]` facts, official title, and his rewrite |
+| LinkedIn review | Change list at the bottom of the same draft. Apply after the resume is final |
 | "Why IC" answer | Framing agreed. Not written yet |
 | Canada target list | Not started |
 | Staff stories (2–3) | Not started |
