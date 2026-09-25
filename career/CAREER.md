@@ -45,7 +45,7 @@ re-raise declined suggestions.
 | Item | State |
 | --- | --- |
 | Resume review | Done 2026-09-25. He sends the DEV resume (v1.06) as is, with only the title changed. Optional: hiring bullet, vary the "Built" openings |
-| LinkedIn review | Done 2026-09-25. Headline: "Senior/Staff Frontend Engineer (React/TypeScript, Node.js) \| Data-heavy 3D and geospatial web apps". VEERUM title as on the resume. About left as he wrote it (manager-leaning; his call). Flagged once: Playwright ~15% on LinkedIn vs 70-80% on resume |
+| LinkedIn review | Done 2026-09-25. Headline: "Senior/Staff Frontend Engineer (React/TypeScript, Node.js) \| Data-heavy 3D and geospatial web apps". VEERUM title field too short for the full line: recommended title "Lead Software Engineer" with the description opening "Official title: Director of Software Automation." (not confirmed he applied it). Spanish profile deleted. About left as he wrote it (manager-leaning; his call). Flagged once: Playwright ~15% on LinkedIn vs 70-80% on resume |
 | "Why IC" answer | Done 2026-09-25, his wording, in `why-ic.md` |
 | Canada target list | Dropped 2026-09-25. He searches every couple of days himself. Filters: CAD 180k+, Senior/Staff, his stack, **posting open to Canada** |
 | Staff stories (2–3) | Not started |
