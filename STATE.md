@@ -6,18 +6,14 @@ and `career/CAREER.md`)._
 
 ## Next session
 
-**Career: finish the resume, then LinkedIn.** Skill `career-session`. Draft and LinkedIn change
-list: `career/private/2026-09-25-resume-draft.md`. Settled 2026-09-25: title line, TN line kept (citizen), skills kept, old-job date and
-Newtech mismatches accepted. Blocked on him: writing the `[?]` values in, then rewriting
-the bullets himself. Review his
-rewrite for AI voice and for claims he can't defend. Findings: format passes ATS (single column,
-no tables/text boxes, empty header/footer); the problems were title, date and employer mismatches
-across the three documents, and the DEV version merging both Veerum titles into one bullet list.
+**Career: write the "why IC" answer.** Skill `career-session`. Framing is in `career/CAREER.md`.
+Now load-bearing: the resume discloses "official title: Director", so it is the first question on
+every screen. About 60 s spoken; he rehearses it out loud and reports where he stumbled.
 
 ## Week 1: getting interviews (career comes first)
 
-1. Resume and LinkedIn review. ← in progress (draft done)
-2. The "why IC" answer: write it with him, then he rehearses it out loud. The framing is agreed in
+1. Resume and LinkedIn review. Done 2026-09-25.
+2. ← next. The "why IC" answer: write it with him, then he rehearses it out loud. The framing is agreed in
    `career/CAREER.md`.
 3. A list of Canada-eligible target companies, built from `research/2026-canada-remote-eligibility.md`.
 

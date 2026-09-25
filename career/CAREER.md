@@ -38,8 +38,8 @@ location questions reject him automatically. This is independent of visa sponsor
 
 | Item | State |
 | --- | --- |
-| Resume review | 2026-09-25: draft in `private/2026-09-25-resume-draft.md`. ATS format passes. Waiting on his `[?]` facts, official title, and his rewrite |
-| LinkedIn review | Change list at the bottom of the same draft. Apply after the resume is final |
-| "Why IC" answer | Framing agreed. Not written yet |
+| Resume review | Done 2026-09-25. He sends the DEV resume (v1.06) as is, with only the title changed. Optional: hiring bullet, vary the "Built" openings |
+| LinkedIn review | Done 2026-09-25. Title change only |
+| "Why IC" answer | Next. Framing agreed |
 | Canada target list | Not started |
 | Staff stories (2–3) | Not started |
