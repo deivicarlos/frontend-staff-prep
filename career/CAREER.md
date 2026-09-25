@@ -24,10 +24,11 @@ location questions reject him automatically. This is independent of visa sponsor
 - **Where to apply:** Canada-eligible postings only. A US posting counts only if it names
   Canada. Prefer the company's own Canada posting. About 5 good applications a week, not
   volume.
-- **Title:** restore **Director** on the resume and LinkedIn. It had been relabelled "Lead".
-  Frame IC-first: hands-on work, systems he designed and shipped, plus one or two bullets on
-  scope (cross-team architecture, hiring bar). Background checks and references will confirm
-  the real title.
+- **Title (revised 2026-09-25):** IC resume and LinkedIn use "Lead Software Engineer (official
+  title: Director of Software Automation)". The functional title passes the recruiter skim; the
+  disclosed official title survives the background check. He had been hiding the title, planning
+  to call it an old resume. That excuse fails because the line reads "to present". The Manager
+  resume keeps the plain Director title, for manager roles only.
 - **The "why IC" answer.** It builds on: *closer to the code, more impact, and he wants to keep
   mentoring as a senior IC*. It stays silent on boredom and on management politics (both true,
   both read as risk to a VP). At NinjaOne he said only that he likes to code and solve
