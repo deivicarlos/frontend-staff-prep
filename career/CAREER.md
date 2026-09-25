@@ -41,5 +41,5 @@ location questions reject him automatically. This is independent of visa sponsor
 | Resume review | Done 2026-09-25. He sends the DEV resume (v1.06) as is, with only the title changed. Optional: hiring bullet, vary the "Built" openings |
 | LinkedIn review | Done 2026-09-25. Title change only |
 | "Why IC" answer | Done 2026-09-25, his wording, in `why-ic.md` |
-| Canada target list | Next |
+| Canada target list | Dropped 2026-09-25. He searches every couple of days himself. Filters: CAD 180k+, Senior/Staff, his stack, **posting open to Canada** |
 | Staff stories (2–3) | Not started |
