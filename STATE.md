@@ -6,16 +6,16 @@ and `career/CAREER.md`)._
 
 ## Next session
 
-**Career: rehearse the "why IC" answer.** Skill `career-session`. Draft in `career/why-ic.md`.
-He says it aloud 3× on a timer and reports the third run's time and the beat he stumbled on; log
-it there. Then run it once live in chat as a cold screen question. Next after that: Canada target list.
+**Career: build the Canada-eligible target company list.** Skill `career-session`. Source:
+`research/2026-canada-remote-eligibility.md`. Filter: CAD 180k+ reachable at Senior, frontend
+or fullstack, a Canada posting or a US posting that names Canada. Resume and "why IC" are done.
 
 ## Week 1: getting interviews (career comes first)
 
 1. Resume and LinkedIn review. Done 2026-09-25.
-2. ← next. The "why IC" answer: write it with him, then he rehearses it out loud. The framing is agreed in
+2. Done 2026-09-25. The "why IC" answer: write it with him, then he rehearses it out loud. The framing is agreed in
    `career/CAREER.md`.
-3. A list of Canada-eligible target companies, built from `research/2026-canada-remote-eligibility.md`.
+3. ← next. A list of Canada-eligible target companies, built from `research/2026-canada-remote-eligibility.md`.
 
 ## From week 2: the weekly rhythm (40–60 min a day)
 
