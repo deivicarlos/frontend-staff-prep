@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reference — Combobox ARIA</title>
+<link rel="stylesheet" href="../assets/course.css">
+<style>
+  main { max-width: 46rem; }
+  table { width: 100%; border-collapse: collapse; font-family: var(--sans);
+    font-size: .86rem; margin: 1.2rem 0; }
+  th, td { text-align: left; padding: .6rem .7rem; border-bottom: 1px solid var(--rule);
+    vertical-align: top; }
+  th { font-size: .72rem; letter-spacing: .08em; text-transform: uppercase;
+    color: var(--ink-faint); border-bottom: 2px solid var(--ink); }
+  td code { font-size: .8em; }
+  td.el { font-weight: 600; white-space: nowrap; }
+  .wrap { overflow-x: auto; }
+  pre { overflow-x: auto; }
+  ol.traps { font-family: var(--sans); font-size: .92rem; line-height: 1.6; padding-left: 1.2rem; }
+  ol.traps li { margin-bottom: .9rem; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Combobox ARIA</h1>
+  <p class="subtitle">Which element carries which attribute, and the one rule that decides it.
+  Roving <code>tabindex</code> is at the end for contrast.</p>
+  <p class="meta">Reference · Verified against the W3C ARIA Authoring Practices Guide (APG), September 2026</p>
+</header>
+
+<main>
+
+<div class="note">
+  <p>In 0003 you picked <code>aria-activedescendant</code> for the right reason and put it on
+  the <code>&lt;ul&gt;</code>. In the sheet 1 rewrite you created the <code>AbortController</code>
+  where the cleanup couldn't reach it. Both times you remembered the technique and got its placement wrong. This sheet is
+  about placement.</p>
+</div>
+
+<h2>The rule</h2>
+
+<p class="lede"><strong><code>aria-activedescendant</code> goes on whichever element has DOM
+focus.</strong> Assistive tech reads it from the focused element and treats the element it points
+to as focused. When it sits on any other element, nothing reads it.</p>
+
+<p>In a combobox the input has DOM focus the whole time, because the user is typing. So the input
+carries <code>aria-activedescendant</code>, and the list only holds the ids it points to.
+Nearly every other attribute follows from this.</p>
+
+<h2>Placement</h2>
+
+<div class="wrap">
+<table>
+  <tr><th>Element</th><th>Carries</th><th>Note</th></tr>
+  <tr><td class="el" rowspan="6"><code>&lt;input&gt;</code></td>
+    <td><code>role="combobox"</code></td><td>The whole widget is named after the input, not after the list.</td></tr>
+  <tr><td><code>aria-expanded</code></td><td><code>true</code> when the list is visible. Default is <code>false</code>.</td></tr>
+  <tr><td><code>aria-controls="&lt;list id&gt;"</code></td><td>Points at the popup. APG: only needed while it's visible.</td></tr>
+  <tr><td><code>aria-activedescendant="&lt;option id&gt;"</code></td><td>The active option's id. Remove it when nothing is active.</td></tr>
+  <tr><td><code>aria-autocomplete="list"</code></td><td><code>list</code> means the suggestions filter as the user types. <code>both</code> adds inline completion text.</td></tr>
+  <tr><td>a label</td><td>A <code>&lt;label&gt;</code> if there's a visible label, otherwise <code>aria-label</code>. <strong>A placeholder is not a label.</strong></td></tr>
+  <tr><td class="el" rowspan="2"><code>&lt;ul&gt;</code></td>
+    <td><code>role="listbox"</code></td><td>Needs no name of its own when it's part of a combobox.</td></tr>
+  <tr><td><code>id</code></td><td>The target of the input's <code>aria-controls</code>. Nothing else goes here: not <code>aria-activedescendant</code>, not <code>tabindex</code>.</td></tr>
+  <tr><td class="el" rowspan="3"><code>&lt;li&gt;</code></td>
+    <td><code>role="option"</code></td><td>Without it, <code>listbox</code> has no children it recognises.</td></tr>
+  <tr><td><code>id</code></td><td>Unique. This is what <code>aria-activedescendant</code> points to. Build it with <code>useId()</code>.</td></tr>
+  <tr><td><code>aria-selected="true"</code></td><td>On the active option. In a combobox, selection follows focus.</td></tr>
+</table>
+</div>
+
+<p style="font-size:.85rem">Not needed: <code>aria-haspopup</code>, because <code>combobox</code> already implies
+<code>listbox</code> (you only set it for a grid, tree or dialog popup). Also not needed: <code>aria-owns</code> on the input. That was how
+ARIA 1.0 did it, and the APG says to use <code>aria-controls</code> instead.</p>
+
+<h2>Traps</h2>
+
+<ol class="traps">
+  <li><strong><code>aria-activedescendant</code> on the listbox.</strong> It's valid ARIA, since
+  <code>listbox</code> supports the attribute, so no linter will complain. But the listbox never
+  has focus, so nothing reads it. This is the 0003 miss.</li>
+
+  <li><strong>The id has to be inside the listbox.</strong> The APG's DOM rule: an element with
+  role <code>combobox</code> may point <code>aria-activedescendant</code> at an element that is
+  inside the element its <code>aria-controls</code> names. So if <code>aria-controls</code> is
+  missing or points somewhere else, the reference is invalid.</li>
+
+  <li><strong>The active id must go away when the option does.</strong> If a new result set arrives
+  and <code>active</code> keeps an old index, it now points at a different book or at nothing. (This is the stale-index miss from
+  0003 requirement 5.)</li>
+
+  <li><strong><code>aria-controls</code> pointing at an unmounted list.</strong> If the
+  <code>&lt;ul&gt;</code> only renders while the list is open, the id doesn't exist the rest of the time. Either set
+  <code>aria-controls</code> only while the list is rendered, or keep the <code>&lt;ul&gt;</code> mounted and
+  hide it. The 0004 scaffold gets this wrong.</li>
+
+  <li><strong>Scrolling is your job.</strong> DOM focus never moves, so the browser won't scroll
+  the active option into view. The APG requires you to do it:
+  <code>scrollIntoView({ block: "nearest" })</code>.</li>
+
+  <li><strong>A mouse click must not take focus away from the input.</strong> Call
+  <code>preventDefault()</code> on the option's <code>mousedown</code>. Otherwise the input
+  blurs before the <code>click</code> event fires.</li>
+</ol>
+
+<h2>The contrast: roving <code>tabindex</code></h2>
+
+<p>This one is for widgets where <strong>real focus can move</strong>, because the user isn't typing into anything: tabs,
+toolbars, menus, radio groups. The APG's own toolbar and tabs examples use it.</p>
+
+<div class="wrap">
+<table>
+  <tr><th>Element</th><th>Carries</th></tr>
+  <tr><td class="el">Container</td><td>The role (<code>tablist</code>, <code>toolbar</code>, <code>menu</code>, <code>radiogroup</code>). No <code>tabindex</code>.</td></tr>
+  <tr><td class="el">The one current item</td><td><code>tabindex="0"</code>. This is the group's single stop in the Tab order.</td></tr>
+  <tr><td class="el">Every other item</td><td><code>tabindex="-1"</code>. They can be focused from script but are skipped by Tab.</td></tr>
+  <tr><td class="el">On an arrow key</td><td>Move the <code>0</code> to the next item, then call <code>.focus()</code> on it. This needs a ref for each item.</td></tr>
+</table>
+</div>
+
+<div class="wrap">
+<table>
+  <tr><th>Question</th><th><code>aria-activedescendant</code></th><th>Roving <code>tabindex</code></th></tr>
+  <tr><td>Where is DOM focus?</td><td>Stays on one element</td><td>Moves to each item</td></tr>
+  <tr><td>Who scrolls the item into view?</td><td>You do</td><td>The browser does it for free</td></tr>
+  <tr><td>Use it when</td><td>Focus must stay in a text input: combobox, typeahead</td><td>Nothing needs to keep focus: tabs, toolbar, menu</td></tr>
+</table>
+</div>
+
+<div class="note warn">
+  <p><strong>Sentence to have ready:</strong> <em>"If the user is typing, DOM focus can't leave
+  the input, so I use <code>aria-activedescendant</code> on the input and scroll the active option into view myself. If
+  nothing needs to keep focus, I use roving <code>tabindex</code>: real focus moves, the group is one Tab stop, and the browser
+  handles scrolling."</em> Lesson 3 Q2 was the second half of that sentence.</p>
+</div>
+
+<div class="task">
+  <p><strong>Before you close this, 3 minutes:</strong> in
+  <code>exercises/0004-finish-the-job/src/Typeahead.tsx</code>, delete every <code>role</code> and
+  <code>aria-*</code> attribute in the JSX, then put them back from memory without looking at this page. Then check what you wrote
+  against the placement table. Also fix the scaffold's two misses: it has no label, and <code>aria-controls</code> points at an unmounted list.
+  Then answer in one line: a formatting toolbar with Bold, Italic and Underline buttons. Which technique do you use, and which
+  element starts with <code>tabindex="0"</code>?</p>
+</div>
+
+<h2>Sources</h2>
+<ul style="font-family:var(--sans);font-size:.88rem;line-height:1.6">
+  <li><a href="https://www.w3.org/WAI/ARIA/apg/patterns/combobox/">APG: Combobox pattern</a> (roles, states and properties, keyboard interaction)</li>
+  <li><a href="https://www.w3.org/WAI/ARIA/apg/patterns/listbox/">APG: Listbox pattern</a> (<code>option</code> containment, when a listbox needs a label)</li>
+  <li><a href="https://www.w3.org/WAI/ARIA/apg/practices/keyboard-interface/">APG: Developing a keyboard interface</a> (both focus techniques, the DOM rule for <code>aria-activedescendant</code>, scroll-into-view)</li>
+  <li><a href="https://www.w3.org/WAI/ARIA/apg/patterns/toolbar/">APG: Toolbar pattern</a> (roving <code>tabindex</code> example)</li>
+</ul>
+
+</main>
+</body>
+</html>

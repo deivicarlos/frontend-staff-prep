@@ -5,8 +5,10 @@ _Last updated: 2026-09-24, session 6._
 ## Immediately next
 
 **Sheet 1 shipped and cold-rewrite done** — three passes to correct, see
-[LR-0011](learning-records/0011-placement-is-the-thin-layer.md). Nothing owed by him. Next is
-sheet 2, **with placement as its spine** (LR-0011 finding 1), then exercise 0005, which must:
+[LR-0011](learning-records/0011-placement-is-the-thin-layer.md). Sheet 2 shipped too:
+[`reference/combobox-aria.html`](reference/combobox-aria.html). **He owes its 3-minute task**
+(strip and restore the ARIA in 0004, fix the scaffold's missing label and dangling
+`aria-controls`, one-line toolbar answer; roving with `tabindex="0"` on Bold is correct). Check the diff, then exercise 0005, which must:
 make him paste the log panel's output per requirement instead of ticking a box (finding 3), and
 grade the guarded `finally` with a done-condition that has more than one request in flight
 (teacher error in LR-0011).
@@ -23,7 +25,7 @@ rather than rendered; `try/catch` around a promise-returning call catching nothi
 call is awaited inside it (LR-0010 finding 4 — he closed this in one sentence, so the sheet is a
 record, not instruction); `.finally()` for the loading flag that must clear on both endings.
 
-### 2. `reference/combobox-aria.html`
+### 2. `reference/combobox-aria.html` — SHIPPED 2026-09-24
 
 From [LR-0009](learning-records/0009-the-re-read-is-the-load-bearing-step.md) finding 4. He
 selected `aria-activedescendant` for the right reason, derived from the right constraint, then
