@@ -1,0 +1,408 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lesson 5: The Constraint Ledger</title>
+<link rel="stylesheet" href="../assets/course.css">
+<style>
+  /* This lesson's tables carry prose in every column; undo the sheet's nowrap/meta styling. */
+  main table { display: block; overflow-x: auto; }
+  main tbody td:first-child,
+  main tbody td:last-child {
+    white-space: normal; text-align: left; font-size: inherit; color: inherit;
+  }
+  main td { min-width: 7rem; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>The constraint ledger</h1>
+  <p class="subtitle">You already know most of how a feed works. You lost the design probe
+  because a constraint you had just described was gone one question later. This lesson is RADIO
+  used as a way to stop that from happening, not a list of steps to recite.</p>
+  <p class="meta">Lesson 05 · Frontend system design · ~30 minutes · have a timer ready</p>
+</header>
+
+<main>
+
+<h2>Why this lesson</h2>
+
+<div class="diagnosis">
+  <div class="dx"><span class="dx-q">Probe</span><span>"Design a news feed": you opened with Tailwind, react-query and virtualization. You asked no questions, so you gathered no requirements.</span></div>
+  <div class="dx"><span class="dx-q">Q2→Q3</span><span>You described new posts being prepended and the scroll offset being compensated. One question later you chose <code>?offset=</code> pagination, which prepending breaks. You said: "not sure why".</span></div>
+  <div class="dx"><span class="dx-q">Q3</span><span><code>['posts', 'page3']</code>: each page modelled as its own query.</span></div>
+  <div class="dx"><span class="dx-q">0005</span><span>"The operator needs to know" did not turn into "render an error state". That is the same skill: turning prose into a constraint you can act on.</span></div>
+</div>
+
+<p>None of these are gaps in what you know. Each decision was made on its own, and nothing
+checked it against what you had already said. The fix is structural: <strong>write the
+constraints down, number them, and have every later decision cite one.</strong></p>
+
+<h2>RADIO, with its time budget</h2>
+
+<table>
+  <thead><tr><th>Step</th><th>Share</th><th>In 45 min</th><th>What it produces</th></tr></thead>
+  <tbody>
+    <tr><td><strong>R</strong>equirements</td><td>~10%</td><td>~5 min</td><td><strong>The ledger:</strong> numbered constraints C1…Cn, written where the interviewer can see them</td></tr>
+    <tr><td><strong>A</strong>rchitecture</td><td>~20%</td><td>~9 min</td><td>Components and who owns which data (server cache, client state, URL)</td></tr>
+    <tr><td><strong>D</strong>ata model</td><td>~10%</td><td>~5 min</td><td>Entities, and the client-side store shape</td></tr>
+    <tr><td><strong>I</strong>nterface</td><td>~20%</td><td>~9 min</td><td>API calls: parameters, response shape, pagination scheme</td></tr>
+    <tr><td><strong>O</strong>ptimizations</td><td>~40%</td><td>~17 min</td><td>Deep dives, each justified by a ledger line</td></tr>
+  </tbody>
+</table>
+
+<p>The percentages come from GreatFrontEnd's playbook, and the minutes are those percentages
+applied to a 45-minute round. The guide frames the first step as <em>"Understand the problem
+thoroughly and determine the scope by asking a number of clarifying questions."</em> The step you
+skipped is only 10% of the clock, and it is where everything in the other 90% gets decided.</p>
+
+<blockquote><strong>The idea, once.</strong> Requirements aren't a phase you finish and move on
+from. They are a <em>ledger</em>. Every later decision is an entry that has to cite the
+constraint that forced it. A decision that cites nothing is a preference. A decision that
+contradicts an earlier line is the bug interviewers are listening for.</blockquote>
+
+<h2>Application 1: ask, against a clock</h2>
+
+<div class="predict" data-predict data-key="0005-ask">
+  <span class="predict-label">3 minutes, timer on</span>
+  <p class="predict-prompt">The prompt: <strong>"Design a news feed."</strong> Write the
+  questions you'd ask before drawing anything, at most six. Next to each one, write the design
+  decision its answer would change. A question with no decision next to it is a wasted
+  question.</p>
+  <textarea class="predict-input" rows="7" placeholder="Q: …  → changes: …"></textarea>
+  <button class="predict-btn">Reveal</button>
+  <div class="predict-answer" hidden>
+    <table>
+      <thead><tr><th>Question</th><th>Answer (say you got this)</th><th>Ledger line</th><th>Decision it drives</th></tr></thead>
+      <tbody>
+        <tr><td>Do new posts arrive while the user is reading?</td><td>Yes, constantly</td><td>C1: the feed's head moves</td><td>Pagination scheme; "N new posts" banner vs auto-insert</td></tr>
+        <tr><td>What goes in a post: text, images, video?</td><td>Text and images</td><td>C2: row height unknown until media loads</td><td>Virtualization must measure, not assume</td></tr>
+        <tr><td>What happens when you go to a post and come back?</td><td>Return to the same spot</td><td>C3: position survives navigation</td><td>Where the pages and the scroll anchor live</td></tr>
+        <tr><td>Which devices?</td><td>Mobile web included</td><td>C4: memory and network are tight</td><td>Cap on DOM nodes and on cached pages</td></tr>
+        <tr><td>Can you like or comment inline?</td><td>Like, yes</td><td>C5: writes happen on a long list</td><td>Optimistic update vs refetch</td></tr>
+        <tr><td>Infinite scroll or "load more"?</td><td>Infinite</td><td>C6: loading is triggered by scroll</td><td>A sentinel with IntersectionObserver</td></tr>
+      </tbody>
+    </table>
+    <p>Grade yourself on the right-hand column, not the left one. In the probe, each of C1–C4
+    came up later as an interviewer follow-up, and you answered each one on the spot and on its
+    own. Asked at the start, they would have been four lines you could check against.</p>
+  </div>
+</div>
+
+<h2>The ledger in use: every decision cites a line</h2>
+
+<p>Using the six lines above, this is what "carrying a constraint" looks like on the
+whiteboard. The right-hand column is what makes it a design and not a list of choices.</p>
+
+<table>
+  <thead><tr><th>Decision</th><th>Cites</th><th>What the cited line rules out</th></tr></thead>
+  <tbody>
+    <tr><td>Cursor pagination (<code>?cursor=&lt;last-seen-id&gt;</code>)</td><td>C1</td><td>Offset: the head moves, so every offset is off by however many posts arrived</td></tr>
+    <tr><td>New posts go into a "12 new posts" banner, not the list</td><td>C1, C3</td><td>Inserting above the reader and then compensating scroll on every arrival</td></tr>
+    <tr><td>Virtualization that measures rows and corrects when images load</td><td>C2, C4</td><td>Fixed row height with <code>overflow: hidden</code>, which you offered in the probe</td></tr>
+    <tr><td>One infinite query, kept in the cache across route changes</td><td>C3</td><td>Page state held in the feed component, which is lost on unmount</td></tr>
+    <tr><td><code>maxPages</code> cap on the query</td><td>C4</td><td>Unbounded cache growth over a long session</td></tr>
+    <tr><td><code>setQueryData</code> for a like, not <code>invalidateQueries</code></td><td>C5, C4</td><td>Refetching every loaded page because one heart changed (see below)</td></tr>
+  </tbody>
+</table>
+
+<h2>Application 2: replay your own Q2 → Q3</h2>
+
+<div class="predict" data-predict data-key="0005-offset">
+  <span class="predict-label">Predict, then reveal</span>
+  <p class="predict-prompt">Ledger line C1: the feed's head moves. The API offers both
+  <code>?offset=&amp;limit=20</code> and <code>?cursor=&amp;limit=20</code>. The user has loaded
+  two pages (posts 1–40). While they read, 30 new posts arrive at the top. They scroll and you
+  request page 3. <strong>With offset, what exactly comes back? And what happens with offset if
+  3 posts are <em>deleted</em> from the top instead?</strong></p>
+  <textarea class="predict-input" rows="4" placeholder="30 prepended: …&#10;3 deleted: …"></textarea>
+  <button class="predict-btn">Reveal</button>
+  <div class="predict-answer" hidden>
+    <p><strong>30 prepended:</strong> <code>?offset=40</code> now points at what used to be post
+    11. You get old posts 11–30 again, all of them duplicates of rows already on screen.</p>
+    <p><strong>3 deleted:</strong> <code>?offset=40</code> now points at what used to be post
+    44. Old posts 41–43 are never shown. Duplicates at least look like a bug. Silent gaps don't
+    look like anything.</p>
+    <p>A cursor names the <em>last item you saw</em> (for example "posts older than id
+    <code>p_9f2</code>"). Inserts and deletes elsewhere can't move it. GreatFrontEnd's feed
+    write-up: <em>"When new posts are inserted into the feed, offsets can shift, leading to
+    duplicate or missing items"</em>, and <em>"For a news feed, cursor-based pagination is the
+    clear choice."</em></p>
+  </div>
+</div>
+
+<h3>Cursor vs offset, the full comparison</h3>
+
+<table>
+  <thead><tr><th></th><th>Offset / page number</th><th>Cursor</th></tr></thead>
+  <tbody>
+    <tr><td>Data changes while paging</td><td>Duplicates or skipped items</td><td>Stable</td></tr>
+    <tr><td>Deep pages</td><td>The database skips N rows, so it gets slower as N grows</td><td>Seeks from an index, so the cost stays flat</td></tr>
+    <tr><td>Jump to page 37, show "page 3 of 50"</td><td>Yes</td><td>No, it only goes to the next page (or the previous one)</td></tr>
+    <tr><td>Right for</td><td>Admin tables, search results with page numbers, mostly static data</td><td>Feeds, chat, logs, anything with a moving head</td></tr>
+  </tbody>
+</table>
+
+<p>Offset isn't wrong. It's wrong <em>under C1</em>. That is the whole point of the ledger: the
+same choice is right or wrong depending on a line written ten minutes earlier.</p>
+
+<h2>useInfiniteQuery: one entry, many pages</h2>
+
+<p>Your <code>['posts', 'page3']</code> gives every page its own cache entry. With TanStack, an
+infinite feed is <strong>one</strong> query whose data is <code>{ pages, pageParams }</code>.
+These are the v5 facts, checked against the docs and the installed type definitions:</p>
+
+<table>
+  <tbody>
+    <tr><td><code>initialPageParam</code></td><td><strong>Required in v5.</strong> This is the cursor for the first page, e.g. <code>null</code>.</td></tr>
+    <tr><td><code>getNextPageParam</code></td><td>Required. <code>(lastPage, allPages, lastPageParam, allPageParams) =&gt; TPageParam | undefined | null</code></td></tr>
+    <tr><td><code>hasNextPage</code></td><td><code>true</code> when <code>getNextPageParam</code> returns anything other than <code>null</code> or <code>undefined</code>.</td></tr>
+    <tr><td>Refetch</td><td><em>"each group is fetched sequentially, starting from the first one"</em>, so with 15 pages loaded, a refetch is 15 requests one after another.</td></tr>
+    <tr><td><code>fetchNextPage</code> during a fetch</td><td>The docs warn this <em>"runs the risk of overwriting data refreshes happening in the background"</em>. Guard it with <code>!isFetching</code>.</td></tr>
+    <tr><td><code>maxPages</code></td><td>Caps how many pages are kept. It requires <code>getPreviousPageParam</code> as well, so trimmed pages can be fetched again when the user scrolls back up.</td></tr>
+  </tbody>
+</table>
+
+<div class="predict" data-predict data-key="0005-iq">
+  <span class="predict-label">Write it, 4 minutes</span>
+  <p class="predict-prompt"><code>GET /api/feed?cursor=&lt;id&gt;&amp;limit=20</code> returns
+  <code>{ items: Post[], nextCursor: string | null }</code>. The first page is requested with no
+  cursor. Write the <code>useInfiniteQuery</code> call, the flattened list, and the handler your
+  scroll sentinel calls. Check where the cursor comes from: it has to come from the server's
+  answer, not from a counter.</p>
+  <textarea class="predict-input" rows="10" placeholder="const { … } = useInfiniteQuery({ … })"></textarea>
+  <button class="predict-btn">Reveal</button>
+  <div class="predict-answer" hidden>
+<pre><code>const { data, fetchNextPage, hasNextPage, isFetching } = useInfiniteQuery({
+  queryKey: ["feed"],
+  queryFn: ({ pageParam, signal }) =&gt; fetchFeed(pageParam, signal),
+  initialPageParam: null as string | null,
+  getNextPageParam: (lastPage) =&gt; lastPage.nextCursor, // null ends the feed
+});
+
+const posts = data?.pages.flatMap((p) =&gt; p.items) ?? [];
+
+function onSentinelVisible() {
+  if (hasNextPage &amp;&amp; !isFetching) fetchNextPage();
+}</code></pre>
+    <p>Check where each part sits:</p>
+    <ul>
+      <li><strong>The key has no page in it.</strong> The page lives in <code>pageParam</code>,
+      which TanStack stores in <code>data.pageParams</code>.</li>
+      <li><strong>The cursor comes from <code>lastPage.nextCursor</code>.</strong> Writing
+      <code>allPages.length * 20</code> would be offset pagination with a different name.</li>
+      <li><strong>The guard is <code>!isFetching</code></strong>, not only
+      <code>!isFetchingNextPage</code>. A background refetch counts too.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="predict" data-predict data-key="0005-like">
+  <span class="predict-label">Carry a constraint</span>
+  <p class="predict-prompt">The user has scrolled 15 pages deep and likes a post. A teammate
+  writes <code>onSuccess: () =&gt; queryClient.invalidateQueries({ queryKey: ["feed"] })</code>,
+  the fix you shipped in 0005. Using ledger lines C1, C4 and C5, what does it cost here, and what
+  do you write instead?</p>
+  <textarea class="predict-input" rows="4" placeholder="Cost: …&#10;Instead: …"></textarea>
+  <button class="predict-btn">Reveal</button>
+  <div class="predict-answer" hidden>
+    <p><strong>Cost:</strong> the refetch is sequential from page 1, so that's 15 requests one
+    after another on a mobile connection (C4). Because the head moved (C1), the refetched pages
+    can also differ from the ones on screen, and rows shift under the reader.</p>
+    <p><strong>Instead:</strong> <code>queryClient.setQueryData(["feed"], old =&gt; …)</code>,
+    mapping over <code>old.pages</code> and changing only that one post. Do it optimistically in
+    <code>onMutate</code> and roll back on error (C5). In 0005, invalidating was right: 12 rows,
+    one page, and filters that all needed the change. <strong>The same technique is right or
+    wrong depending on the ledger.</strong></p>
+  </div>
+</div>
+
+<h2>The sentence to have ready</h2>
+
+<div class="note">
+  <p><em>"Before I draw anything, I'll pin down the constraints and number them, so every
+  decision I make after this points back to one. If a later choice contradicts a line, that's
+  the bug."</em></p>
+  <p>Say it and then do it. Keep the ledger visible on the board and point at it when you
+  choose something ("cursor, because of C1"). Interviewers score whether your decisions are
+  justified. Pointing at a numbered line makes the justification visible.</p>
+</div>
+
+<h2>Retrieval check: a new prompt, the same claim</h2>
+
+<p>This one tests the lesson's claim directly: a constraint given early has to be what decides
+a later answer. <strong>Set a 10-minute timer.</strong> Write each answer and cite the ledger
+line it depends on. An answer that cites nothing doesn't count, even if it's right.</p>
+
+<div class="task">
+  <h3>The brief: a chat channel (like Slack)</h3>
+  <p>You clarified the requirements and got these answers. Write them into a ledger first:</p>
+  <ul>
+    <li>Channels have years of history. Users open a channel at the newest message and scroll
+    <em>up</em> for older ones.</li>
+    <li>New messages arrive in real time at the bottom.</li>
+    <li>Messages can be edited and deleted by anyone with rights, at any time.</li>
+    <li>Links to a specific message exist (from search and notifications), and following one
+    opens the channel <em>at that message</em>, possibly years back.</li>
+    <li>Mobile web is supported.</li>
+  </ul>
+</div>
+
+<div class="predict" data-predict data-key="0005-rc-ledger">
+  <span class="predict-label">0 · The ledger</span>
+  <p class="predict-prompt">Write C1…Cn, one line each.</p>
+  <textarea class="predict-input" rows="5" placeholder="C1: …"></textarea>
+  <button class="predict-btn">Reveal</button>
+  <div class="predict-answer" hidden>
+    <p>C1 history is loaded upward from the newest · C2 the head moves (real time) · C3 items
+    change and disappear anywhere (edit/delete) · C4 you can enter anywhere (deep link) · C5
+    mobile limits. Your wording will differ. What matters is that C3 and C4 are separate
+    lines.</p>
+  </div>
+</div>
+
+<div class="predict" data-predict data-key="0005-rc-page">
+  <span class="predict-label">1 · Pagination scheme</span>
+  <p class="predict-prompt">Deep links (the fourth bullet) make "page 37" look tempting. Which
+  scheme do you choose, and which line rules the other one out?</p>
+  <textarea class="predict-input" rows="3"></textarea>
+  <button class="predict-btn">Reveal</button>
+  <div class="predict-answer" hidden>
+    <p><strong>Cursor, anchored on a message id.</strong> C3 rules out offset: deletes anywhere
+    shift every offset after them, so "page 37" means something different each time you ask. C4
+    doesn't need page numbers. It needs "the messages <em>around</em> id X", which is a cursor
+    request (<code>?around=msg_123</code>, then <code>?before=</code> and <code>?after=</code>).
+    If you chose page numbers because of C4, that's the Q2→Q3 pattern again: the line that
+    looked like it helped overrode the line that forbids it.</p>
+  </div>
+</div>
+
+<div class="predict" data-predict data-key="0005-rc-model">
+  <span class="predict-label">2 · TanStack model</span>
+  <p class="predict-prompt">What is the query key, and which of <code>getNextPageParam</code> /
+  <code>getPreviousPageParam</code> do you need? Cite the lines.</p>
+  <textarea class="predict-input" rows="3"></textarea>
+  <button class="predict-btn">Reveal</button>
+  <div class="predict-answer" hidden>
+    <p>One infinite query per channel, <code>["messages", channelId]</code>, with no page
+    number in the key. You need <strong>both</strong> directions. Older messages load upward (C1)
+    and, after a deep link, newer ones load downward toward the present (C4). C5 adds
+    <code>maxPages</code>, which also requires <code>getPreviousPageParam</code>. The
+    <code>initialPageParam</code> is the anchor: "latest", or the linked message's id. If the
+    anchor goes in the key (<code>["messages", channelId, anchorId]</code>), a deep link and a
+    normal open become separate cache entries. That's acceptable, but say it out loud.</p>
+  </div>
+</div>
+
+<div class="predict" data-predict data-key="0005-rc-live">
+  <span class="predict-label">3 · A message arrives while they read history</span>
+  <p class="predict-prompt">The user is 200 messages up, reading. A new message arrives
+  (the real-time bullet). What happens on screen, and how does it get into the cache? Cite the
+  lines.</p>
+  <textarea class="predict-input" rows="3"></textarea>
+  <button class="predict-btn">Reveal</button>
+  <div class="predict-answer" hidden>
+    <p>Don't scroll the user, and don't refetch. Write the message into the newest page with
+    <code>setQueryData</code> and show a "new messages ↓" pill (C2). Only auto-scroll when they
+    were already at the bottom. If they arrived by deep link, the newest page may not be loaded
+    at all (C4). Then the message goes nowhere in the cache, and the pill takes them to the
+    present with a fresh load. Invalidating would refetch every loaded page in sequence (C5).</p>
+  </div>
+</div>
+
+<div class="predict" data-predict data-key="0005-rc-edit">
+  <span class="predict-label">4 · Someone deletes a message you've loaded</span>
+  <p class="predict-prompt">It arrives as a real-time event. What do you do, and what do you
+  <em>not</em> have to do because of decision 1?</p>
+  <textarea class="predict-input" rows="3"></textarea>
+  <button class="predict-btn">Reveal</button>
+  <div class="predict-answer" hidden>
+    <p>Remove it (or mark it deleted) in whichever page holds it, using
+    <code>setQueryData</code>. You <strong>don't</strong> have to repair pagination. The cursors
+    are message ids, so a hole in the list doesn't move the next request (C3 → decision 1). That
+    is what paying off a constraint looks like: an earlier decision makes a later problem
+    disappear.</p>
+  </div>
+</div>
+
+<div class="quiz" data-quiz data-lesson="0005">
+
+<div class="q" data-track="infinite" data-answer="2">
+  <span class="q-num">Q1 · useInfiniteQuery</span>
+  <p class="q-stem">A feed has 6 pages loaded and its query goes stale and refetches. What
+  goes over the network?</p>
+  <ul class="opts">
+    <li><button class="opt">Only the first page, and the rest are dropped from the cache</button></li>
+    <li><button class="opt">All 6 pages at once, in parallel, then the cache is replaced</button></li>
+    <li><button class="opt">All 6 pages, one after another, starting from the first</button></li>
+    <li><button class="opt">Only the last page, since it's the one that changes</button></li>
+  </ul>
+  <div class="why" hidden><strong>Sequentially from the first.</strong> Each page's param comes
+  from the page before it, so the refetch can't run in parallel. This is why a broad
+  <code>invalidateQueries</code> on a deep feed is expensive, and why <code>maxPages</code>
+  exists.</div>
+</div>
+
+<div class="q" data-track="infinite" data-answer="1">
+  <span class="q-num">Q2 · useInfiniteQuery</span>
+  <p class="q-stem">What does <code>hasNextPage</code> come from?</p>
+  <ul class="opts">
+    <li><button class="opt">Whether the last page came back with fewer items than limit</button></li>
+    <li><button class="opt">Whether getNextPageParam returned something other than null or undefined</button></li>
+    <li><button class="opt">Whether the server sent a Link header naming a next page</button></li>
+    <li><button class="opt">Whether pages.length is still below the maxPages cap</button></li>
+  </ul>
+  <div class="why" hidden><strong><code>getNextPageParam</code>.</strong> Return
+  <code>null</code> or <code>undefined</code> and the feed ends. The logic that decides this is
+  yours. TanStack never looks at item counts or headers.</div>
+</div>
+
+<div class="q" data-track="pagination" data-answer="0">
+  <span class="q-num">Q3 · Pagination</span>
+  <p class="q-stem">Which product is offset pagination the <em>right</em> choice for?</p>
+  <ul class="opts">
+    <li><button class="opt">An admin table of invoices with "page 4 of 30" and jump-to-page</button></li>
+    <li><button class="opt">A support-ticket queue where new tickets arrive every few seconds</button></li>
+    <li><button class="opt">An activity log that new events are appended to continuously</button></li>
+    <li><button class="opt">A comment thread where replies can be deleted by moderators</button></li>
+  </ul>
+  <div class="why" hidden><strong>The invoice table.</strong> The data mostly sits still, and
+  the product needs things only offset gives you: a total page count and random access. Every
+  other option has a moving head or holes, which is C1 or C3 from this lesson.</div>
+</div>
+
+</div>
+
+<div class="note warn">
+  <p><strong>Score the design drill yourself:</strong> for each of the four decisions, did the
+  answer cite a ledger line, and was it the line the reveal names? Bring that count, out of 4,
+  plus the quiz score, to the next session.</p>
+</div>
+
+<h2>Sources</h2>
+<ul>
+  <li>GreatFrontEnd, <a href="https://www.greatfrontend.com/front-end-system-design-playbook/framework">Front End System Design Playbook: RADIO framework</a>. The steps, the time allocation and the requirements-exploration quote.</li>
+  <li>GreatFrontEnd, <a href="https://www.greatfrontend.com/questions/system-design/news-feed-facebook">News Feed (e.g. Facebook)</a>. Offset vs cursor, and both quotes.</li>
+  <li>TanStack Query v5, <a href="https://tanstack.com/query/latest/docs/framework/react/guides/infinite-queries">Infinite Queries guide</a>. The <code>{ pages, pageParams }</code> shape, <code>initialPageParam</code> required, sequential refetch, the <code>fetchNextPage</code> warning, <code>maxPages</code>.</li>
+  <li>TanStack Query v5, <a href="https://tanstack.com/query/latest/docs/framework/react/reference/useInfiniteQuery">useInfiniteQuery reference</a>, and the <code>@tanstack/query-core</code> 5.104 type definitions. The <code>getNextPageParam</code> signature and the fact that <code>maxPages</code> needs <code>getPreviousPageParam</code>.</li>
+  <li>TanStack Query v5, <a href="https://tanstack.com/query/latest/docs/framework/react/guides/query-invalidation">Query Invalidation</a>. Prefix matching (exercise 0005, requirement 4).</li>
+</ul>
+
+<footer class="nav">
+  <p><strong>This lesson targets:</strong> LR-0007 (constraints don't carry forward), the
+  probe's Q3 (<code>useInfiniteQuery</code>), and LR-0013 (turning scenario prose into a
+  task).</p>
+  <ul>
+    <li><a href="0003-the-keyboard-is-the-widget.html">← Lesson 3</a></li>
+    <li><a href="../STATE.md">STATE.md</a></li>
+  </ul>
+</footer>
+
+</main>
+
+<script src="../assets/quiz.js"></script>
+<script src="../assets/predict.js"></script>
+</body>
+</html>

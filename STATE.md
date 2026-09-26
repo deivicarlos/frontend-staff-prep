@@ -1,15 +1,18 @@
 # State
 
-_Updated 2026-09-26 (0005 graded). The plan was re-set by a grilling session on 2026-09-24
+_Updated 2026-09-26 (0005 graded, lesson 5 built). The plan was re-set by a grilling session on 2026-09-24
 ([LR-0012](learning-records/0012-reweight-to-what-screens-grade.md); decisions in `MISSION.md`
 and `career/CAREER.md`)._
 
 ## Next session
 
-**Lesson 5: frontend system design (RADIO)** (skill `build-lesson`). Exercise 0005 was graded
-4/6 on 2026-09-26 ([LR-0013](learning-records/0013-placement-lands-scenario-still-does-not.md)).
-After the clock he fixed 4 and 5, so all six pass. The `useEffect` came from forgetting TanStack
-(API recall again, LR-0010).
+**He works Lesson 5** ([`lessons/0005-the-constraint-ledger.html`](lessons/0005-the-constraint-ledger.html),
+built 2026-09-26, ~30 min). He brings two numbers: the chat-channel drill score (decisions that
+cited the right ledger line, out of 4) and the quiz score (out of 3). Grade the drill on whether
+decision 1 picks cursor *because of* C3 (deletes). Choosing page numbers because of deep links
+would be the LR-0007 pattern repeating. Then the queue moves on to the auth diagnostic.
+
+Exercise 0005: 4/6 timed, 6/6 after the clock (LR-0013).
 
 ## Week 1: getting interviews (career comes first)
 
@@ -29,8 +32,7 @@ The rhythm bends to what he says he has time for on the day.
 
 ## Queue, in order
 
-1. **Lesson 5: frontend system design (RADIO).** It covers requirements gathering and carrying a
-   constraint across decisions (LR-0007), plus `useInfiniteQuery` and cursor vs offset.
+1. **Lesson 5: frontend system design (RADIO).** Built; he works it next session.
 2. **Auth and backend: calibrate first.** A diagnostic on login flow, sessions vs JWT, cookie
    flags, token storage and refresh, CSRF/XSS, REST design, a two-table model, and debugging a
    Node endpoint. Then teach only what it shows is missing. He knows Node from work.
