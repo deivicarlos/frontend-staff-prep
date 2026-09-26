@@ -36,4 +36,7 @@ TanStack Query works. It's now removed.
 - **4 not changed:** `invalidateQueries` at `DeviceList.tsx:83` still uses
   `["devices", { status }]`. The exact line was given to him.
 
-Timed score stays 4/6. After the clock: 5/6.
+- **4 fixed** on the next pass: the invalidation key is now `["devices"]`. It passes. The
+  exact-line hint worked on the first try.
+
+Timed score stays 4/6. After the clock: 6/6.

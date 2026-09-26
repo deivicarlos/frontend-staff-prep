@@ -8,9 +8,8 @@ and `career/CAREER.md`)._
 
 **Lesson 5: frontend system design (RADIO)** (skill `build-lesson`). Exercise 0005 was graded
 4/6 on 2026-09-26 ([LR-0013](learning-records/0013-placement-lands-scenario-still-does-not.md)).
-After the clock he fixed 5, which makes it 5/6. The `useEffect` came from forgetting TanStack
-(API recall again, LR-0010). Requirement 4 is still open: he was given the exact line
-(`DeviceList.tsx:83`, the invalidation key). If he confirms the fix, note it in `EVALUATION.md`.
+After the clock he fixed 4 and 5, so all six pass. The `useEffect` came from forgetting TanStack
+(API recall again, LR-0010).
 
 ## Week 1: getting interviews (career comes first)
 

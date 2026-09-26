@@ -80,7 +80,7 @@ export function DeviceList({ selectedId, onSelect }: Props) {
       ),
     onSuccess: async () => {
       await qc.invalidateQueries({
-        queryKey: ["devices", { status }],
+        queryKey: ["devices"],
       });
     },
   });
