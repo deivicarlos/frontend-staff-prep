@@ -10,7 +10,7 @@ and `career/CAREER.md`)._
 built 2026-09-26, ~30 min). He brings two numbers: the chat-channel drill score (decisions that
 cited the right ledger line, out of 4) and the quiz score (out of 3). Grade the drill on whether
 decision 1 picks cursor *because of* C3 (deletes). Choosing page numbers because of deep links
-would be the LR-0007 pattern repeating. Then the queue moves on to the auth diagnostic.
+would be the LR-0007 pattern repeating. Then the queue moves to item 2 below, if he approved the reorder.
 
 Exercise 0005: 4/6 timed, 6/6 after the clock (LR-0013).
 
@@ -30,18 +30,25 @@ Exercise 0005: 4/6 timed, 6/6 after the clock (LR-0013).
 
 The rhythm bends to what he says he has time for on the day.
 
-## Queue, in order
+## Queue, in order (PROPOSED 2026-09-26, awaiting his OK)
 
-1. **Lesson 5: frontend system design (RADIO).** Built; he works it next session.
-2. **Auth and backend: calibrate first.** A diagnostic on login flow, sessions vs JWT, cookie
-   flags, token storage and refresh, CSRF/XSS, REST design, a two-table model, and debugging a
-   Node endpoint. Then teach only what it shows is missing. He knows Node from work.
-3. **Exercise 0006: build from scratch, roomba-shaped.** 45 min, graded on the state model and
-   on getting the logic working before any layout.
-4. **Lesson 4: rendering, hooks and the event loop.** Build it on the case of aborting a stale
-   request and asking what order the `isLoading` writes land in (LR-0011). Include the boundary
-   of what the Compiler does.
-5. **Web Worker vs Service Worker:** a reference sheet.
+He challenged the roomba exercise, saying it rested on one 2021 screen. The rounds have been re-mapped to
+current formats (`research/2026-hiring-landscape.md`, addendum 2026-09-26). If he agrees, this
+replaces the old queue:
+
+1. **Lesson 5: system design (RADIO).** Unchanged. Highest-weight round, and weight rises at Staff.
+2. **Exercise 0006: an evolving, AI-allowed build** (Shopify/Canva format). A grid robot, in his own
+   IDE with AI, three requirement drops. Graded on directing the AI, extensibility, and tests.
+   This pulls Phase 2 forward as a round format.
+3. **JS utilities drill, no AI, 25 min.** Debounce/throttle, Promise.all, event emitter. Graded on
+   edge cases (leading/trailing, empty input, ordering).
+4. **Auth and backend diagnostic.** Unchanged. Postings: backend 20/24, security/auth 8/24.
+5. **Code review exercise.** Review a flawed PR diff under a clock. A Staff signal.
+6. **Lesson 4: rendering, hooks and the event loop.** Unchanged (LR-0011).
+7. **Project deep dive:** a career session. One project told as architecture, trade-offs, and
+   what he would change.
+
+The Workers sheet is dropped: no round asks for it. Revisit only if a posting names it.
 
 Once the frontend track is solid: **Phase 2, engineering with AI** (`MISSION.md`).
 

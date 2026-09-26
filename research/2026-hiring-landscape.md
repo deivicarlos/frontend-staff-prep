@@ -101,3 +101,40 @@ Researched 2026-09-24. Tags: **[P]** primary (company page, official doc, survey
 8. Pure-FE titles are a minority. Search "full-stack" and "product engineer" too, and be able to show backend/API competence (20/24 postings).
 9. Accessibility: fold it into every UI answer (semantics, keyboard, focus, ARIA on composite widgets). It differentiates at senior level but is not its own round.
 10. Postings name React, TypeScript, and performance, not Next.js/RSC. Frameworks are table stakes; spend prep time on judgment rounds, not framework trivia.
+
+---
+
+## Addendum 2026-09-26: round formats mapped to the queue
+
+He asked whether the roomba exercise is justified by the current market or only by his 2021 Shopify
+screen. Findings:
+
+- **Shopify still asks a grid-robot problem, but the format changed.** There are two AI coding rounds
+  (screen and onsite). You bring your own IDE and AI tools, and start from an empty GitHub repo.
+  "A single open-ended problem that starts simple and evolves." Known prompts include Robot
+  Navigation (robots in a grid with obstacles, configurable maps), LRU Cache, and Tail. Graded on:
+  whether you direct the AI rather than let it lead, design and extensibility, testing strategy,
+  readability, how you handle imperfect generated code, and narration. [S, candidate-sourced]
+  https://www.hellointerview.com/blog/shopify-ai-enabled-coding
+- **Canva frontend AI round:** "more complex, ambiguous, and realistic" prompts, e.g. "Build a
+  control system for managing aircraft takeoffs and landings", replacing Game of Life-style tasks.
+  Successful candidates "didn't just prompt AI and accept whatever it generated". [P]
+  https://www.canva.dev/blog/engineering/yes-you-can-use-ai-in-our-interviews/
+- **The UI build round taxonomy** (FE Interview Handbook): components (tabs, modal, carousel,
+  accordion), widgets (stopwatch, transfer list), apps (todo, data table, file explorer, kanban), and
+  games (tic-tac-toe, Wordle, Snake). Grid games are a standing category. No time limit is stated.
+  [S] https://www.frontendinterviewhandbook.com/coding/build-user-interfaces
+- **JS utility round:** debounce/throttle, Promise.all/any, deep clone, event emitter, and array
+  methods. Basic questions take 10–15 min. "Advanced questions are usually given to more senior
+  candidates", 25–30 min. [S] https://www.frontendinterviewhandbook.com/coding/javascript-utility-function
+- **Staff-only rounds:** project deep dive (architecture, decisions, trade-offs, what you would change)
+  and code review rounds are reported as common and growing. [S, prep sites]
+  https://www.hellointerview.com/guides/anthropic/staff · https://interviewdb.com/blog/senior-software-interviews-beyond-leetcode-2026/
+  Larson recommends code review for Staff+ loops (§1). [P]
+- **Gap:** Wealthsimple's official interview page returned no body text. Canadian loops beyond
+  Shopify remain unverified.
+
+**Net for the queue:** a grid-state build is current, but as an **evolving, AI-allowed** round, not a
+fixed 45-minute no-AI build. AI-enabled coding is a round format now (Shopify, Canva, Meta), so it
+cannot wait for Phase 2. JS utilities, code review, and the project deep dive have no slot in the
+queue yet. The Workers sheet has no round behind it.
