@@ -8,9 +8,9 @@ and `career/CAREER.md`)._
 
 **Lesson 5: frontend system design (RADIO)** (skill `build-lesson`). Exercise 0005 was graded
 4/6 on 2026-09-26 ([LR-0013](learning-records/0013-placement-lands-scenario-still-does-not.md)).
-One question is still open with him: where the 25 minutes went, and what the stray
-`useEffect(() => fetchDevices(status))` in `DeviceList.tsx` was for. If he fixes 4 and 5,
-re-run `check.mjs`-style checks (the done-conditions in `START-HERE.md`) and re-score.
+After the clock he fixed 5, which makes it 5/6. The `useEffect` came from forgetting TanStack
+(API recall again, LR-0010). Requirement 4 is still open: he was given the exact line
+(`DeviceList.tsx:83`, the invalidation key). If he confirms the fix, note it in `EVALUATION.md`.
 
 ## Week 1: getting interviews (career comes first)
 

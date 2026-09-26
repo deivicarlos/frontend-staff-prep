@@ -23,3 +23,17 @@ buzzer table was left empty, so both misses are **silent**.
 - Requirements transcribed: yes, verbatim.
 - Buzzer table: empty. Requirements 4 and 5 are unnamed.
 - Requirement 5 was not understood and no question was asked about it during the clock.
+
+## After the clock (not scored)
+
+He answered: he finished inside 25 min, and the stray `useEffect` came from forgetting how
+TanStack Query works. It's now removed.
+
+- **5 fixed:** `throw` on `!res.ok` in `fetchDevices`, plus an `isError` branch that renders
+  `error.message`. It passes. My check first failed it because its regex didn't allow the
+  hyphen in "un-available", which was the teacher's error. On a first load during an outage,
+  "No devices." still renders under the error, but that is outside the done-condition.
+- **4 not changed:** `invalidateQueries` at `DeviceList.tsx:83` still uses
+  `["devices", { status }]`. The exact line was given to him.
+
+Timed score stays 4/6. After the clock: 5/6.

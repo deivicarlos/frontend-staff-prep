@@ -7,6 +7,11 @@ export async function fetchDevices(status: StatusFilter): Promise<Device[]> {
   const qs = status === "all" ? "" : `?status=${status}`;
   const url = `/api/devices${qs}`;
   const res = await fetch(url);
+
+  if (!res.ok) {
+    throw new Error("Device service is un-available");
+  }
+
   const json = await res.json();
   return json.items;
 }

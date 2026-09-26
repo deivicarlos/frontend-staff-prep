@@ -67,14 +67,10 @@ export function DeviceList({ selectedId, onSelect }: Props) {
   const qc = useQueryClient();
   const [status, setStatus] = useState<StatusFilter>("all");
 
-  const { data, isLoading, refetch } = useQuery({
+  const { data, isLoading, refetch, isError, error } = useQuery({
     queryKey: ["devices", { status }],
     queryFn: () => fetchDevices(status),
   });
-
-  useEffect(() => {
-    fetchDevices(status);
-  }, [status]);
 
   const toggle = useMutation({
     mutationFn: (device: Device) =>
@@ -110,6 +106,7 @@ export function DeviceList({ selectedId, onSelect }: Props) {
       </header>
 
       {isLoading && <p className="muted">Loading devices…</p>}
+      {isError && <p className="error">{error.message}</p>}
 
       {!isLoading && !data?.length && <p className="muted">No devices.</p>}
 
