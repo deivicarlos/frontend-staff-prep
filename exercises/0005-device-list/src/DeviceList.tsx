@@ -2,6 +2,39 @@
  * BEFORE THE CLOCK: copy the six requirements here.
  *
  *
+ * **1 · The list is empty.** Support says the dashboard shows no devices at all, and there are 12.
+**Done when:** all 12 devices are on screen under *all*, and the log shows
+`GET /api/devices` answered `200`.
+
+**2 · The filters do nothing.** Clicking *online* or *offline* changes the button and nothing
+else. Offline devices sit behind a slow tunnel, so that filter takes 1.5s.
+**Done when:** *offline* shows exactly the 5 offline devices and the log shows the
+`status=offline` request. Then reload, click *offline*, and click *online* straight away. The
+list ends on the 7 online devices and never shows an offline row along the way.
+
+**3 · The details open on the wrong device.** An operator looks at *online*, goes back to
+*all*, expands sensor-04 (▸), and switches to *online* again. The details are now open on a
+device they never touched.
+**Done when:** after that sequence, the list shows only online devices, sensor-04 is still
+expanded, and it is the only expanded row.
+
+**4 · "Take offline" doesn't stick.** The operator clicks it and the dashboard carries on
+showing the device as online until someone reloads.
+**Done when:** under *online*, clicking *Take offline* on cam-05 removes it from the list with
+no reload. Switching to *all* shows cam-05 as offline. In the log, the list request that
+follows starts **after** the `PATCH` ends. Compare the times.
+
+**5 · The service falls over.** When the backend is down, the operator needs to know. When it
+comes back, they need to carry on.
+**Done when:** with *Simulate outage* ticked, *Refresh* puts a message on screen that an
+operator would understand: no blank list, no raw error text, and nothing in the console. Untick
+it and *Refresh* again: 12 devices, and no trace of the message.
+
+**6 · The detail panel shows the wrong device.** Clicking a device name loads the panel on the
+right, which takes 1.2s. Operators click one device, change their mind and click another.
+**Done when:** you click cam-01 and then gw-08 before cam-01's details arrive. The panel never
+shows cam-01, *Loading…* stays visible the whole time until gw-08 appears, and the log shows
+`GET /api/devices/d1` as `aborted`.
  * ---------------------------------------------------------------------------
  * AT THE BUZZER: fill this in before you open AFTER-THE-TIMER.md.
  *
@@ -14,9 +47,14 @@
  * | 6   |         |                                   |
  */
 
-import { useState } from "react";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { fetchDevices, setDeviceStatus, type Device, type StatusFilter } from "./api";
+import { useEffect, useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  fetchDevices,
+  setDeviceStatus,
+  type Device,
+  type StatusFilter,
+} from "./api";
 
 const FILTERS: StatusFilter[] = ["all", "online", "offline"];
 
@@ -26,16 +64,29 @@ type Props = {
 };
 
 export function DeviceList({ selectedId, onSelect }: Props) {
+  const qc = useQueryClient();
   const [status, setStatus] = useState<StatusFilter>("all");
 
   const { data, isLoading, refetch } = useQuery({
-    queryKey: ["devices"],
+    queryKey: ["devices", { status }],
     queryFn: () => fetchDevices(status),
   });
 
+  useEffect(() => {
+    fetchDevices(status);
+  }, [status]);
+
   const toggle = useMutation({
     mutationFn: (device: Device) =>
-      setDeviceStatus(device.id, device.status === "online" ? "offline" : "online"),
+      setDeviceStatus(
+        device.id,
+        device.status === "online" ? "offline" : "online",
+      ),
+    onSuccess: async () => {
+      await qc.invalidateQueries({
+        queryKey: ["devices", { status }],
+      });
+    },
   });
 
   return (
@@ -65,7 +116,7 @@ export function DeviceList({ selectedId, onSelect }: Props) {
       <ul className="rows">
         {data?.map((device, i) => (
           <DeviceRow
-            key={i}
+            key={device.id}
             device={device}
             selected={device.id === selectedId}
             onSelect={() => onSelect(device.id)}

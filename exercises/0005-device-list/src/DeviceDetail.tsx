@@ -11,8 +11,9 @@ export function DeviceDetail({ id }: { id: string | null }) {
   useEffect(() => {
     if (!id) return;
 
+    const controller = new AbortController();
+
     const load = async () => {
-      const controller = new AbortController();
       setIsLoading(true);
       setError(null);
       try {
@@ -21,12 +22,16 @@ export function DeviceDetail({ id }: { id: string | null }) {
       } catch {
         if (!controller.signal.aborted) setError("Could not load this device.");
       } finally {
-        setIsLoading(false);
+        if (!controller.signal.aborted) {
+          setIsLoading(false);
+        }
       }
     };
 
     load();
-    return () => {};
+    return () => {
+      controller.abort();
+    };
   }, [id]);
 
   if (!id) return <aside className="detail muted">Select a device.</aside>;

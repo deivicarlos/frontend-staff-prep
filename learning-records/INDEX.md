@@ -17,3 +17,4 @@ new record is written.
 | [0010](0010-completion-closed-the-cost-moved-to-triage.md) | triage, recall | Completion closed. The cost moved to triage and API lookups. Retired the midpoint alarm. |
 | [0011](0011-placement-is-the-thin-layer.md) | placement, event loop | Right parts, wrong place. Microtask ordering gap. A smooth rewrite isn't a verified one. |
 | [0012](0012-reweight-to-what-screens-grade.md) | direction | Reweighted to what screens actually grade. ARIA dropped. AI engineering added as phase 2. |
+| [0013](0013-placement-lands-scenario-still-does-not.md) | placement, TanStack, scenarios | Async placement transferred. Invalidation scope (prefix) missed. Scenario requirement unconverted a third time. |

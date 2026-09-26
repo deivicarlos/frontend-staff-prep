@@ -15,6 +15,7 @@ Archive of closed items and scores. Read on demand; STATE.md is the live file.
 | Exercise 0003 — keyboard layer | **4/6 in 20 min.** Arrow nav, focus model and scroll-into-view full; Enter guard and Escape absent, ARIA half-placed, stale index unreset. Protocol 1 of 3 |
 | Sheet 1 cold rewrite | Three passes. Controller out of cleanup's reach, then unguarded `finally`, then correct. `Book[]` at source |
 | Exercise 0004 — finish the job | **2/4 binary in 20 min.** Debounce and cancellation both pass — the 0002 `AbortController` is armed. Error and loading never started; clock went to an API lookup |
+| Exercise 0005 — device list | **4/6 binary in 25 min.** API chain, queryKey, row key and detail-panel placement all pass. Invalidation scoped to one filter; outage not understood, not asked. Buzzer table empty |
 
 **Reps remain the primary instrument** (LR-0006, unchanged). Exercise 0003 is the first exercise
 to score above ~2/6 and the first where a lesson's central claim was visibly applied under a clock.

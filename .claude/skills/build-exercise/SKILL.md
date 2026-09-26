@@ -48,6 +48,8 @@ description: Build a timed exercise in exercises/. Use when STATE.md's next item
 3. Budget the clock across the requirements, and take one cheap pass over all of them before
    going deep on any.
 4. At the buzzer, write down what's unmet.
+5. A requirement you can't turn into a task in one pass is a question to ask, not one to skip
+   (LR-0013).
 
 ## Rubric rules
 

@@ -1,17 +1,16 @@
 # State
 
-_Updated 2026-09-25 (0005 built). The plan was re-set by a grilling session on 2026-09-24
+_Updated 2026-09-26 (0005 graded). The plan was re-set by a grilling session on 2026-09-24
 ([LR-0012](learning-records/0012-reweight-to-what-screens-grade.md); decisions in `MISSION.md`
 and `career/CAREER.md`)._
 
 ## Next session
 
-**Grade exercise 0005** (skill `grade-exercise`). It was built on 2026-09-25 and he's running it
-now: a 25-min timer, 6 chained bugs, more than fit. Ask him to paste the log output for each
-requirement, per `AFTER-THE-TIMER.md`. The done-conditions were proven red on the scaffold and
-green on a reference fix. The wrong placements were also proven red: invalidating in the click
-handler, and moving the controller while leaving `finally` unguarded. After grading, the next
-item is lesson 5.
+**Lesson 5: frontend system design (RADIO)** (skill `build-lesson`). Exercise 0005 was graded
+4/6 on 2026-09-26 ([LR-0013](learning-records/0013-placement-lands-scenario-still-does-not.md)).
+One question is still open with him: where the 25 minutes went, and what the stray
+`useEffect(() => fetchDevices(status))` in `DeviceList.tsx` was for. If he fixes 4 and 5,
+re-run `check.mjs`-style checks (the done-conditions in `START-HERE.md`) and re-score.
 
 ## Week 1: getting interviews (career comes first)
 
@@ -31,30 +30,29 @@ The rhythm bends to what he says he has time for on the day.
 
 ## Queue, in order
 
-1. **Exercise 0005: debug a broken app.** Built 2026-09-25 (`exercises/0005-device-list/`). Grade it.
-2. **Lesson 5: frontend system design (RADIO).** It covers requirements gathering and carrying a
+1. **Lesson 5: frontend system design (RADIO).** It covers requirements gathering and carrying a
    constraint across decisions (LR-0007), plus `useInfiniteQuery` and cursor vs offset.
-3. **Auth and backend: calibrate first.** A diagnostic on login flow, sessions vs JWT, cookie
+2. **Auth and backend: calibrate first.** A diagnostic on login flow, sessions vs JWT, cookie
    flags, token storage and refresh, CSRF/XSS, REST design, a two-table model, and debugging a
    Node endpoint. Then teach only what it shows is missing. He knows Node from work.
-4. **Exercise 0006: build from scratch, roomba-shaped.** 45 min, graded on the state model and
+3. **Exercise 0006: build from scratch, roomba-shaped.** 45 min, graded on the state model and
    on getting the logic working before any layout.
-5. **Lesson 4: rendering, hooks and the event loop.** Build it on the case of aborting a stale
+4. **Lesson 4: rendering, hooks and the event loop.** Build it on the case of aborting a stale
    request and asking what order the `isLoading` writes land in (LR-0011). Include the boundary
    of what the Compiler does.
-6. **Web Worker vs Service Worker:** a reference sheet.
+5. **Web Worker vs Service Worker:** a reference sheet.
 
 Once the frontend track is solid: **Phase 2, engineering with AI** (`MISSION.md`).
 
 ## What we know about him (the detail is in `learning-records/INDEX.md`)
 
-- He selects the right technique but misplaces its parts: the controller out of reach of the
-  cleanup, `aria-activedescendant` on the `<ul>` (LR-0011). Grade placement explicitly.
+- Placement: the request-effect parts (controller, abort in cleanup, guarded `finally`) landed
+  first try under a clock in 0005 (LR-0013). Keep grading placement on new surfaces.
 - He finishes what he starts but starts too few things, going depth-first with no time budget
   (LR-0010). The standing exercise protocol lives in skill `build-exercise`.
 - In design, a constraint he states does not survive into later decisions (LR-0007).
-- A requirement phrased as a scenario doesn't become a task for him (LR-0009). Keep writing
-  scenario-shaped requirements anyway.
+- A requirement phrased as a scenario doesn't become a task for him: 0003, then 0005 req 5
+  (LR-0009, LR-0013). He doesn't ask when stuck. The protocol now says to ask.
 - He doesn't have the model for microtask ordering relative to effects (LR-0011).
 - Writing it smoothly doesn't mean he checked it. Ask for evidence he checked, never whether he
   did (LR-0011).
@@ -66,6 +64,6 @@ Once the frontend track is solid: **Phase 2, engineering with AI** (`MISSION.md`
 - A discriminated union for request state has never been measured. Check it whenever the async
   layer appears in an exercise.
 - Generics (Q14): fold into a component-API exercise.
-- Identity bugs (key, queryKey, deps, stale index): keep spot-checking.
+- Identity bugs: keys are fine. `invalidateQueries` prefix matching was missed in 0005 (LR-0013).
 - There is no live human feedback loop, so how he sounds out loud is unmeasured. Consider mock
   interviews later.
