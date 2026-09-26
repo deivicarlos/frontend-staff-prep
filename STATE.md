@@ -1,14 +1,17 @@
 # State
 
-_Updated 2026-09-25. The plan was re-set by a grilling session on 2026-09-24
+_Updated 2026-09-25 (0005 built). The plan was re-set by a grilling session on 2026-09-24
 ([LR-0012](learning-records/0012-reweight-to-what-screens-grade.md); decisions in `MISSION.md`
 and `career/CAREER.md`)._
 
 ## Next session
 
-**Exercise 0005: debug a broken app** (queue item 1). Skill `build-exercise`. Week-1 career
-work is closed: resume and LinkedIn done, "why IC" in his wording, and no target list (he searches
-every couple of days himself). Weekend career sessions: applications and Staff stories.
+**Grade exercise 0005** (skill `grade-exercise`). It was built on 2026-09-25 and he's running it
+now: a 25-min timer, 6 chained bugs, more than fit. Ask him to paste the log output for each
+requirement, per `AFTER-THE-TIMER.md`. The done-conditions were proven red on the scaffold and
+green on a reference fix. The wrong placements were also proven red: invalidating in the click
+handler, and moving the controller while leaving `finally` unguarded. After grading, the next
+item is lesson 5.
 
 ## Week 1: getting interviews (career comes first)
 
@@ -28,11 +31,7 @@ The rhythm bends to what he says he has time for on the day.
 
 ## Queue, in order
 
-1. **Exercise 0005: debug a broken app.** Modelled on a screen he really faced: a device list
-   using TanStack Query, where each fix reveals the next bug (the API call, filters, a `queryKey`
-   or identity bug, loading/error including an unguarded `finally`). It has more bugs than fit
-   in the clock and the brief says so, so triage is what gets graded. He pastes the log per
-   requirement and narrates each fix in one line.
+1. **Exercise 0005: debug a broken app.** Built 2026-09-25 (`exercises/0005-device-list/`). Grade it.
 2. **Lesson 5: frontend system design (RADIO).** It covers requirements gathering and carrying a
    constraint across decisions (LR-0007), plus `useInfiniteQuery` and cursor vs offset.
 3. **Auth and backend: calibrate first.** A diagnostic on login flow, sessions vs JWT, cookie
