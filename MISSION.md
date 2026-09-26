@@ -32,6 +32,8 @@ vibe coding: controlling context, planning before generating, writing skills, re
 generated code against the architecture, and keeping security and design sound. *"AI makes a
 good engineer even better but a bad engineer worse."* Starts after the frontend track, which is
 what makes this phase work: you can only direct and review what you understand.
+One exception, added 2026-09-26: AI-allowed coding is already a round format (Shopify, Canva,
+Meta), so AI-allowed timed exercises run inside the frontend track. Phase 2 is the deeper practice.
 
 ## Constraints
 

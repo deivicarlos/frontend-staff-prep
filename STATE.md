@@ -10,7 +10,7 @@ and `career/CAREER.md`)._
 built 2026-09-26, ~30 min). He brings two numbers: the chat-channel drill score (decisions that
 cited the right ledger line, out of 4) and the quiz score (out of 3). Grade the drill on whether
 decision 1 picks cursor *because of* C3 (deletes). Choosing page numbers because of deep links
-would be the LR-0007 pattern repeating. Then the queue moves to item 2 below, if he approved the reorder.
+would be the LR-0007 pattern repeating. Then the queue moves to item 2 below.
 
 Exercise 0005: 4/6 timed, 6/6 after the clock (LR-0013).
 
@@ -30,11 +30,11 @@ Exercise 0005: 4/6 timed, 6/6 after the clock (LR-0013).
 
 The rhythm bends to what he says he has time for on the day.
 
-## Queue, in order (PROPOSED 2026-09-26, awaiting his OK)
+## Queue, in order (agreed 2026-09-26)
 
-He challenged the roomba exercise, saying it rested on one 2021 screen. The rounds have been re-mapped to
-current formats (`research/2026-hiring-landscape.md`, addendum 2026-09-26). If he agrees, this
-replaces the old queue:
+Re-mapped to current round formats (`research/2026-hiring-landscape.md`, addendum 2026-09-26)
+after he challenged the roomba, which rested on one 2021 screen. Every item needs a round that
+asks for it.
 
 1. **Lesson 5: system design (RADIO).** Unchanged. Highest-weight round, and weight rises at Staff.
 2. **Exercise 0006: an evolving, AI-allowed build** (Shopify/Canva format). A grid robot, in his own
@@ -48,7 +48,8 @@ replaces the old queue:
 7. **Project deep dive:** a career session. One project told as architecture, trade-offs, and
    what he would change.
 
-The Workers sheet is dropped: no round asks for it. Revisit only if a posting names it.
+8. **Bonus: Web Worker vs Service Worker** (reference sheet, skill `build-lesson`). Only once items
+   1–7 are covered and he performs them consistently. No round asks for it.
 
 Once the frontend track is solid: **Phase 2, engineering with AI** (`MISSION.md`).
 
