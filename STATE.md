@@ -6,7 +6,10 @@ and `career/CAREER.md`)._
 
 ## Next session
 
-**He works Lesson 5** ([`lessons/0005-the-constraint-ledger.html`](lessons/0005-the-constraint-ledger.html),
+**Build the frontend security lesson** (skill `build-lesson`). The brief is in "Inserted
+2026-10-06" below. Interview prep for a live Staff React application comes before everything else.
+
+**After that, he works Lesson 5** ([`lessons/0005-the-constraint-ledger.html`](lessons/0005-the-constraint-ledger.html),
 built 2026-09-26, ~30 min). He brings two numbers: the chat-channel drill score (decisions that
 cited the right ledger line, out of 4) and the quiz score (out of 3). Grade the drill on whether
 decision 1 picks cursor *because of* C3 (deletes). Choosing page numbers because of deep links
