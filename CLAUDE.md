@@ -13,7 +13,7 @@ needs:
 | --- | --- |
 | Build an exercise | skill `build-exercise` |
 | Grade an exercise he finished | skill `grade-exercise` |
-| Build a lesson or reference sheet | skill `build-lesson` |
+| Build a lesson or reference sheet | his `/teach` skill (he types it; it cannot be model-invoked), plus `build-lesson` for this repo's conventions. If he hasn't typed it, tell him: `/teach <topic>` |
 | Resume, LinkedIn, applications, interview stories | skill `career-session` |
 | A planning decision (reorder, add a track) | `MISSION.md`, `research/` |
 | Evidence about him in one area | `learning-records/INDEX.md`, then only the records it points to |
