@@ -30,6 +30,8 @@ needs:
   rather than delivering input he can already articulate.
 - **He is a senior engineer.** No encouragement padding, no basics.
 - **Verify facts against primary sources** (`RESOURCES.md`, web tools), never recall.
+- **Teach the field, never his employer's code.** Lessons cover industry practice and best
+  practices. Never build a lesson or exercise on VEERUM's codebase (his rule, 2026-10-06).
 
 ## End of every session
 

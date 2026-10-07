@@ -52,6 +52,12 @@ BFF (Node proxy, Passport + Auth0, express-session in a separate store, `connect
 Secure, Lax), so use it only to place him on the map.
 Still open: company, band, Canada eligibility (ask the recruiter).
 
+**System design is a track, not one lesson** (he asked 2026-10-06). Lesson 5 (RADIO) is the
+only one so far and is unworked. After it, one design lesson per week (the Friday slot), each
+prompt against a clock. Candidates, ordered by fit to Staff postings: a data grid or dashboard
+over a large dataset; autocomplete/search; a design system; a news feed; chat. Confirm the order
+against `research/2026-hiring-landscape.md` before building.
+
 ## Queue, in order (agreed 2026-09-26)
 
 Re-mapped to current round formats (`research/2026-hiring-landscape.md`, addendum 2026-09-26)
