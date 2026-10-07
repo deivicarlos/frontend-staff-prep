@@ -37,7 +37,7 @@ The rhythm bends to what he says he has time for on the day.
 
 **Interview prep: a Staff React screen through a recruiter.** All five written answers are done
 in his wording, 2026-10-06 (the file `career/private/2026-10-06-staff-react-screen.md` holds my
-drafts; his final text was pasted in chat). Next: **a lesson on login and auth security** (skill `build-lesson`). He did not build Veerum's
+drafts, plus the full posting and the five questions verbatim; his final text was pasted in chat). Prep targets this posting until he says otherwise. Next: **a lesson on login and auth security** (skill `build-lesson`). He did not build Veerum's
 auth and never learned it. Scope, set by him 2026-10-06: **teach the field, not his codebase.**
 No review of Veerum's code (he asked to drop the open-redirect and id_token findings). Cover:
 - The ways to build login: server sessions; BFF (RFC 10017, Aug 2026); token-mediating backend;
