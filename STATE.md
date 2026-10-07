@@ -37,21 +37,20 @@ The rhythm bends to what he says he has time for on the day.
 
 **Interview prep: a Staff React screen through a recruiter.** All five written answers are done
 in his wording, 2026-10-06 (the file `career/private/2026-10-06-staff-react-screen.md` holds my
-drafts; his final text was pasted in chat). Next: **a lesson on frontend security** (skill
-`build-lesson`), aimed at Q4's follow-ups. He has no hands-on
-CSP experience. Cover CSP (report-only rollout, nonces/hashes, connect/worker-src,
-frame-ancestors), OAuth Authorization Code + PKCE for SPAs (Auth0), where the token lives, and
-secrets and headers in a Docker setup (nginx/ALB/CloudFront; no Kubernetes in his history).
-His real auth stack is a BFF (RFC 10017): a Node proxy with Passport (Auth0 + username/password),
-server-side sessions in a separate DB, and a cookie in the browser. He used it without
-understanding it, so teach the stack he has first: sessions vs JWT, cookie flags, CSRF, and why
-BFF ranks above tokens in the browser. The resume's "auth middleware" bullet is exposed too.
-He does not know what CSRF is (2026-10-06): start from zero. Use his own auth router as the
-case study (he pasted it): `session.regenerate` (fixation), the `x-csrf-guard` header, JWKS
-verification, Auth0 logout. Review finds: open redirect via `referrer`, `getKey` swallows its
-error, the SSO `id_token` is possibly forwarded as a Bearer token. Also from his code: list
-thunks fetch every page in parallel and sort on the client (Lesson 5 tie-in).
-Still open: company, band, Canada eligibility; Q3 needs one real feature.
+drafts; his final text was pasted in chat). Next: **a lesson on login and auth security** (skill `build-lesson`). He did not build Veerum's
+auth and never learned it. Scope, set by him 2026-10-06: **teach the field, not his codebase.**
+No review of Veerum's code (he asked to drop the open-redirect and id_token findings). Cover:
+- The ways to build login: server sessions; BFF (RFC 10017, Aug 2026); token-mediating backend;
+  tokens in the browser. Trade-offs and the industry ranking.
+- OAuth 2 / OIDC: Authorization Code + PKCE, ID token vs access token, refresh tokens, SSO.
+- Sessions vs JWT: revocation, expiry, per-request cost.
+- The attacks and defences: XSS and token storage, CSRF (he does not know it; start from
+  zero), session fixation, cookie flags (HttpOnly, Secure, SameSite), CSP.
+- What a Senior/Staff must be able to explain and defend out loud, drilled against a clock.
+Verify every fact against primary sources (RFCs, OWASP cheat sheets, MDN). His own setup is a
+BFF (Node proxy, Passport + Auth0, express-session in a separate store, `connect.sid` HttpOnly,
+Secure, Lax), so use it only to place him on the map.
+Still open: company, band, Canada eligibility (ask the recruiter).
 
 ## Queue, in order (agreed 2026-09-26)
 
