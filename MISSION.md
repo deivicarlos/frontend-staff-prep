@@ -21,8 +21,10 @@ depth comes first: get to genuinely strong there, then widen.
 - Has one substantial public project that survives being read by an interviewer.
 - Can debug an unfamiliar, broken multi-component app under a clock, fixing bugs in
   sequence and narrating each fix. This is the format he has actually faced (LR-0012).
-- Can explain auth end to end (login, sessions vs JWT, cookies, CSRF/XSS) and what workers
-  are for, at the level of mechanism.
+- **Security, authentication and authorization, from zero to Staff** (his ask, 2026-10-08):
+  can design auth in a system design round and defend it in a Staff discussion, at the level
+  of mechanism (browser rules, sessions, tokens, OAuth/OIDC, architectures, authorization).
+- Can explain what workers are for, at the level of mechanism.
 
 ## Phase 2: engineering with AI
 
@@ -39,7 +41,8 @@ Meta), so AI-allowed timed exercises run inside the frontend track. Phase 2 is t
 
 - Employed full-time. **40–60 minutes a day** is the reliable base (set 2026-09-24), with occasional days off. Every session is self-contained. No multi-session cliffhangers.
 - **Located in Canada.** He targets Canada-eligible remote roles at CAD 180k+. Prep is built for Senior loops, with Staff as upside (`career/CAREER.md`).
-- Two years since last shipping React. Assume conceptual rust, not conceptual absence.
+- Two years since last shipping React. Rust in React, but real voids elsewhere (auth, browser
+  security): every lesson starts from zero (rule 2026-10-08, LR-0015).
 - Starting point is unmeasured — LR-0001 (the calibration) sets the real floor.
 
 ## Also in scope: getting interviews

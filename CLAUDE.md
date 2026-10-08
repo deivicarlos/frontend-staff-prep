@@ -26,9 +26,13 @@ needs:
 - **Measure, don't ask.** His self-report is unreliable ("I don't know how far I am"). Read his
   diff, run the check, then ask at most one question in prose.
 - **Ask in prose, never with `AskUserQuestion` option grids.** He rejected them twice.
-- **His gap is retrieval under a clock, not knowledge.** Force application against a clock
-  rather than delivering input he can already articulate.
-- **He is a senior engineer.** No encouragement padding, no basics.
+- **In React, his gap is retrieval under a clock. In areas he never worked in (auth, browser
+  security), the knowledge itself is missing (LR-0014).** Either way, force application against
+  a clock rather than delivering input he can already articulate.
+- **Teach every topic from zero** (his rule, 2026-10-08). He has gaps he can't see. Build the
+  underlying mechanism first (what the browser or the server actually does), then the practice
+  on top of it. Skipping the base is what failed in lesson 6 (LR-0014). He is still a senior
+  engineer: no encouragement padding.
 - **Verify facts against primary sources** (`RESOURCES.md`, web tools), never recall.
 - **Teach the field, never his employer's code.** Lessons cover industry practice and best
   practices. Never build a lesson or exercise on VEERUM's codebase (his rule, 2026-10-06).

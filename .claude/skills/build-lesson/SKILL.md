@@ -30,5 +30,6 @@ description: Build a lesson (lessons/) or a reference sheet (reference/). Use wh
 
 ## Style
 
-Senior audience, concise. A table where he'd otherwise read a paragraph. One "sentence to
+Start from zero: the first section builds the mechanism the rest depends on, and assumes no
+prior knowledge of it (CLAUDE.md, LR-0014). Concise. A table where he'd otherwise read a paragraph. One "sentence to
 have ready" for interviews, as in the existing reference sheets.

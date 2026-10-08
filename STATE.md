@@ -1,105 +1,89 @@
 # State
 
-_Updated 2026-10-07 (lesson 6 built: auth security part 1). Earlier: 2026-10-06 (Staff React
-screen answers), 2026-09-26 (0005 graded, lesson 5 built). Plan re-set 2026-09-24
-([LR-0012](learning-records/0012-reweight-to-what-screens-grade.md)); decisions in `MISSION.md`
-and `career/CAREER.md`._
+_Updated 2026-10-08. Lesson 6 graded and repaired. New rule: every lesson starts from zero.
+Security becomes a track ([LR-0015](learning-records/0015-from-zero-and-a-security-track.md)).
+Plan re-set 2026-09-24 ([LR-0012](learning-records/0012-reweight-to-what-screens-grade.md));
+decisions in `MISSION.md` and `career/CAREER.md`._
 
 ## Next session
 
-**Lesson 6 graded 2026-10-07 ([LR-0014](learning-records/0014-auth-the-browser-model-is-missing.md)):**
-drill 2/5, retrieval 1.5/5 + 0.5/4, quiz 1/4. He names BFF but has no model of when the
-browser sends a cookie or what CORS does. Repair done in chat 2026-10-07: the two-gates model (preflight decides whether the request is sent;
-SameSite etc. decide whether the cookie is attached), last item 3/3. Next, **on a later day**, he redoes lesson 6's
-cookie-flags drill and retrieval check 1 cold (clear the boxes in devtools or just write in chat).
-**Lesson 7** (OAuth/OIDC + RFC 10017 architectures; brief kept in git history, commit f52584d)
-waits until the drill is 4/5+. Sources: `RESOURCES.md` auth section.
+**Build Security track lesson S1** (he types `/teach browser security from zero`, then skill
+`build-lesson`). Start from zero, per the CLAUDE.md rule. S1 is the base that lesson 6 assumed
+and he didn't have:
+HTTP request/response, origin vs site, how cookies are set, stored and attached (by destination,
+whoever starts the request), the same-origin policy, CORS and preflight. Teach it as **two gates**:
+gate 1, preflight/CORS, decides whether the request is sent. Gate 2, SameSite/Domain/Path/Secure,
+decides whether the cookie goes with it. `HttpOnly` is in neither. It only stops JS reading the cookie.
+**Retrieval check:** lesson 6's cookie-flags drill (5 attacks) and its retrieval check 1, cold.
+The target is 4/5+. Fold in what he asked on 2026-10-07: where a request without a cookie gets
+rejected (app auth middleware, not the load balancer), and why public APIs use header tokens.
 
-**After that, he works Lesson 5** ([`lessons/0005-the-constraint-ledger.html`](lessons/0005-the-constraint-ledger.html),
-built 2026-09-26, ~30 min). He brings two numbers: the chat-channel drill score (decisions that
-cited the right ledger line, out of 4) and the quiz score (out of 3). Grade the drill on whether
-decision 1 picks cursor *because of* C3 (deletes). Choosing page numbers because of deep links
-would be the LR-0007 pattern repeating. Then the queue moves to item 2 below.
+Tomorrow is the Friday system-design slot. Default to S1 anyway because the screen is live.
+Lesson 5 (RADIO, unworked) takes the next free design slot.
 
-Exercise 0005: 4/6 timed, 6/6 after the clock (LR-0013).
+## Security, AuthN and AuthZ: zero to hero (his ask, 2026-10-08)
 
-## From week 2: the weekly rhythm (40–60 min a day)
+Aimed at system design rounds and Staff discussions. One lesson per session, from zero, each one
+ending in a cold retrieval check against a clock. Sources: `RESOURCES.md` auth section; fetch
+RFC 9700 (OAuth security BCP) and OWASP API Top 10 before S5 and S7.
 
-- **Mon–Thu: timed exercises.** Formats: debugging a broken app, building from scratch, and
-  AI-assisted work on material he already knows.
-- **Fri: frontend system design.**
-- **Sat or Sun: one career session** (applications, stories, the "why IC" answer).
+| # | Lesson | Status |
+|---|---|---|
+| S1 | How the browser talks to servers: origins, cookies, SOP, CORS, the two gates | **next** |
+| S2 | Authentication from zero: proving identity, password hashing, server sessions (ID, store, fixation, timeouts, logout), MFA/passkeys overview | |
+| S3 | Attacks on a logged-in user: XSS, CSRF, cookie flags, CSP. [Lesson 6](lessons/0006-the-browser-attaches-the-cookie.html) exists. Retake it after S1–S2, or rebuild it | lesson 6: 2/5 ([LR-0014](learning-records/0014-auth-the-browser-model-is-missing.md)) |
+| S4 | Tokens: what a JWT is, signing and validation, sessions vs JWT, access + refresh, revocation | |
+| S5 | OAuth 2 and OIDC from zero: the delegation problem, roles, Code + PKCE, ID vs access token, SSO | |
+| S6 | Login architectures for SPAs: BFF, token-mediating backend, browser client (RFC 10017 §6), server sessions; place his BFF on the map | |
+| S7 | Authorization: authN vs authZ, RBAC/ABAC/ReBAC, enforce on the server (the UI only hides), scopes vs permissions, multi-tenancy, object-level authorization bugs | |
+| S8 | Staff synthesis: auth inside a design round, out loud, against a clock; one reference sheet for the track | |
 
-The rhythm bends to what he says he has time for on the day.
+Scope rule (2026-10-06): **teach the field, never VEERUM's code.** His setup (Node BFF,
+Passport + Auth0, express-session, `connect.sid` HttpOnly/Secure/Lax) is used only to place him.
 
-## Inserted 2026-10-06, runs before the queue
+## Live: a Staff React screen through a recruiter
 
-**Interview prep: a Staff React screen through a recruiter.** All five written answers are done
-in his wording, 2026-10-06 (the file `career/private/2026-10-06-staff-react-screen.md` holds my
-drafts, plus the full posting and the five questions verbatim; his final text was pasted in chat). Prep targets this posting until he says otherwise. Lesson 6 (part 1) built 2026-10-07; lesson 7 (OAuth/architectures) next. Original brief: He did not build Veerum's
-auth and never learned it. Scope, set by him 2026-10-06: **teach the field, not his codebase.**
-No review of Veerum's code (he asked to drop the open-redirect and id_token findings). Cover:
-- The ways to build login: server sessions; BFF (RFC 10017, Aug 2026); token-mediating backend;
-  tokens in the browser. Trade-offs and the industry ranking.
-- OAuth 2 / OIDC: Authorization Code + PKCE, ID token vs access token, refresh tokens, SSO.
-- Sessions vs JWT: revocation, expiry, per-request cost.
-- The attacks and defences: XSS and token storage, CSRF (he does not know it; start from
-  zero), session fixation, cookie flags (HttpOnly, Secure, SameSite), CSP.
-- What a Senior/Staff must be able to explain and defend out loud, drilled against a clock.
-Verify every fact against primary sources (RFCs, OWASP cheat sheets, MDN). His own setup is a
-BFF (Node proxy, Passport + Auth0, express-session in a separate store, `connect.sid` HttpOnly,
-Secure, Lax), so use it only to place him on the map.
-Still open: company, band, Canada eligibility (ask the recruiter).
+Five written answers done 2026-10-06 (`career/private/2026-10-06-staff-react-screen.md`: drafts,
+posting, questions). Prep targets this posting until he says otherwise. Still open: company,
+band, Canada eligibility (ask the recruiter).
 
-**System design is a track, not one lesson** (he asked 2026-10-06). Lesson 5 (RADIO) is the
-only one so far and is unworked. After it, one design lesson per week (the Friday slot), each
-prompt against a clock. Candidates, ordered by fit to Staff postings: a data grid or dashboard
-over a large dataset; autocomplete/search; a design system; a news feed; chat. Confirm the order
-against `research/2026-hiring-landscape.md` before building.
+## Weekly rhythm (40–60 min a day; bends to his day)
 
-## Queue, in order (agreed 2026-09-26)
+Mon–Thu timed exercises · Fri frontend system design · Sat or Sun a career session. The security
+track takes the daily slot while the screen is live.
 
-Re-mapped to current round formats (`research/2026-hiring-landscape.md`, addendum 2026-09-26)
-after he challenged the roomba, which rested on one 2021 screen. Every item needs a round that
-asks for it.
+**System design is a track** (2026-10-06): Lesson 5 (RADIO, built, unworked) first. It is worked in
+~30 min, and he brings the chat-channel drill score /4 and the quiz score /3. Grade decision 1 on picking cursor
+*because of* C3. Then one design lesson a week: data grid/dashboard, autocomplete, design
+system, news feed, chat. Confirm the order against `research/2026-hiring-landscape.md`.
 
-1. **Lesson 5: system design (RADIO).** Unchanged. Highest-weight round, and weight rises at Staff.
-2. **Exercise 0006: an evolving, AI-allowed build** (Shopify/Canva format). A grid robot, in his own
-   IDE with AI, three requirement drops. Graded on directing the AI, extensibility, and tests.
-   This pulls Phase 2 forward as a round format.
-3. **JS utilities drill, no AI, 25 min.** Debounce/throttle, Promise.all, event emitter. Graded on
-   edge cases (leading/trailing, empty input, ordering).
-4. **Auth and backend diagnostic.** Unchanged. Postings: backend 20/24, security/auth 8/24.
-5. **Code review exercise.** Review a flawed PR diff under a clock. A Staff signal.
-6. **Lesson 4: rendering, hooks and the event loop.** Unchanged (LR-0011).
-7. **Project deep dive:** a career session. One project told as architecture, trade-offs, and
-   what he would change.
+## Queue after the security track (agreed 2026-09-26)
 
-8. **Bonus: Web Worker vs Service Worker** (reference sheet, skill `build-lesson`). Only once items
-   1–7 are covered and he performs them consistently. No round asks for it.
+1. Exercise 0006: an evolving, AI-allowed build (grid robot, three requirement drops).
+2. JS utilities drill, no AI, 25 min (debounce/throttle, Promise.all, event emitter).
+3. Code review exercise: a flawed PR diff against a clock.
+4. Lesson 4: rendering, hooks and the event loop (LR-0011).
+5. Project deep dive (career session).
+6. Bonus: Web Worker vs Service Worker reference sheet, only once 1–5 are solid.
 
-Once the frontend track is solid: **Phase 2, engineering with AI** (`MISSION.md`).
+Then Phase 2, engineering with AI (`MISSION.md`). The old item "auth and backend diagnostic" is
+absorbed into the security track.
 
-## What we know about him (the detail is in `learning-records/INDEX.md`)
+## What we know about him (detail in `learning-records/INDEX.md`)
 
-- Placement: the request-effect parts (controller, abort in cleanup, guarded `finally`) landed
-  first try under a clock in 0005 (LR-0013). Keep grading placement on new surfaces.
-- He finishes what he starts but starts too few things, going depth-first with no time budget
-  (LR-0010). The standing exercise protocol lives in skill `build-exercise`.
-- In design, a constraint he states does not survive into later decisions (LR-0007).
-- A requirement phrased as a scenario doesn't become a task for him: 0003, then 0005 req 5
-  (LR-0009, LR-0013). He doesn't ask when stuck. The protocol now says to ask.
-- He doesn't have the model for microtask ordering relative to effects (LR-0011).
-- Writing it smoothly doesn't mean he checked it. Ask for evidence he checked, never whether he
-  did (LR-0011).
-- A hint that points at other code fails. The second time, name the exact line (LR-0011).
-- TypeScript is strong. Generics were a calibration miss (Q14). React 19 knowledge is current.
+- **He has real voids outside React. Teach from zero** (LR-0014, LR-0015). In auth he named the right
+  architecture (BFF) but had no browser model under it. Taught from zero, it landed the same day.
+- Placement of request-effect parts holds under a clock (LR-0013).
+- Finishes what he starts, but starts too few things, going depth-first (LR-0010). The protocol is in `build-exercise`.
+- A constraint he states doesn't carry into later design decisions (LR-0007).
+- Scenario-phrased requirements don't become tasks for him, and he doesn't ask when stuck (LR-0009, LR-0013).
+- No model of microtask ordering relative to effects (LR-0011).
+- A smooth rewrite isn't a checked one. Ask for evidence (LR-0011).
+- TypeScript is strong, but generics were a miss (Q14). React 19 knowledge is current.
 
 ## Open, not yet scheduled
 
-- A discriminated union for request state has never been measured. Check it whenever the async
-  layer appears in an exercise.
+- Request state as a discriminated union is unmeasured. Check it when the async layer appears.
 - Generics (Q14): fold into a component-API exercise.
-- Identity bugs: keys are fine. `invalidateQueries` prefix matching was missed in 0005 (LR-0013).
-- There is no live human feedback loop, so how he sounds out loud is unmeasured. Consider mock
-  interviews later.
+- `invalidateQueries` prefix matching missed in 0005 (LR-0013).
+- How he sounds out loud is unmeasured. Consider mock interviews.
