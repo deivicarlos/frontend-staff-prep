@@ -26,13 +26,6 @@ would be the LR-0007 pattern repeating. Then the queue moves to item 2 below.
 
 Exercise 0005: 4/6 timed, 6/6 after the clock (LR-0013).
 
-## Week 1: getting interviews (career comes first)
-
-1. Resume and LinkedIn review. Done 2026-09-25.
-2. Done 2026-09-25. The "why IC" answer: write it with him, then he rehearses it out loud. The framing is agreed in
-   `career/CAREER.md`.
-3. Dropped 2026-09-25 (he searches himself). A list of Canada-eligible target companies, built from `research/2026-canada-remote-eligibility.md`.
-
 ## From week 2: the weekly rhythm (40–60 min a day)
 
 - **Mon–Thu: timed exercises.** Formats: debugging a broken app, building from scratch, and

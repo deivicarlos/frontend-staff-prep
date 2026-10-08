@@ -73,3 +73,12 @@ Alongside it sits the one knowledge axis still billing real minutes: **mechanica
   dark mode, costing him exercise time. Fixed at source.
 - **No human feedback loop exists.** Everything is asynchronous; self-assessment cannot measure
   how he sounds live. Flagged in `RESOURCES.md` under Gaps. Ask before pushing communities again.
+
+## Moved from STATE 2026-10-07
+
+## Week 1: getting interviews (career comes first)
+
+1. Resume and LinkedIn review. Done 2026-09-25.
+2. Done 2026-09-25. The "why IC" answer: write it with him, then he rehearses it out loud. The framing is agreed in
+   `career/CAREER.md`.
+3. Dropped 2026-09-25 (he searches himself). A list of Canada-eligible target companies, built from `research/2026-canada-remote-eligibility.md`.
