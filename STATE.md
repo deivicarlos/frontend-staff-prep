@@ -7,16 +7,13 @@ and `career/CAREER.md`._
 
 ## Next session
 
-**Grade Lesson 6** ([`lessons/0006-the-browser-attaches-the-cookie.html`](lessons/0006-the-browser-attaches-the-cookie.html),
-built 2026-10-07, ~30 min; XSS vs CSRF, cookie flags, token storage, sessions vs JWT). He brings:
-cookie-flags drill /5, retrieval 1 /5, retrieval 2 + quiz /8, plus his cold and final answers to
-"where do you keep the token". This is the first measurement of the auth area: write an LR.
-Watch item 4 of the drill (sibling subdomain is same-site) and whether the final answer says
-"no storage survives XSS". Then **build Lesson 7** (`/teach`, then `build-lesson`): OAuth 2 /
-OIDC (Code + PKCE, ID vs access token, refresh rotation, SSO) and the three RFC 10017
-architectures (BFF, token-mediating backend, browser client; §6, decreasing security) plus
-server sessions. End it with the out-loud drill, then a reference sheet covering lessons 6–7.
-Sources are in `RESOURCES.md` (auth section). RFC 9700 (OAuth security BCP) not yet fetched.
+**Lesson 6 graded 2026-10-07 ([LR-0014](learning-records/0014-auth-the-browser-model-is-missing.md)):**
+drill 2/5, retrieval 1.5/5 + 0.5/4, quiz not reported. He names BFF but has no model of when the
+browser sends a cookie or what CORS does. A repair drill was given in chat on 2026-10-07 (two rules + 3
+items). Next: if he answered it, grade it. Then, **on a later day**, he redoes lesson 6's
+cookie-flags drill and retrieval check 1 cold (clear the boxes in devtools or just write in chat).
+**Lesson 7** (OAuth/OIDC + RFC 10017 architectures; brief kept in git history, commit f52584d)
+waits until the drill is 4/5+. Sources: `RESOURCES.md` auth section.
 
 **After that, he works Lesson 5** ([`lessons/0005-the-constraint-ledger.html`](lessons/0005-the-constraint-ledger.html),
 built 2026-09-26, ~30 min). He brings two numbers: the chat-channel drill score (decisions that

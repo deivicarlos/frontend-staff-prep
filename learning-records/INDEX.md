@@ -18,3 +18,4 @@ new record is written.
 | [0011](0011-placement-is-the-thin-layer.md) | placement, event loop | Right parts, wrong place. Microtask ordering gap. A smooth rewrite isn't a verified one. |
 | [0012](0012-reweight-to-what-screens-grade.md) | direction | Reweighted to what screens actually grade. ARIA dropped. AI engineering added as phase 2. |
 | [0013](0013-placement-lands-scenario-still-does-not.md) | placement, TanStack, scenarios | Async placement transferred. Invalidation scope (prefix) missed. Scenario requirement unconverted a third time. |
+| [0014](0014-auth-the-browser-model-is-missing.md) | auth, CSRF, CORS | Names BFF but can't defend it. No model of when cookies are sent or what CORS does. Drill 2/5. |
