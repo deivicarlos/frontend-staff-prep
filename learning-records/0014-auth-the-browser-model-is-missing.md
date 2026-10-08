@@ -1,7 +1,7 @@
 # Auth: the right architecture, without the browser model under it
 
 Lesson 6, 2026-10-07. The first measurement of the auth area. Drill **2/5**, retrieval 1
-**1.5/5**, retrieval 2 **0.5/4**, quiz not reported. Revocation 1/3.
+**1.5/5**, retrieval 2 **0.5/4**, quiz **1/4** (only the JWT `exp` question was right). Revocation 1/3.
 
 ## Finding 1: he names the right answer and can't defend it
 
@@ -32,3 +32,11 @@ Do not build lesson 7 on this. First, repair the two browser facts with applicat
 then retest the drill cold on a later day (spacing). Lesson 7 waits until the drill is 4/5+.
 Lesson 6's reveals were sound, so the problem was ordering: the lesson assumed the browser model
 was already there.
+
+## Repair attempt, same day
+
+He didn't know what a preflight is. He said Lax covers it but couldn't say whether the request
+is sent. He credited `HttpOnly` with "preventing XSS" (it limits what XSS takes, it doesn't
+prevent it). He asked for cookies to be explained from the beginning, which confirms finding 2.
+The mechanics were taught from zero in chat (what the browser attaches to a request, the four
+rules, same-origin policy, preflight).

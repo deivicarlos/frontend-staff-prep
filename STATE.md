@@ -8,9 +8,9 @@ and `career/CAREER.md`._
 ## Next session
 
 **Lesson 6 graded 2026-10-07 ([LR-0014](learning-records/0014-auth-the-browser-model-is-missing.md)):**
-drill 2/5, retrieval 1.5/5 + 0.5/4, quiz not reported. He names BFF but has no model of when the
-browser sends a cookie or what CORS does. A repair drill was given in chat on 2026-10-07 (two rules + 3
-items). Next: if he answered it, grade it. Then, **on a later day**, he redoes lesson 6's
+drill 2/5, retrieval 1.5/5 + 0.5/4, quiz 1/4. He names BFF but has no model of when the
+browser sends a cookie or what CORS does. Repair: cookie/CORS mechanics taught from zero in chat 2026-10-07, ending in a 3-item check.
+Next: if he answered it, grade it. Then, **on a later day**, he redoes lesson 6's
 cookie-flags drill and retrieval check 1 cold (clear the boxes in devtools or just write in chat).
 **Lesson 7** (OAuth/OIDC + RFC 10017 architectures; brief kept in git history, commit f52584d)
 waits until the drill is 4/5+. Sources: `RESOURCES.md` auth section.
