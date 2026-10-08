@@ -19,6 +19,18 @@ substitute. Prune anything that turns out shallow or off-mission.
 - [React Blog](https://react.dev/blog) — release posts for 19.0, 19.1, 19.2.
   Use for: Actions, `use()`, `useOptimistic`, form status, ref-as-prop.
 
+## Knowledge — Auth and web security (primary)
+
+- [RFC 10017](https://www.rfc-editor.org/rfc/rfc10017.html) — OAuth 2.0 for Browser-Based
+  Applications, BCP 212, Aug 2026. Use for: the XSS payloads (§5.1), the three architectures
+  ranked by security (§6), BFF cookie and CSRF requirements (§6.1.3), browser token storage (§8).
+- [OWASP Cheat Sheets](https://cheatsheetseries.owasp.org/) — CSRF Prevention, Session
+  Management, JSON Web Token, Content Security Policy. Use for: defences and their ranking.
+- [MDN Set-Cookie](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Set-Cookie),
+  [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CORS),
+  [Sec-Fetch-Site](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Sec-Fetch-Site).
+  Use for: browser behaviour (cookie flags, SameSite defaults, simple requests).
+
 ## Knowledge — Depth and mental models
 
 - [overreacted.io](https://overreacted.io) — Dan Abramov (ex-React core).

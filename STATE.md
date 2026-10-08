@@ -1,13 +1,22 @@
 # State
 
-_Updated 2026-10-06 (Staff React screen answers; security lesson inserted). Earlier: 2026-09-26 (0005 graded, lesson 5 built). The plan was re-set by a grilling session on 2026-09-24
-([LR-0012](learning-records/0012-reweight-to-what-screens-grade.md); decisions in `MISSION.md`
-and `career/CAREER.md`)._
+_Updated 2026-10-07 (lesson 6 built: auth security part 1). Earlier: 2026-10-06 (Staff React
+screen answers), 2026-09-26 (0005 graded, lesson 5 built). Plan re-set 2026-09-24
+([LR-0012](learning-records/0012-reweight-to-what-screens-grade.md)); decisions in `MISSION.md`
+and `career/CAREER.md`._
 
 ## Next session
 
-**Build the frontend security lesson** (skill `build-lesson`). The brief is in "Inserted
-2026-10-06" below. Interview prep for a live Staff React application comes before everything else.
+**Grade Lesson 6** ([`lessons/0006-the-browser-attaches-the-cookie.html`](lessons/0006-the-browser-attaches-the-cookie.html),
+built 2026-10-07, ~30 min; XSS vs CSRF, cookie flags, token storage, sessions vs JWT). He brings:
+cookie-flags drill /5, retrieval 1 /5, retrieval 2 + quiz /8, plus his cold and final answers to
+"where do you keep the token". This is the first measurement of the auth area: write an LR.
+Watch item 4 of the drill (sibling subdomain is same-site) and whether the final answer says
+"no storage survives XSS". Then **build Lesson 7** (`/teach`, then `build-lesson`): OAuth 2 /
+OIDC (Code + PKCE, ID vs access token, refresh rotation, SSO) and the three RFC 10017
+architectures (BFF, token-mediating backend, browser client; §6, decreasing security) plus
+server sessions. End it with the out-loud drill, then a reference sheet covering lessons 6–7.
+Sources are in `RESOURCES.md` (auth section). RFC 9700 (OAuth security BCP) not yet fetched.
 
 **After that, he works Lesson 5** ([`lessons/0005-the-constraint-ledger.html`](lessons/0005-the-constraint-ledger.html),
 built 2026-09-26, ~30 min). He brings two numbers: the chat-channel drill score (decisions that
@@ -37,7 +46,7 @@ The rhythm bends to what he says he has time for on the day.
 
 **Interview prep: a Staff React screen through a recruiter.** All five written answers are done
 in his wording, 2026-10-06 (the file `career/private/2026-10-06-staff-react-screen.md` holds my
-drafts, plus the full posting and the five questions verbatim; his final text was pasted in chat). Prep targets this posting until he says otherwise. Next: **a lesson on login and auth security** (skill `build-lesson`). He did not build Veerum's
+drafts, plus the full posting and the five questions verbatim; his final text was pasted in chat). Prep targets this posting until he says otherwise. Lesson 6 (part 1) built 2026-10-07; lesson 7 (OAuth/architectures) next. Original brief: He did not build Veerum's
 auth and never learned it. Scope, set by him 2026-10-06: **teach the field, not his codebase.**
 No review of Veerum's code (he asked to drop the open-redirect and id_token findings). Cover:
 - The ways to build login: server sessions; BFF (RFC 10017, Aug 2026); token-mediating backend;

@@ -1,0 +1,439 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lesson 6: The Browser Attaches the Cookie</title>
+<link rel="stylesheet" href="../assets/course.css">
+<style>
+  /* Prose in every column; undo the sheet's nowrap/meta styling (same as lesson 5). */
+  main table { display: block; overflow-x: auto; }
+  main tbody td:first-child,
+  main tbody td:last-child {
+    white-space: normal; text-align: left; font-size: inherit; color: inherit;
+  }
+  main td { min-width: 7rem; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>The browser attaches the cookie</h1>
+  <p class="subtitle">There are two attacks to keep apart. In XSS the attacker's code runs
+  <em>inside</em> your origin. In CSRF the attacker's page makes the victim's browser send a
+  request to you, and the browser attaches your cookie on its own. Token storage, cookie flags and
+  sessions vs JWT all come down to which of the two a choice defends against.</p>
+  <p class="meta">Lesson 06 · Frontend auth security, part 1 of 2 · ~30 minutes · have a timer ready</p>
+</header>
+
+<main>
+
+<h2>Why this lesson</h2>
+
+<div class="diagnosis">
+  <div class="dx"><span class="dx-q">Screen</span><span>A Staff React screen is live. Auth is the round where a Director's answer ("we used Auth0 behind a BFF") gets one follow-up: <em>why</em>. Postings asking for security/auth: 8 of 24.</span></div>
+  <div class="dx"><span class="dx-q">Gap</span><span>You've never built auth, and CSRF is new to you. Nothing in this area has been measured yet, so the first box below is the measurement.</span></div>
+  <div class="dx"><span class="dx-q">Part 2</span><span>Lesson 7 covers OAuth/OIDC (Code + PKCE, ID vs access token, refresh) and the four login architectures, ranked. This lesson is the threat model those rankings rest on.</span></div>
+</div>
+
+<div class="predict" data-predict data-key="0006-cold">
+  <span class="predict-label">Cold, 2 minutes, before reading anything</span>
+  <p class="predict-prompt">The interviewer asks: <strong>"Your SPA gets a token after login.
+  Where do you keep it, and why?"</strong> Write the answer you'd give out loud right now. You
+  will rewrite it at the end and compare the two.</p>
+  <textarea class="predict-input" rows="5" placeholder="I'd keep it in … because …"></textarea>
+  <button class="predict-btn">Lock it in</button>
+  <div class="predict-answer" hidden>
+    <p>Locked. Don't edit it. The retrieval check at the end asks the same question.</p>
+  </div>
+</div>
+
+<h2>Two attackers</h2>
+
+<table>
+  <thead><tr><th></th><th>XSS (cross-site scripting)</th><th>CSRF (cross-site request forgery)</th></tr></thead>
+  <tbody>
+    <tr><td>Where the attacker's code runs</td><td><strong>In your origin.</strong> Same privileges as your own JS.</td><td><strong>On their own site.</strong> It never runs in your origin.</td></tr>
+    <tr><td>What it relies on</td><td>Your app rendering attacker-controlled input as code</td><td>The browser attaching your cookies to a request based on its <em>destination</em>, whoever started it</td></tr>
+    <tr><td>Can it read your responses?</td><td>Yes</td><td>No. The same-origin policy blocks the read, but the request has already been sent and acted on</td></tr>
+    <tr><td>Can it read a cookie?</td><td>Yes, unless the cookie is <code>HttpOnly</code></td><td>No, and it doesn't need to</td></tr>
+    <tr><td>Who is at risk</td><td>Token in JS storage <em>and</em> cookie sessions</td><td><strong>Cookie-based auth only.</strong> A token your JS puts in an <code>Authorization</code> header isn't attached automatically</td></tr>
+  </tbody>
+</table>
+
+<p>OWASP's definition of CSRF: <em>"a malicious web site, email, blog, instant message, or program
+tricks an authenticated user's web browser into performing an unwanted action on a trusted
+site."</em> The last row is the trade-off the whole lesson turns on. <strong>Moving a token into
+a cookie removes most of the XSS theft risk and adds CSRF risk.</strong></p>
+
+<h3>Why the forged request goes through</h3>
+
+<p>CORS only controls whether a page can <em>read</em> a response. A "simple" request (GET, HEAD or
+POST with a <code>Content-Type</code> of <code>application/x-www-form-urlencoded</code>,
+<code>multipart/form-data</code> or <code>text/plain</code>, and no custom headers) is sent with no
+preflight. MDN: the request <em>"IS sent to the server"</em>, and the browser only blocks the page
+from reading the response. A plain HTML <code>&lt;form&gt;</code> always sends a simple request.</p>
+
+<div class="predict" data-predict data-key="0006-forge">
+  <span class="predict-label">Predict, 3 minutes</span>
+  <p class="predict-prompt">You're logged in to <code>bank.example</code>, and its session cookie
+  has <strong>no <code>SameSite</code> attribute</strong> (assume a browser that doesn't default it
+  to Lax). You open <code>evil.example</code>, which contains:</p>
+<pre><code>&lt;form method="POST" action="https://bank.example/transfer"&gt;
+  &lt;input name="to" value="attacker"&gt;&lt;input name="amount" value="5000"&gt;
+&lt;/form&gt;
+&lt;script&gt;document.forms[0].submit()&lt;/script&gt;</code></pre>
+  <p class="predict-prompt"><strong>(a)</strong> Does the transfer happen? <strong>(b)</strong>
+  The attacker swaps the form for <code>fetch(url, { method: "POST", credentials: "include",
+  headers: { "Content-Type": "application/json" }, body })</code>, and the bank has no CORS
+  configuration. Does that transfer happen?</p>
+  <textarea class="predict-input" rows="4" placeholder="(a) …&#10;(b) …"></textarea>
+  <button class="predict-btn">Reveal</button>
+  <div class="predict-answer" hidden>
+    <p><strong>(a) Yes.</strong> It's a simple request, so no preflight runs. The browser attaches
+    <code>bank.example</code>'s cookie because the request is going to <code>bank.example</code>.
+    The server sees a valid session and moves the money. The attacker can't read the response,
+    and doesn't need to.</p>
+    <p><strong>(b) No.</strong> <code>application/json</code> isn't a simple content type, so the
+    browser sends an <code>OPTIONS</code> preflight first. The bank doesn't answer with
+    <code>Access-Control-Allow-Origin: https://evil.example</code> and
+    <code>Access-Control-Allow-Credentials: true</code>, so the real POST is never sent.</p>
+    <p><strong>The trap in (b):</strong> if the server also accepts the same JSON when it arrives
+    as <code>text/plain</code>, the attacker sends it that way. It's a simple request again, and
+    the attack works. This is why OWASP's "custom header" defence says to require the header. A
+    header forces a preflight. A content type only forces one if the server refuses every
+    other content type.</p>
+  </div>
+</div>
+
+<h2>Cookie flags: what each one stops</h2>
+
+<table>
+  <thead><tr><th>Attribute</th><th>Effect (MDN)</th><th>Stops</th><th>Does <em>not</em> stop</th></tr></thead>
+  <tbody>
+    <tr><td><code>HttpOnly</code></td><td>JS can't read it through <code>document.cookie</code>. It <em>"will still be sent with JavaScript-initiated requests"</em></td><td>XSS <strong>stealing</strong> the session</td><td>XSS <strong>using</strong> the session from inside the page. CSRF</td></tr>
+    <tr><td><code>Secure</code></td><td>Sent only over <code>https:</code> (localhost is exempt)</td><td>Network sniffing and MITM</td><td>Anything that happens in the browser</td></tr>
+    <tr><td><code>SameSite=Strict</code></td><td>Sent only on requests that start from the same site</td><td>Cross-site CSRF, including links</td><td>Attacks from a <strong>sibling subdomain</strong> (that's the same site). It also logs people out when they arrive from an external link</td></tr>
+    <tr><td><code>SameSite=Lax</code></td><td>Strict, except cross-site <em>top-level navigations</em> that use a <em>safe method</em> (GET)</td><td>Cross-site form POSTs, fetches, <code>&lt;img&gt;</code> and iframe requests</td><td>A <strong>GET that changes state</strong>, reached by a link. Sibling subdomains</td></tr>
+    <tr><td><code>SameSite=None</code></td><td>Sent on every request. Requires <code>Secure</code></td><td>Nothing</td><td>Any of the above</td></tr>
+    <tr><td>No <code>Domain</code></td><td>"Host-only": not sent to subdomains</td><td>Leaking to <code>*.example.com</code></td><td>Anything else</td></tr>
+    <tr><td><code>__Host-</code> name prefix</td><td>The browser only accepts the cookie if it has <code>Secure</code>, no <code>Domain</code> and <code>Path=/</code></td><td>A subdomain <strong>overwriting</strong> your cookie (this is how session fixation is done)</td><td>Anything else</td></tr>
+  </tbody>
+</table>
+
+<p>Two things to know about the defaults. MDN: <em>"Some browsers use <code>Lax</code> as the
+default value if <code>SameSite</code> is not specified"</em> (Chromium does). When Lax is only the
+default, cookies are still sent on cross-site <strong>POSTs for two minutes</strong> after they were
+set. So set the attribute explicitly. And OWASP, on using SameSite as your CSRF defence:
+<em>"useful as a defense-in-depth control but it does not replace a proper CSRF
+defense."</em></p>
+
+<h3>The actual CSRF defences (OWASP)</h3>
+
+<table>
+  <thead><tr><th>Defence</th><th>How it works</th><th>Fits</th></tr></thead>
+  <tbody>
+    <tr><td>Synchronizer token</td><td>The server issues a secret per session and puts it in a hidden field or header (<em>never</em> a cookie). It checks the token on every state-changing request</td><td>Server-rendered forms</td></tr>
+    <tr><td>Signed double-submit cookie</td><td>The token is an HMAC tied to the session and is sent both as a cookie and as a header. The server checks that they match</td><td>Stateless servers, SPAs</td></tr>
+    <tr><td>Fetch Metadata</td><td>The server reads <code>Sec-Fetch-Site</code> and rejects POST/PUT/PATCH/DELETE when the value is <code>cross-site</code>. Widely available since March 2023</td><td>Any server. Cheap to add</td></tr>
+    <tr><td>Custom request header</td><td>Require e.g. <code>X-CSRF-Token</code> (any value). A header forces a preflight, and your CORS policy only lets your own origins through</td><td>JSON APIs called by an SPA</td></tr>
+  </tbody>
+</table>
+
+<p>Two more OWASP points. <strong>Login CSRF</strong>: the login form needs protection too,
+because an attacker can log the victim in to the <em>attacker's</em> account. And <em>"XSS can
+defeat all CSRF mitigation techniques"</em>: script running in your origin can read the token and
+send the header.</p>
+
+<div class="predict" data-predict data-key="0006-flags">
+  <span class="predict-label">Apply, 4 minutes</span>
+  <p class="predict-prompt">A BFF session cookie is set as <code>sid=…; HttpOnly; Secure;
+  SameSite=Lax; Path=/</code> on <code>app.example.com</code>, with no other CSRF defence. That's
+  roughly where your current setup sits. For each attack, write <em>succeeds</em> or
+  <em>blocked</em>, and name the flag or rule that decides it:</p>
+  <ol class="predict-prompt">
+    <li><code>evil.com</code> auto-submits a form POST to <code>/api/projects/42/delete</code>.</li>
+    <li>The API also accepts <code>GET /api/projects/42/delete</code>, and <code>evil.com</code> shows a link to it that the user clicks.</li>
+    <li>The same GET URL, but in <code>&lt;img src&gt;</code> on <code>evil.com</code>.</li>
+    <li>A stored XSS on <code>blog.example.com</code> (another team's app) auto-submits the form POST from 1.</li>
+    <li>A stored XSS inside <code>app.example.com</code> runs <code>fetch("/api/projects/42", { method: "DELETE" })</code>.</li>
+  </ol>
+  <textarea class="predict-input" rows="6" placeholder="1. …&#10;2. …&#10;3. …&#10;4. …&#10;5. …"></textarea>
+  <button class="predict-btn">Reveal</button>
+  <div class="predict-answer" hidden>
+    <ol>
+      <li><strong>Blocked.</strong> It's a cross-site POST, and Lax doesn't send the cookie with
+      it.</li>
+      <li><strong>Succeeds.</strong> A link click is a top-level navigation with a safe method,
+      which is exactly Lax's exception. The bug is the state-changing GET. Fix that, not the
+      cookie.</li>
+      <li><strong>Blocked.</strong> An <code>&lt;img&gt;</code> is a subresource request, not a
+      top-level navigation.</li>
+      <li><strong>Succeeds.</strong> <code>blog.example.com</code> and
+      <code>app.example.com</code> are the <em>same site</em> (same registrable domain), so
+      SameSite doesn't apply. <code>Sec-Fetch-Site</code> would say <code>same-site</code>, so
+      a server that accepts only <code>same-origin</code> blocks it. So does a CSRF token.</li>
+      <li><strong>Succeeds, and no flag can stop it.</strong> The request is same-origin and
+      <code>HttpOnly</code> doesn't stop the cookie from being sent. This is the next
+      section.</li>
+    </ol>
+    <p>Score: one point for each correct verdict that names the right rule. A correct verdict
+    with no rule doesn't count, which is how lesson 5 graded decisions too.</p>
+  </div>
+</div>
+
+<h2>XSS: where the token is stored decides what gets stolen</h2>
+
+<p>RFC 10017 (<em>OAuth 2.0 for Browser-Based Applications</em>, BCP 212, August 2026) lists
+what attacker code can do once it runs in your app (§5.1):</p>
+
+<table>
+  <thead><tr><th>Payload</th><th>What it does</th><th>Who it works against</th></tr></thead>
+  <tbody>
+    <tr><td>Single-execution token theft</td><td>Reads the current tokens and sends them out</td><td>Tokens that JS can reach</td></tr>
+    <tr><td>Persistent token theft</td><td>Keeps stealing each new token (e.g. after every refresh)</td><td>Tokens that JS can reach</td></tr>
+    <tr><td>Acquisition of new tokens</td><td>Starts its own silent authorization flow in a hidden iframe and keeps the result</td><td><strong>Every app that gets its tokens in the browser</strong>, wherever it stores them</td></tr>
+    <tr><td>Proxying requests via the user's browser</td><td>Calls your API from inside the page while it's open</td><td><strong>Everyone</strong>, cookie sessions included</td></tr>
+  </tbody>
+</table>
+
+<p>On the last row, §5.1.4: <em>"It is commonly accepted that this scenario cannot be stopped or
+prevented by application-level security measures."</em> On storage, §8.5: localStorage
+<em>"does not protect against unauthorized access from malicious JavaScript"</em>, and of
+localStorage, sessionStorage and IndexedDB, <em>"none of these options can fully mitigate token
+exfiltration."</em> In-memory storage (§8.4) narrows the exposure, but code running in the same
+page can still get the token, for example by replacing <code>fetch</code> before your code calls
+it.</p>
+
+<blockquote><strong>The idea, once.</strong> No storage choice defeats XSS. What a storage
+choice decides is <em>what the attacker leaves with</em>. A token they can reach in JS works from
+their own machine, after the tab closes, until it expires. An <code>HttpOnly</code> session
+cookie only lets them act <em>through the open tab</em>, against <em>your</em> backend, where you
+can see it and end it. Stealing the token outright becomes using the session while the tab is
+open. The defence against XSS itself is not having XSS: React's escaping, no
+<code>dangerouslySetInnerHTML</code> on untrusted input, and a strict CSP as a second
+layer.</blockquote>
+
+<p>That CSP, as OWASP recommends it: <code>script-src 'nonce-{random}' 'strict-dynamic';
+object-src 'none'; base-uri 'none'</code>. Use a nonce or a hash, not a list of allowed domains.
+Allowlist policies have been shown to be routinely bypassable. OWASP is explicit that CSP
+<em>"should not be relied upon as the only defensive mechanism against XSS."</em></p>
+
+<div class="predict" data-predict data-key="0006-memory">
+  <span class="predict-label">Defend it, 3 minutes</span>
+  <p class="predict-prompt">A teammate's PR: <em>"Security fix: the access token moves from
+  localStorage into a React context, so XSS can't steal it."</em> Write your review comment: what
+  it actually improves, what it doesn't, and what you'd propose instead.</p>
+  <textarea class="predict-input" rows="5" placeholder="Improves: …&#10;Doesn't: …&#10;Instead: …"></textarea>
+  <button class="predict-btn">Reveal</button>
+  <div class="predict-answer" hidden>
+    <p><strong>Improves:</strong> the token no longer survives a reload or sits on disk, and a
+    generic script that dumps localStorage no longer finds it (§8.4: it "limits the
+    exposure").</p>
+    <p><strong>Doesn't:</strong> an attacker who targets this app can still get it: patch
+    <code>fetch</code> or a prototype and read the header as it goes out (theft), run a
+    silent flow to get a fresh token (acquisition), or simply call the API (proxying). The PR
+    title overclaims.</p>
+    <p><strong>Instead:</strong> if the data is sensitive, take tokens out of the browser
+    entirely. A BFF keeps the tokens on the server and gives the browser an
+    <code>HttpOnly</code> cookie. RFC 10017 §6.1.4.3 <em>"strongly recommended"</em> it for
+    business apps and anything that handles personal data. Add a strict CSP either way. A
+    Staff-level comment approves the small win and names the real fix.</p>
+  </div>
+</div>
+
+<h2>Sessions vs JWT: where the state lives</h2>
+
+<table>
+  <thead><tr><th></th><th>Server session (opaque ID in a cookie)</th><th>Self-contained JWT (verified by signature)</th></tr></thead>
+  <tbody>
+    <tr><td>State</td><td>In a server store, looked up by the ID</td><td>In the token. The server holds nothing</td></tr>
+    <tr><td>Per-request cost</td><td>A store lookup (e.g. Redis)</td><td>A signature check. No lookup</td></tr>
+    <tr><td>Revoke one user now</td><td><strong>Delete the session.</strong> The next request fails</td><td><strong>You can't.</strong> It's valid until <code>exp</code>, unless you keep a denylist keyed on <code>jti</code>, which brings back the lookup</td></tr>
+    <tr><td>Logout</td><td>Destroy it on the server (OWASP: invalidate <em>"on both sides, client and server"</em>)</td><td>The client throws the token away, and any copy of it still works</td></tr>
+    <tr><td>Scales across services</td><td>Needs a shared store</td><td>Any service holding the key can verify it</td></tr>
+    <tr><td>Session fixation</td><td>Issue a <strong>new ID at login</strong> (OWASP: renew <em>"after any privilege level change"</em>)</td><td>Not applicable. A new token is minted at login</td></tr>
+  </tbody>
+</table>
+
+<p>The usual answer is "both": short-lived JWT access tokens, so the revocation gap is minutes,
+and a refresh token or server session that <em>can</em> be revoked. That's lesson 7. For a
+session ID, OWASP asks for at least 64 bits of entropy, an idle timeout (2–5 min for high-value
+apps, 15–30 for low-risk ones) and an absolute timeout (typically 4–8 h).</p>
+
+<div class="predict" data-predict data-key="0006-revoke">
+  <span class="predict-label">Predict, 2 minutes</span>
+  <p class="predict-prompt">Security disables a compromised account at 10:00. The attacker's
+  credential was issued at 09:50. When does the attacker lose access with (a) a server session,
+  (b) a JWT with a 1-hour <code>exp</code> and no denylist, (c) a 5-minute access JWT plus a
+  refresh token that the server revokes at 10:00?</p>
+  <textarea class="predict-input" rows="3" placeholder="(a) …  (b) …  (c) …"></textarea>
+  <button class="predict-btn">Reveal</button>
+  <div class="predict-answer" hidden>
+    <p><strong>(a) 10:00</strong>, on their next request, if disabling the account deletes its
+    sessions. If it doesn't, you have the JWT problem with extra steps.
+    <strong>(b) 10:50.</strong> <strong>(c) No later than 10:05.</strong> The access token
+    issued at 09:50 died at 09:55, and the most recent refresh before 10:00 issued one that
+    lasts at most until 10:05. The refresh at that point fails. The trade-off is something you
+    can state as a number: <em>the access token's lifetime is the longest a revoked user keeps
+    access</em>.</p>
+  </div>
+</div>
+
+<h2>The sentence to have ready</h2>
+
+<div class="note">
+  <p><em>"No token storage survives XSS: attacker code in my origin can always call my API. So I
+  pick storage for what an attacker <strong>leaves with</strong>. With a BFF and an HttpOnly,
+  Secure, SameSite cookie, they leave with nothing usable off the page. The cookie brings CSRF
+  with it, so I add a real CSRF defence on top of SameSite: Fetch Metadata or a required
+  custom header. And I prevent the XSS itself with escaping and a strict CSP."</em></p>
+  <p>It covers both attacks, admits what nothing can stop, and says which defence is the
+  primary one and which is the extra layer. Interviewers listen for the last part.</p>
+</div>
+
+<h2>Retrieval check: the same question, now</h2>
+
+<p><strong>Set an 8-minute timer.</strong> Scroll so this lesson is off the screen. Answer each
+question out loud first, then write it down.</p>
+
+<div class="predict" data-predict data-key="0006-rc-store">
+  <span class="predict-label">1 · The cold question again</span>
+  <p class="predict-prompt">"Your SPA gets a token after login. Where do you keep it, and why?"
+  Then scroll up and compare it with your cold answer.</p>
+  <textarea class="predict-input" rows="5"></textarea>
+  <button class="predict-btn">Reveal rubric</button>
+  <div class="predict-answer" hidden>
+    <p>One point each: <strong>(1)</strong> says no storage survives XSS, and names proxying
+    · <strong>(2)</strong> frames the choice as what the attacker leaves with · <strong>(3)</strong>
+    proposes a BFF with an HttpOnly cookie, or justifies an alternative · <strong>(4)</strong> names
+    CSRF as the cost of cookies, with a primary defence that isn't only SameSite ·
+    <strong>(5)</strong> says how XSS itself is prevented (escaping, strict CSP).
+    <strong>Out of 5.</strong></p>
+  </div>
+</div>
+
+<div class="predict" data-predict data-key="0006-rc-csrf">
+  <span class="predict-label">2 · Explain CSRF to an engineer who's never heard of it</span>
+  <p class="predict-prompt">In four sentences or fewer: how it works, why CORS doesn't stop
+  it, and two defences.</p>
+  <textarea class="predict-input" rows="4"></textarea>
+  <button class="predict-btn">Reveal rubric</button>
+  <div class="predict-answer" hidden>
+    <p>One point each: the browser attaches cookies by <em>destination</em> · a simple request
+    (form POST) is sent with no preflight, and CORS only blocks reading the response · one
+    primary defence (token, Fetch Metadata or custom header) · SameSite named as defence in
+    depth. <strong>Out of 4.</strong></p>
+  </div>
+</div>
+
+<div class="quiz" data-quiz data-lesson="0006">
+
+<div class="q" data-track="csrf" data-answer="1">
+  <span class="q-num">Q1 · SameSite</span>
+  <p class="q-stem">The cookie is <code>HttpOnly; Secure; SameSite=Lax</code>. Which request
+  started on <code>evil.example</code> arrives <em>with</em> the cookie?</p>
+  <ul class="opts">
+    <li><button class="opt">An auto-submitted hidden form using POST</button></li>
+    <li><button class="opt">A top-level link click using GET</button></li>
+    <li><button class="opt">An img tag requesting a GET</button></li>
+    <li><button class="opt">A fetch call with credentials included</button></li>
+  </ul>
+  <div class="why" hidden><strong>The link click.</strong> Lax allows cross-site top-level
+  navigations that use a safe method. That's why a state-changing GET is a CSRF hole even with
+  Lax.</div>
+</div>
+
+<div class="q" data-track="xss" data-answer="1">
+  <span class="q-num">Q2 · XSS vs HttpOnly</span>
+  <p class="q-stem">Attacker script runs inside your SPA. The session is an
+  <code>HttpOnly</code> cookie. What can the attacker <em>not</em> do?</p>
+  <ul class="opts">
+    <li><button class="opt">Send API requests carrying the session</button></li>
+    <li><button class="opt">Read the session ID value itself</button></li>
+    <li><button class="opt">Read responses from your own API</button></li>
+    <li><button class="opt">Change what the user sees onscreen</button></li>
+  </ul>
+  <div class="why" hidden><strong>Read the value.</strong> That's the only thing
+  <code>HttpOnly</code> prevents. The cookie is still sent with the script's same-origin
+  requests, which is RFC 10017's "proxying" payload.</div>
+</div>
+
+<div class="q" data-track="csrf" data-answer="1">
+  <span class="q-num">Q3 · CORS</span>
+  <p class="q-stem"><code>evil.example</code> calls <code>fetch</code> on your API with
+  <code>credentials: "include"</code> and <code>Content-Type: application/json</code>. Your API has
+  no CORS configuration. Why doesn't the write happen?</p>
+  <ul class="opts">
+    <li><button class="opt">The browser strips cookies from every fetch</button></li>
+    <li><button class="opt">The preflight fails, so nothing is sent</button></li>
+    <li><button class="opt">The server rejects JSON from unknown origins</button></li>
+    <li><button class="opt">HttpOnly hides the cookie from the request</button></li>
+  </ul>
+  <div class="why" hidden><strong>The preflight fails.</strong> JSON isn't a simple content type,
+  so the browser asks first, and your API doesn't approve <code>evil.example</code>. If the
+  API also accepts <code>text/plain</code>, there's no preflight and the write happens.</div>
+</div>
+
+<div class="q" data-track="sessions" data-answer="1">
+  <span class="q-num">Q4 · Revocation</span>
+  <p class="q-stem">A user must be cut off immediately. The API uses stateless JWTs with a
+  1-hour <code>exp</code> and no denylist. When does access actually end?</p>
+  <ul class="opts">
+    <li><button class="opt">Immediately, once the account is deleted</button></li>
+    <li><button class="opt">When the token's exp claim passes</button></li>
+    <li><button class="opt">When the user closes the tab</button></li>
+    <li><button class="opt">When the browser clears local storage</button></li>
+  </ul>
+  <div class="why" hidden><strong>At <code>exp</code>.</strong> The API checks the signature and
+  never asks anyone. Any copy of the token works until then. Revoking it means a denylist
+  (state again), or short lifetimes with a refresh token that can be revoked.</div>
+</div>
+
+</div>
+
+<div class="note warn">
+  <p><strong>Bring three numbers to the next session:</strong> the cookie-flags drill (out of 5),
+  retrieval check 1 (out of 5), and retrieval check 2 + the quiz (out of 8). Paste your cold
+  answer and your final answer as well. The difference between them is the measurement.</p>
+</div>
+
+<div class="ask">
+  <p><strong>Ask me.</strong> If any reveal didn't convince you, for example why a sibling
+  subdomain counts as the same site, or why memory storage doesn't help, ask before lesson 7.
+  Lesson 7 builds on all of it.</p>
+</div>
+
+<h2>Read this</h2>
+<p><strong>Primary source:</strong> <a href="https://www.rfc-editor.org/rfc/rfc10017.html">RFC 10017</a>,
+§5.1 (the four payloads) and §6.1 (BFF). That's about 25 minutes, and lesson 7 starts from §6.
+Then the <a href="https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html">OWASP
+CSRF Prevention Cheat Sheet</a>, the defences part.</p>
+
+<h2>Sources</h2>
+<ul>
+  <li>IETF, <a href="https://www.rfc-editor.org/rfc/rfc10017.html">RFC 10017: OAuth 2.0 for Browser-Based Applications</a> (BCP 212, Aug 2026). §5.1 payloads, the quote from §5.1.4, §8.4 and §8.5 on storage, §6.1.4.3 on BFF recommended, §6 patterns "in decreasing order of security".</li>
+  <li>OWASP, <a href="https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html">CSRF Prevention Cheat Sheet</a>. The definition, the four defences, SameSite as defence in depth, login CSRF, "XSS can defeat all CSRF mitigation techniques".</li>
+  <li>OWASP, <a href="https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html">Session Management Cheat Sheet</a>. Session fixation and renewing the ID, 64-bit entropy, timeouts, invalidating on both sides, no credentials in web storage.</li>
+  <li>OWASP, <a href="https://cheatsheetseries.owasp.org/cheatsheets/JSON_Web_Token_Cheat_Sheet.html">JSON Web Token Cheat Sheet</a>. A denylist keyed on <code>jti</code> as the workaround for "stateless session" invalidation.</li>
+  <li>OWASP, <a href="https://cheatsheetseries.owasp.org/cheatsheets/Content_Security_Policy_Cheat_Sheet.html">Content Security Policy Cheat Sheet</a>. The strict CSP policy, and CSP not being the only defence.</li>
+  <li>MDN, <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Set-Cookie">Set-Cookie</a>. HttpOnly, Secure, SameSite values and defaults, the 2-minute POST exception, host-only cookies, <code>__Host-</code>.</li>
+  <li>MDN, <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CORS">CORS</a>. Simple-request conditions, simple requests are sent, the rules for credentialed requests.</li>
+  <li>MDN, <a href="https://developer.mozilla.org/en-US/docs/Glossary/Site">Site</a> and <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Sec-Fetch-Site">Sec-Fetch-Site</a>. Registrable domain, sibling subdomains being the same site, header values, Baseline since March 2023.</li>
+</ul>
+
+<footer class="nav">
+  <p><strong>This lesson targets:</strong> the auth area, unmeasured until now (STATE, inserted
+  2026-10-06). CSRF from zero. The XSS/storage argument a Staff screen asks you to defend.</p>
+  <ul>
+    <li><a href="0005-the-constraint-ledger.html">← Lesson 5</a></li>
+    <li><a href="../STATE.md">STATE.md</a></li>
+  </ul>
+</footer>
+
+</main>
+
+<script src="../assets/quiz.js"></script>
+<script src="../assets/predict.js"></script>
+</body>
+</html>
