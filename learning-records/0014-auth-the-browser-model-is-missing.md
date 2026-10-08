@@ -40,3 +40,10 @@ is sent. He credited `HttpOnly` with "preventing XSS" (it limits what XSS takes,
 prevent it). He asked for cookies to be explained from the beginning, which confirms finding 2.
 The mechanics were taught from zero in chat (what the browser attaches to a request, the four
 rules, same-origin policy, preflight).
+
+After teaching, a three-request check: he collapsed "request not sent" into "cookie not attached",
+treating SameSite as a request blocker. Taught it as two gates (gate 1: preflight/CORS decides
+whether the request is sent; gate 2: SameSite/Domain/Path/Secure decide whether the cookie goes
+with it). The next item was **3/3**: CORS that allows evil.example with credentials, and Lax. He
+also inferred unprompted that a legitimate cross-site credentialed integration needs
+`SameSite=None`. The model held for one item on the same day; retest it cold on another day.
