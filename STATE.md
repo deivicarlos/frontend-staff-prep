@@ -9,11 +9,15 @@ decisions in `MISSION.md` and `career/CAREER.md`._
 ## Next session
 
 **Global Relay interview prep until Fri 2026-10-16, 10:30 PDT** (30 min, Lead SWD, same posting as
-the 10-06 screen). Skill `career-session`. Plan in the prep file, section 4: Wed mock 1 (6 questions,
-answered out loud, he pastes the transcript + seconds; grade answer-first, ≤90 s, one number, stopped),
-Thu mock 2 (full 25-min run with follow-ups + cold internals/perf probes). First check whether he
-asked the recruiter for the pay range + work model (GR is Vancouver, likely on-site; public pay data is
-below his CAD 180k floor). After Friday: grade the interview from his recall, then resume S1 below.
+the 10-06 screen). Skill `career-session`. Pay and logistics are settled with the recruiter: don't raise them.
+Done 10-14/15: GR summary, Core Web Vitals, SPA/SSR (he has no SSR experience; knowing it is enough),
+security block 1 + BFF/tokens/SSO/multi-tenant, all in the prep file §2b–2g ([LR-0016](learning-records/0016-preflight-closed-csp-and-layers-open.md)).
+**Next (Thu 10-15):** (1) cold preflight re-check, E/F style, 2 scenarios. (2) Cold check on CSP rollout,
+email layers, session ID vs token. (3) **Mock**: Claude as Benjamin, mixed (opener, perf/CWV, state,
+security, a verbal design question like "a UI to review millions of archived messages"), follow-ups,
+grade on answer-first / correct / concise. Questions use only taught concepts. Don't end turns with
+"move on?". He says when.
+After Friday: grade the interview from his recall, then resume S1 below (block 1 partly covers it).
 
 ### Then (paused for the interview)
 
@@ -29,8 +33,6 @@ decides whether the cookie goes with it. `HttpOnly` is in neither. It only stops
 The target is 4/5+. Fold in what he asked on 2026-10-07: where a request without a cookie gets
 rejected (app auth middleware, not the load balancer), and why public APIs use header tokens.
 
-Tomorrow is the Friday system-design slot. Default to S1 anyway because the screen is live.
-Lesson 5 (RADIO, unworked) takes the next free design slot.
 
 ## Security, AuthN and AuthZ: zero to hero (his ask, 2026-10-08)
 
