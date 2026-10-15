@@ -1,11 +1,22 @@
 # State
 
-_Updated 2026-10-08. Lesson 6 graded and repaired. New rule: every lesson starts from zero.
+_Updated 2026-10-14. Interview Fri 2026-10-16 with Global Relay; prep in
+`career/private/2026-10-16-global-relay-prep.md`. Earlier: 2026-10-08. Lesson 6 graded and repaired. New rule: every lesson starts from zero.
 Security becomes a track ([LR-0015](learning-records/0015-from-zero-and-a-security-track.md)).
 Plan re-set 2026-09-24 ([LR-0012](learning-records/0012-reweight-to-what-screens-grade.md));
 decisions in `MISSION.md` and `career/CAREER.md`._
 
 ## Next session
+
+**Global Relay interview prep until Fri 2026-10-16, 10:30 PDT** (30 min, Lead SWD, same posting as
+the 10-06 screen). Skill `career-session`. Plan in the prep file, section 4: Wed mock 1 (6 questions,
+answered out loud, he pastes the transcript + seconds; grade answer-first, ≤90 s, one number, stopped),
+Thu mock 2 (full 25-min run with follow-ups + cold internals/perf probes). First check whether he
+asked the recruiter for the pay range + work model (GR is Vancouver, likely on-site; public pay data is
+below his CAD 180k floor). After Friday: grade the interview from his recall, then resume S1 below.
+
+### Then (paused for the interview)
+
 
 **Build Security track lesson S1** (he types `/teach browser security from zero`, then skill
 `build-lesson`). Start from zero, per the CLAUDE.md rule. S1 is the base that lesson 6 assumed
@@ -43,9 +54,8 @@ Passport + Auth0, express-session, `connect.sid` HttpOnly/Secure/Lax) is used on
 
 ## Live: a Staff React screen through a recruiter
 
-Five written answers done 2026-10-06 (`career/private/2026-10-06-staff-react-screen.md`: drafts,
-posting, questions). Prep targets this posting until he says otherwise. Still open: company,
-band, Canada eligibility (ask the recruiter).
+Company: **Global Relay** (Vancouver). Screen passed, 1st interview Fri 2026-10-16. Five written
+answers in `career/private/2026-10-06-staff-react-screen.md`. Open: pay band, on-site vs remote.
 
 ## Weekly rhythm (40–60 min a day; bends to his day)
 
