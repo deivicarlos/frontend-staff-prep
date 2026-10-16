@@ -1,42 +1,39 @@
 # State
 
-_Updated 2026-10-15. Interview Fri 2026-10-16 with Global Relay; prep in
-`career/private/2026-10-16-global-relay-prep.md`. Earlier: 2026-10-08. Lesson 6 graded and repaired. New rule: every lesson starts from zero.
+_Updated 2026-10-15 (evening). Earlier: 2026-10-08, every lesson starts from zero and
 Security becomes a track ([LR-0015](learning-records/0015-from-zero-and-a-security-track.md)).
 Plan re-set 2026-09-24 ([LR-0012](learning-records/0012-reweight-to-what-screens-grade.md));
 decisions in `MISSION.md` and `career/CAREER.md`._
 
 ## Next session
 
-**Global Relay interview prep until Fri 2026-10-16, 10:30 PDT** (30 min, Lead SWD, same posting as
-the 10-06 screen). Skill `career-session`. Pay and logistics are settled with the recruiter: don't raise them.
-Done 10-14/15: GR summary, Core Web Vitals, SPA/SSR (he has no SSR experience; knowing it is enough),
-security block 1 + BFF/tokens/SSO/multi-tenant, all in the prep file §2b–2g ([LR-0016](learning-records/0016-preflight-closed-csp-and-layers-open.md)).
-Done 10-15 ([LR-0017](learning-records/0017-internals-and-inp-cold-misses.md)): preflight held
-2/2, CSP rollout 3/3 on re-ask, internals/INP 2.5/7 cold → ~2.5/4 re-asked. Typed mocks dropped
-(his call): he rehearses out loud alone.
-**If he returns Fri before 10:30 PDT:** 10-min warm-up only: 5 one-line cold questions on the
-open items below, a correction for each miss, no new material. Then send him to prep §1 and §3.
-**Next (after Fri 10-16):** grade the interview from his recall: which questions came, which he
-froze on, what follow-ups Benjamin pushed. Then resume S1 below (block 1 partly covers it).
-Still open: INP's three phases, render vs commit + effect timing, key change = remount (not
-re-render), RUM behind login, CSP `script-src` nonce, email separate origin. Re-check cold if
-the interview leads to a 2nd round. Don't end turns with "move on?". He says when.
+**Global Relay 1st interview: Fri 2026-10-16, 10:30–11:00 PDT** (11:30 Calgary). Lead SWD Benjamin
+DeLong, same posting as the 10-06 screen. Prep: `career/private/2026-10-16-global-relay-prep.md`.
+Skill `career-session`. Pay and logistics are settled: don't raise them. Check today's date and time
+first, then pick:
+
+- **Before the interview:** a 10-min warm-up only. Ask 5 one-line cold questions on the open items
+  below, give a correction for each miss, no new material. Then send him to prep §1 and §3. No mocks.
+- **After the interview:** grade it from his recall: which questions came, where he froze, which
+  follow-ups Benjamin pushed. Write an LR, update the career status. Then resume S1 below.
+
+Open items (LR-0016, [LR-0017](learning-records/0017-internals-and-inp-cold-misses.md)): INP's three
+phases + fix for each, render vs commit + effect timing, key change = remount (not re-render), RUM
+behind login (Lighthouse can't measure INP), CSP `script-src` nonce + `strict-dynamic` (not URLs),
+archived email's separate origin.
+
+He may answer by voice dictation (macOS), so expect mistranscribed terms. Typed mocks are dropped
+(his call, 10-15): he rehearses out loud alone. Don't end turns with "move on?". He says when.
 
 ### Then (paused for the interview)
 
-
-**Build Security track lesson S1** (he types `/teach browser security from zero`, then skill
-`build-lesson`). Start from zero, per the CLAUDE.md rule. S1 is the base that lesson 6 assumed
-and he didn't have:
-HTTP request/response, origin vs site, how cookies are set, stored and attached (by destination,
-whoever starts the request), the same-origin policy, CORS and preflight. Teach it as **two gates**:
-gate 1, preflight/CORS, decides whether the request is sent. Gate 2, SameSite/Domain/Path/Secure,
-decides whether the cookie goes with it. `HttpOnly` is in neither. It only stops JS reading the cookie.
-**Retrieval check:** lesson 6's cookie-flags drill (5 attacks) and its retrieval check 1, cold.
-The target is 4/5+. Fold in what he asked on 2026-10-07: where a request without a cookie gets
-rejected (app auth middleware, not the load balancer), and why public APIs use header tokens.
-
+**Security lesson S1** (he types `/teach browser security from zero`, then skill `build-lesson`).
+From zero: HTTP request/response, origin vs site, how cookies are set/stored/attached (by
+destination), SOP, CORS and preflight, taught as **two gates** (gate 1 CORS/preflight: is it sent;
+gate 2 SameSite/Domain/Path/Secure: does the cookie go; HttpOnly is in neither). Most of this was
+taught in chat 10-14/15 (prep §2e–2f): build on it, don't repeat it. Retrieval: lesson 6's
+cookie-flags drill + check 1, cold, target 4/5+. Fold in: where a cookieless request is rejected
+(app auth middleware), why public APIs use header tokens.
 
 ## Security, AuthN and AuthZ: zero to hero (his ask, 2026-10-08)
 
@@ -58,15 +55,10 @@ RFC 9700 (OAuth security BCP) and OWASP API Top 10 before S5 and S7.
 Scope rule (2026-10-06): **teach the field, never VEERUM's code.** His setup (Node BFF,
 Passport + Auth0, express-session, `connect.sid` HttpOnly/Secure/Lax) is used only to place him.
 
-## Live: a Staff React screen through a recruiter
-
-Company: **Global Relay** (Vancouver). Screen passed, 1st interview Fri 2026-10-16. Five written
-answers in `career/private/2026-10-06-staff-react-screen.md`. Open: pay band, on-site vs remote.
-
 ## Weekly rhythm (40–60 min a day; bends to his day)
 
 Mon–Thu timed exercises · Fri frontend system design · Sat or Sun a career session. The security
-track takes the daily slot while the screen is live.
+track takes the daily slot while Global Relay is live.
 
 **System design is a track** (2026-10-06): Lesson 5 (RADIO, built, unworked) first. It is worked in
 ~30 min, and he brings the chat-channel drill score /4 and the quiz score /3. Grade decision 1 on picking cursor
@@ -96,10 +88,11 @@ absorbed into the security track.
 - No model of microtask ordering relative to effects (LR-0011).
 - A smooth rewrite isn't a checked one. Ask for evidence (LR-0011).
 - TypeScript is strong, but generics were a miss (Q14). React 19 knowledge is current.
+- Material read once, without application, falls out within 24 h (CWV/INP, LR-0017).
 
 ## Open, not yet scheduled
 
 - Request state as a discriminated union is unmeasured. Check it when the async layer appears.
 - Generics (Q14): fold into a component-API exercise.
 - `invalidateQueries` prefix matching missed in 0005 (LR-0013).
-- How he sounds out loud is unmeasured. Consider mock interviews.
+- How he sounds out loud is unmeasured. He rehearses alone; dictation could make mocks cheap.

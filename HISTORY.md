@@ -82,3 +82,10 @@ Alongside it sits the one knowledge axis still billing real minutes: **mechanica
 2. Done 2026-09-25. The "why IC" answer: write it with him, then he rehearses it out loud. The framing is agreed in
    `career/CAREER.md`.
 3. Dropped 2026-09-25 (he searches himself). A list of Canada-eligible target companies, built from `research/2026-canada-remote-eligibility.md`.
+
+## Moved from STATE 2026-10-15
+
+- GR prep done 10-14/15: GR summary, Core Web Vitals, SPA/SSR (no SSR experience; knowing it is
+  enough), security block 1 + BFF/tokens/SSO/multi-tenant, prep file §2b–2g (LR-0016).
+- 10-15: preflight held 2/2 overnight, CSP rollout 3/3 on re-ask, internals/INP 2.5/7 cold →
+  ~2.5/4 re-asked (LR-0017).
