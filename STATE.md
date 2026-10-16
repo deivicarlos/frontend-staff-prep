@@ -13,19 +13,19 @@ does it behave / how would you review it"; maybe a small build from scratch; an 
 may ask LeetCode. Likely the week of 10-19; plan as if it's **Tue 10-20**. Later: a senior leadership round.
 Pay confirmed CAD 180-200k + 4%. GR is building its AI code-review strategy: item 4 adds that answer. Skill `career-session` for GR; `build-exercise` for reps.
 
-**GR sprint (agreed 10-16; replaces the security track until the GR loop ends). The challenge round is the priority: items 1 and 3 first. Sat: 1 + 2. Sun: 3 + 1. Mon: 1 + 4 + 6.**
-1. **Code-review / predict-behaviour reps:** 15-20 min each, a React component with 3-5 planted
+**GR sprint (agreed 10-16; replaces the security track until the GR loop ends). The challenge round is the priority: items 1 and 3 first. Sat: 1 + 2. Sun: 3 + 1. Mon: 1 + 4 + 6.** He works in slots as they open, including before Sat: always tell him the length of the next item up front. If items run out before round 2, add more.
+1. **Code-review reps (30 min each incl. grading).** Rep 1 built: `exercises/0006-review-the-pr` (7 planted bugs, verified red/green with Playwright; grade with `AFTER-THE-TIMER.md`). Reps 2-3 to build: 15-20 min each, a React component with 3-5 planted
    bugs (stale closure, missing cleanup, wrong deps, key misuse, effect ordering, race, derived
    state). He answers out loud: what renders, what breaks, the fix. This is queue item 3, moved up.
-2. **JS fundamentals predict-the-output drill, cold:** `this` (4 call-site rules + arrows +
+2. **JS fundamentals drill (20 min):** `this` (4 call-site rules + arrows +
    lost `this` in callbacks), `==` coercion, closures in loops, hoisting/TDZ, event loop order
    (LR-0011 gap), promises/async.
-3. **A from-scratch build in 45 min** (Vite + React + TS: fetch, list, filter, loading/error). Exercise 0006, reshaped.
-4. **Three Staff answers out loud:** reviewing AI-written code (team policy), migrating a legacy JS framework to React (strangler, React
+3. **A from-scratch build (45 min + 15 grading)** (Vite + React + TS: fetch, list, filter, loading/error). Exercise 0006, reshaped.
+4. **Three Staff answers out loud (10 min each):** reviewing AI-written code (team policy), migrating a legacy JS framework to React (strangler, React
    islands, a shared design system, a Playwright safety net), and Redux to TanStack Query (to make
    his round-1 claim defensible; see `career/private/2026-10-16-global-relay-debrief.md`).
 5. Fix the 6 s to 3 s story's cause (TTI was removed in Lighthouse 10; re-renders don't move a load metric).
-6. LeetCode: only easy/medium arrays, hashmaps, strings, and only if the recruiter confirms it.
+6. LeetCode (25 min per problem): only easy/medium arrays, hashmaps, strings, and only if the recruiter confirms it.
 
 Open recall items (LR-0016/17, warm-up 10-16 ~2/5): INP phase 2 (processing), useEffect runs
 *after* paint, RUM behind login, CSP nonce + `strict-dynamic`. Fold them into the reps; no more CSP drilling.
@@ -77,7 +77,7 @@ system, news feed, chat. Confirm the order against `research/2026-hiring-landsca
 
 ## Queue after the security track (agreed 2026-09-26)
 
-1. Exercise 0006: an evolving, AI-allowed build (grid robot, three requirement drops).
+1. Exercise 0007+: an evolving, AI-allowed build (grid robot, three requirement drops).
 2. JS utilities drill, no AI, 25 min (debounce/throttle, Promise.all, event emitter).
 3. Code review exercise: a flawed PR diff against a clock.
 4. Lesson 4: rendering, hooks and the event loop (LR-0011).
