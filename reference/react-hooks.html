@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>React Hooks Reference</title>
+<link rel="stylesheet" href="../assets/course.css">
+</head>
+<body>
+
+<header>
+  <h1>React hooks, one page</h1>
+  <p class="subtitle">Beyond <code>useState</code> and <code>useEffect</code>: what each hook is
+  for, the trap, and when not to use it. React 19.2.</p>
+  <p class="meta">Reference · from <a href="../lessons/0007-why-did-it-render.html">lesson 7</a> and <a href="../lessons/0008-when-it-runs.html">lesson 8</a></p>
+</header>
+
+<main>
+
+<h2>The two models underneath</h2>
+<p><strong>Render triggers:</strong> its own state was set · its parent rendered · a context it reads changed.
+Props changing isn't a trigger on its own. React compares with <code>Object.is</code>, and
+<code>{}</code>, <code>[]</code> and <code>() =&gt; {}</code> are new on every render.</p>
+<p><strong>One frame:</strong> handler → render → commit → <code>useLayoutEffect</code> →
+<strong>paint</strong> → <code>useEffect</code> (usually; it may run before the paint when an interaction caused it).</p>
+
+<h2>The hooks</h2>
+<table class="prose">
+  <thead><tr><th>Hook</th><th>For</th><th>Trap</th></tr></thead>
+  <tbody>
+    <tr><td><code>memo(C)</code></td><td>Skipping a child's render when every prop is <code>Object.is</code>-equal</td><td>Useless with inline objects or functions. Doesn't stop own-state or context renders</td></tr>
+    <tr><td><code>useMemo</code></td><td>Caching a computed <strong>result</strong>, or keeping an object prop stable</td><td>Pointless without an expensive calculation, a <code>memo</code> child or a dependency array that reads it</td></tr>
+    <tr><td><code>useCallback</code></td><td>Caching the <strong>function itself</strong> for a <code>memo</code> child or an effect's deps</td><td>On a plain DOM element it does nothing</td></tr>
+    <tr><td><code>useRef</code></td><td>A DOM handle, or a value handlers need but the screen doesn't (timer, controller, socket)</td><td>Changing it doesn't render. Don't read or write it during render</td></tr>
+    <tr><td><code>useEffectEvent</code></td><td>Reading the latest props and state inside an effect without restarting it</td><td>Not for silencing the lint rule. Never in deps, never passed to children</td></tr>
+    <tr><td><code>useLayoutEffect</code></td><td>Measuring the layout and correcting it before the paint (tooltip, popover)</td><td>Blocks the paint. Use <code>useEffect</code> otherwise</td></tr>
+    <tr><td><code>useTransition</code></td><td>Marking a <code>setState</code> you own as non-urgent and interruptible. <code>isPending</code></td><td>Never on the state that controls a text input. Wrap setState after <code>await</code> in another <code>startTransition</code></td></tr>
+    <tr><td><code>useDeferredValue</code></td><td>Rendering a slow child with a lagging copy of a value you receive</td><td>The child must be <code>memo</code>. It isn't a debounce, so keep debouncing network calls</td></tr>
+    <tr><td><code>useSyncExternalStore</code></td><td>Reading a store outside React (legacy app, browser API) without tearing</td><td><code>getSnapshot</code> must return the same value while nothing changed. Keep <code>subscribe</code> stable</td></tr>
+    <tr><td><code>useActionState</code></td><td><code>[state, dispatch, isPending]</code> for a form or mutation. Calls run one after another</td><td>Call <code>dispatch</code> from <code>&lt;form action&gt;</code> or <code>startTransition</code></td></tr>
+    <tr><td><code>useOptimistic</code></td><td>Showing the expected result while an Action runs. It reverts on its own</td><td>Call the setter inside an Action</td></tr>
+    <tr><td><code>use</code></td><td>Reading a promise (with Suspense) or a context, even inside an <code>if</code></td><td>The promise must be cached, not created during render</td></tr>
+    <tr><td><code>useReducer</code></td><td>Several state fields that change together, through named actions</td><td>The reducer must be pure</td></tr>
+    <tr><td><code>useContext</code></td><td>Values that change rarely (theme, user, flags)</td><td>Every consumer renders when the value changes</td></tr>
+    <tr><td><code>useId</code></td><td>Stable unique IDs for <code>aria-*</code> and <code>htmlFor</code></td><td>Not for list keys</td></tr>
+  </tbody>
+</table>
+
+<p>React Compiler 1.0 (October 2025) inserts <code>memo</code>, <code>useMemo</code> and
+<code>useCallback</code> automatically. Without the compiler, first move state down or pass
+<code>children</code>.</p>
+
+<div class="note">
+  <p><strong>Sentence to have ready:</strong> <em>"Dependencies decide when an effect re-runs.
+  <code>memo</code> decides whether a child skips its parent's render, and identity decides both.
+  The rest is timing: layout effects before the paint, transitions after the urgent update."</em></p>
+</div>
+
+<div class="task">
+  <h3>Cold recall · 3 minutes</h3>
+  <p>Cover the table. On paper, write the 12 hooks from <code>memo</code> to <code>use</code>,
+  each with its trap in five words or fewer. Then check against the table. Every missing trap is the
+  one to reread.</p>
+</div>
+
+<footer class="nav">
+  <ul>
+    <li><a href="../lessons/0007-why-did-it-render.html">Lesson 7</a></li>
+    <li><a href="../lessons/0008-when-it-runs.html">Lesson 8</a></li>
+  </ul>
+</footer>
+
+</main>
+</body>
+</html>

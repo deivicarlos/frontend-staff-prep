@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lesson 8 — When It Runs</title>
+<link rel="stylesheet" href="../assets/course.css">
+</head>
+<body>
+
+<header>
+  <h1>When it runs</h1>
+  <p class="subtitle">One interaction, one frame. <code>useLayoutEffect</code> runs before the
+  paint, transitions push work after it, <code>useSyncExternalStore</code> brings outside data
+  in, and React 19's Actions handle the wait for the server.</p>
+  <p class="meta">Lesson 08 · Hooks, part 2 of 2 · ~30 minutes · <a href="0007-why-did-it-render.html">← Part 1</a></p>
+</header>
+
+<main>
+
+<h2>1 · The mechanism: what happens between a click and the next frame</h2>
+
+<p>The browser has one main thread. While your JS runs, nothing paints. This is the order for
+one state update
+(<a href="https://react.dev/learn/render-and-commit">Render and Commit</a>,
+<a href="https://react.dev/reference/react/useLayoutEffect">useLayoutEffect</a>,
+<a href="https://react.dev/reference/react/useEffect">useEffect</a>):</p>
+
+<table class="prose">
+  <thead><tr><th>Step</th><th>What happens</th><th>Paint blocked?</th></tr></thead>
+  <tbody>
+    <tr><td>1 · Event handler</td><td>Your <code>onClick</code> runs and calls <code>setState</code></td><td>yes</td></tr>
+    <tr><td>2 · Render</td><td>React calls the components and works out the difference</td><td>yes</td></tr>
+    <tr><td>3 · Commit</td><td>React writes the changes to the DOM</td><td>yes</td></tr>
+    <tr><td>4 · <code>useLayoutEffect</code></td><td>Runs now. State set here re-renders <strong>before</strong> the paint</td><td>yes</td></tr>
+    <tr><td>5 · Paint</td><td>The user sees the new frame. This is where INP stops counting</td><td>—</td></tr>
+    <tr><td>6 · <code>useEffect</code></td><td>Usually runs here, <strong>after</strong> the paint</td><td>no</td></tr>
+  </tbody>
+</table>
+
+<div class="note warn">
+  <p><strong>The precise version of step 6.</strong> "If your Effect wasn't caused by an
+  interaction (like a click), React will generally let the browser paint the updated screen
+  first." If it <em>was</em> caused by an interaction, "React may run your Effect before the
+  browser paints" (<a href="https://react.dev/reference/react/useEffect">useEffect</a>). For
+  interviews: "<code>useEffect</code> doesn't block the paint. <code>useLayoutEffect</code>
+  always does."</p>
+</div>
+
+<h2>2 · <code>useLayoutEffect</code>: measure before the user sees it</h2>
+
+<p>It exists for one job: read the layout (a size or position) and fix the output <em>before</em>
+the first paint. The classic case is a tooltip that has to flip above its trigger when there's
+no room below.</p>
+
+<div class="predict" data-predict data-key="0008-layout">
+  <span class="predict-label">Predict, then reveal</span>
+  <p class="predict-prompt">The tooltip renders below, measures its height in an effect, and
+  sets state to move above when it doesn't fit. Using <code>useEffect</code>, what does the user
+  see? What changes with <code>useLayoutEffect</code>, and what does that cost?</p>
+  <textarea class="predict-input" placeholder="useEffect: …&#10;useLayoutEffect: …&#10;Cost: …"></textarea>
+  <button class="predict-btn">Reveal</button>
+  <div class="predict-answer" hidden>
+    <p><strong>With <code>useEffect</code>: a flicker.</strong> The browser paints the tooltip
+    below, then the effect's state update moves it above in the next frame.</p>
+    <p><strong>With <code>useLayoutEffect</code>: no flicker.</strong> React "guarantees that
+    the code inside <code>useLayoutEffect</code> and any state updates scheduled inside it will
+    be processed before the browser repaints." The first position never reaches the screen.</p>
+    <p><strong>The cost:</strong> the paint waits for both renders. "When used excessively, this
+    makes your app slow. When possible, prefer <code>useEffect</code>"
+    (<a href="https://react.dev/reference/react/useLayoutEffect">useLayoutEffect</a>).</p>
+  </div>
+</div>
+
+<h2>3 · <code>useTransition</code> and <code>useDeferredValue</code>: urgent first, the rest later</h2>
+
+<p>Some updates are <strong>urgent</strong>: the character the user just typed has to appear
+now. Others aren't, like re-filtering 20,000 rows. Both hooks mark the second kind as
+interruptible: React renders it in the background and drops it if a newer update arrives. This is
+the fix for INP's <strong>processing</strong> phase.</p>
+
+<table class="prose">
+  <thead><tr><th></th><th><code>useTransition</code></th><th><code>useDeferredValue</code></th></tr></thead>
+  <tbody>
+    <tr><td>You have</td><td>the <strong>setState call</strong></td><td>only the <strong>value</strong> (it's a prop, or comes from a hook you don't control)</td></tr>
+    <tr><td>Shape</td><td><code>const [isPending, startTransition] = useTransition()</code><br><code>startTransition(() =&gt; setTab(t))</code></td><td><code>const deferred = useDeferredValue(query)</code><br>pass <code>deferred</code> to the slow child</td></tr>
+    <tr><td>Pending signal</td><td><code>isPending</code></td><td><code>query !== deferred</code></td></tr>
+    <tr><td>Trap</td><td>Can't wrap the state that controls a text input. "Transition updates can't be used to control text inputs"</td><td>The slow child must be <code>memo</code>, or it renders anyway and the hook does nothing</td></tr>
+  </tbody>
+</table>
+
+<p><strong>Not a debounce.</strong> A debounce waits a fixed delay and then still blocks while it
+renders. A deferred render has no delay, keeps up with fast devices, and "is interruptible by
+default" (<a href="https://react.dev/reference/react/useDeferredValue">useDeferredValue</a>,
+<a href="https://react.dev/reference/react/useTransition">useTransition</a>). Keep debouncing for
+<strong>network</strong> calls. A transition makes rendering cheaper; it doesn't reduce requests.</p>
+
+<div class="predict" data-predict data-key="0008-defer">
+  <span class="predict-label">Predict, then reveal</span>
+  <p class="predict-prompt">A search input filters a 20,000-row archive table on every keystroke,
+  and typing lags. The input's state and the table are in the same component. Write the fix in
+  three or four lines.</p>
+  <textarea class="predict-input" placeholder="const … = …&#10;&lt;Table … /&gt;&#10;Table must be …"></textarea>
+  <button class="predict-btn">Reveal</button>
+  <div class="predict-answer" hidden>
+<pre><code>const [query, setQuery] = useState("");
+const deferredQuery = useDeferredValue(query);
+&lt;input value={query} onChange={(e) =&gt; setQuery(e.target.value)} /&gt;
+&lt;Table query={deferredQuery} /&gt;           // Table = memo(...)
+{query !== deferredQuery &amp;&amp; &lt;Spinner /&gt;}</code></pre>
+    <p>The input renders with the new <code>query</code> straight away. <code>Table</code>
+    still gets the old <code>deferredQuery</code>, so <code>memo</code> skips it. Then React
+    renders the table in the background, and another keystroke restarts that render. You could
+    use <code>useTransition</code> instead, with a second state for the table query set inside
+    <code>startTransition</code>, but never for the input's own state. Virtualizing the table
+    is still the bigger win at 20,000 rows.</p>
+  </div>
+</div>
+
+<h2>4 · <code>useSyncExternalStore</code>: bringing a non-React store into React</h2>
+
+<p>Data that lives outside React includes a legacy app's store, a WebSocket cache, and
+<code>navigator.onLine</code>. When a migration puts React components inside an old app, this is
+the bridge: React subscribes to the store, reads a snapshot, and renders when the snapshot changes
+(<a href="https://react.dev/reference/react/useSyncExternalStore">useSyncExternalStore</a>).</p>
+
+<pre><code>// outside the component, so the function's identity is stable
+function subscribe(cb) { return legacyStore.on("change", cb); }   // returns unsubscribe
+function getSnapshot() { return legacyStore.getState().selectedId; }
+
+function Inspector() {
+  const selectedId = useSyncExternalStore(subscribe, getSnapshot);
+}</code></pre>
+
+<p>You've already used it: the request log in exercise 0006 is
+<code>useSyncExternalStore(log.subscribe, log.get)</code>. The two rules:</p>
+<ul>
+  <li><strong><code>getSnapshot</code> returns the same value while the store hasn't
+  changed</strong>, compared with <code>Object.is</code>. Returning a new object every call means
+  "you will enter an infinite loop".</li>
+  <li><strong><code>subscribe</code> keeps the same identity.</strong> Define it outside the
+  component. A new function on every render makes React re-subscribe every time.</li>
+</ul>
+<p>Use React state when you can. This hook is "mostly useful if you need to integrate with
+existing non-React code". In other words, migrations.</p>
+
+<div class="predict" data-predict data-key="0008-uses">
+  <span class="predict-label">Predict, then reveal</span>
+  <p class="predict-prompt">What goes wrong here?</p>
+  <pre><code>const user = useSyncExternalStore(subscribe, () =&gt; ({ ...store.user }));</code></pre>
+  <textarea class="predict-input" placeholder="…"></textarea>
+  <button class="predict-btn">Reveal</button>
+  <div class="predict-answer" hidden>
+    <p><strong>An infinite loop.</strong> Every call returns a new object, so React always sees a
+    change. Return <code>store.user</code> itself, provided the store replaces it on change instead of mutating it, or
+    cache the last snapshot and return it until the store changes.</p>
+  </div>
+</div>
+
+<h2>5 · React 19 Actions: waiting on the server</h2>
+
+<p>An <strong>Action</strong> is an async function run inside a transition. React tracks it as
+pending, and while it runs the UI stays responsive (<a href="https://react.dev/blog/2024/12/05/react-19">React 19</a>).</p>
+
+<table class="prose">
+  <thead><tr><th>API</th><th>What it does</th><th>The one rule</th></tr></thead>
+  <tbody>
+    <tr><td><code>useActionState(fn, initial)</code></td><td>Returns <code>[state, dispatch, isPending]</code>. <code>fn(prevState, payload)</code> returns the next state. Calls run <strong>one after another</strong></td><td>Call <code>dispatch</code> from <code>&lt;form action&gt;</code> or inside <code>startTransition</code></td></tr>
+    <tr><td><code>useOptimistic(value)</code></td><td>Shows the expected result <strong>immediately</strong> while the Action runs, then switches back to the real <code>value</code> when it ends</td><td>Call the setter inside an Action</td></tr>
+    <tr><td><code>use(promise | context)</code></td><td>Reads a promise, suspending until it resolves (Suspense shows the fallback). Reads context, and is allowed inside <code>if</code> statements</td><td>The promise must be cached. One created during render "is recreated on every render"</td></tr>
+  </tbody>
+</table>
+
+<p>On failure, <code>useOptimistic</code> needs no rollback code. The real <code>value</code>
+never changed, so the UI "shows what it showed before"
+(<a href="https://react.dev/reference/react/useOptimistic">useOptimistic</a>). For a Vite SPA
+without a framework, TanStack Query still handles server data. These hooks fit forms and
+mutations (<a href="https://react.dev/reference/react/useActionState">useActionState</a>,
+<a href="https://react.dev/reference/react/use">use</a>).</p>
+
+<div class="task">
+  <h3>Do it · 10 minutes</h3>
+  <p>In <code>exercises/0006-review-the-pr/src/ReviewQueue.tsx</code>:</p>
+  <ol>
+    <li>Fix <code>toggleFlag</code> so <code>messages</code> updates only <strong>after</strong>
+    <code>setFlag</code> resolves, as a new array. Now the badge waits for the server.</li>
+    <li>Add <code>useOptimistic(messages, reducer)</code>. Render the list from the optimistic
+    value, and call its setter inside <code>startTransition(async () =&gt; { … })</code>, before
+    the <code>await</code>. Wrap the <code>setMessages</code> after the <code>await</code> in its
+    own <code>startTransition</code>
+    (<a href="https://react.dev/reference/react/useTransition">a documented limitation</a>).</li>
+  </ol>
+  <p><strong>Done when</strong> clicking Flag shows FLAGGED at once, the log shows the
+  <code>PATCH</code> going to <code>200</code>, and the badge stays.</p>
+</div>
+
+<h2>6 · Cold check</h2>
+
+<div class="predict" data-predict data-key="0008-cold">
+  <span class="predict-label">From memory</span>
+  <p class="predict-prompt">List the six steps from a click to <code>useEffect</code>, and mark
+  which ones block the paint. Then: when do you pick <code>useTransition</code> over
+  <code>useDeferredValue</code>?</p>
+  <textarea class="predict-input" placeholder="1. …&#10;…&#10;6. …&#10;Transition when …"></textarea>
+  <button class="predict-btn">Reveal</button>
+  <div class="predict-answer" hidden>
+    <p>Handler → render → commit → <code>useLayoutEffect</code> → <strong>paint</strong> →
+    <code>useEffect</code>. The first four block the paint. <code>useEffect</code> usually runs after
+    it, but may run before it when an interaction caused it.</p>
+    <p><code>useTransition</code> when you own the <code>setState</code> call.
+    <code>useDeferredValue</code> when you only receive the value. Neither goes on the input's own
+    state.</p>
+  </div>
+</div>
+
+<div class="quiz" data-quiz data-lesson="0008">
+
+<div class="q" data-answer="3">
+  <span class="q-num">Q1 · layout</span>
+  <p class="q-stem">A popover must measure its own width and clamp to the viewport with no visible jump.
+  Where does the measurement go?</p>
+  <ul class="opts">
+    <li><button class="opt">In the render body using a ref</button></li>
+    <li><button class="opt">In useEffect with an empty array</button></li>
+    <li><button class="opt">In a startTransition after the click</button></li>
+    <li><button class="opt">In useLayoutEffect before the paint</button></li>
+  </ul>
+  <div class="why" hidden><strong><code>useLayoutEffect</code>.</strong> The DOM exists by then and the
+  paint hasn't happened. You can't read refs during render, and <code>useEffect</code> may paint first.</div>
+</div>
+
+<div class="q" data-answer="0">
+  <span class="q-num">Q2 · deferred</span>
+  <p class="q-stem">You added <code>useDeferredValue</code>, but typing still lags. The slow
+  list is a plain component. Most likely cause?</p>
+  <ul class="opts">
+    <li><button class="opt">The list is not wrapped in memo</button></li>
+    <li><button class="opt">The deferred value needs a timeout</button></li>
+    <li><button class="opt">The input state needs a transition</button></li>
+    <li><button class="opt">The list needs its own useEffect</button></li>
+  </ul>
+  <div class="why" hidden><strong>No <code>memo</code>.</strong> The parent's urgent render
+  renders the list anyway, with the old value, and that's the expensive part.</div>
+</div>
+
+<div class="q" data-answer="2">
+  <span class="q-num">Q3 · external store</span>
+  <p class="q-stem">The page freezes with "Maximum update depth exceeded" after you add
+  <code>useSyncExternalStore</code>. The first thing to check is…</p>
+  <ul class="opts">
+    <li><button class="opt">whether subscribe returns an unsubscribe function</button></li>
+    <li><button class="opt">whether the store emits change events too often</button></li>
+    <li><button class="opt">whether getSnapshot returns a new object each time</button></li>
+    <li><button class="opt">whether the component is wrapped inside a memo</button></li>
+  </ul>
+  <div class="why" hidden><strong><code>getSnapshot</code>.</strong> A new object each call
+  means every check looks like a change, so it renders forever.</div>
+</div>
+
+<div class="q" data-answer="1">
+  <span class="q-num">Q4 · optimistic</span>
+  <p class="q-stem">The Flag request fails. With <code>useOptimistic</code>, what has to happen
+  to undo the badge?</p>
+  <ul class="opts">
+    <li><button class="opt">Call the optimistic setter again with false</button></li>
+    <li><button class="opt">Nothing, it reverts to the real value</button></li>
+    <li><button class="opt">Catch the error and reset the state</button></li>
+    <li><button class="opt">Abort the transition from inside the catch</button></li>
+  </ul>
+  <div class="why" hidden><strong>Nothing.</strong> The optimistic value only shows while
+  the Action runs. When it ends, React renders the real <code>value</code>, which never changed.
+  You still show an error message.</div>
+</div>
+
+</div>
+
+<div class="note">
+  <p><strong>Sentence to have ready:</strong> <em>"Layout effects run before the paint and block
+  it, so I only use them to measure. For a slow screen I keep the input urgent and push the
+  expensive render into a transition, or defer the value into a memoized child. That targets INP's
+  processing phase. When React sits inside a legacy app, <code>useSyncExternalStore</code> is how
+  React components read the old store without tearing."</em></p>
+</div>
+
+<div class="ask">
+  <p><strong>Ask me.</strong> Bring the quiz score out of 4, your cold check as first written,
+  and the <code>useOptimistic</code> diff. If transitions vs deferred values still feels
+  arbitrary, say so.</p>
+</div>
+
+<h2>Read this</h2>
+<p><strong>Primary source:</strong> <a href="https://react.dev/reference/react/useDeferredValue">react.dev,
+useDeferredValue</a>, the "How does deferring a value work under the hood?" box and the debounce
+comparison (10 minutes).</p>
+
+<h2>Sources</h2>
+<ul>
+  <li>react.dev, <a href="https://react.dev/reference/react/useLayoutEffect">useLayoutEffect</a>. Runs before the repaint, blocks the paint, the tooltip example, "prefer useEffect".</li>
+  <li>react.dev, <a href="https://react.dev/reference/react/useEffect">useEffect</a>. Usually after the paint; may run before it when an interaction caused it.</li>
+  <li>react.dev, <a href="https://react.dev/reference/react/useTransition">useTransition</a>. <code>isPending</code>, interruptible, not for text inputs, wrap setState after <code>await</code>.</li>
+  <li>react.dev, <a href="https://react.dev/reference/react/useDeferredValue">useDeferredValue</a>. Two renders, interruptible, needs <code>memo</code>, compared with debounce/throttle.</li>
+  <li>react.dev, <a href="https://react.dev/reference/react/useSyncExternalStore">useSyncExternalStore</a>. A stable snapshot (infinite loop otherwise), a stable subscribe, integrating with non-React code.</li>
+  <li>react.dev, <a href="https://react.dev/reference/react/useActionState">useActionState</a>, <a href="https://react.dev/reference/react/useOptimistic">useOptimistic</a>, <a href="https://react.dev/reference/react/use">use</a>. Signatures, sequential calls, reverting, cached promises.</li>
+</ul>
+
+<footer class="nav">
+  <p><strong>This lesson targets:</strong> effect timing and INP's processing phase (open since
+  LR-0017), plus the migration bridge GR's Archive rewrite needs.</p>
+  <ul>
+    <li><a href="0007-why-did-it-render.html">← Lesson 7</a></li>
+    <li><a href="../reference/react-hooks.html">Hooks reference sheet</a></li>
+  </ul>
+</footer>
+
+</main>
+
+<script src="../assets/quiz.js"></script>
+<script src="../assets/predict.js"></script>
+</body>
+</html>

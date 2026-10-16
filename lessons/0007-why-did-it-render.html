@@ -1,0 +1,344 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lesson 7 — Why Did It Render</title>
+<link rel="stylesheet" href="../assets/course.css">
+</head>
+<body>
+
+<header>
+  <h1>Why did it render?</h1>
+  <p class="subtitle">Three things make a component render. <code>memo</code>,
+  <code>useMemo</code> and <code>useCallback</code> only touch one of them. <code>useRef</code>
+  and <code>useEffectEvent</code> are how you keep a value without starting one.</p>
+  <p class="meta">Lesson 07 · Hooks, part 1 of 2 · ~30 minutes · <a href="0008-when-it-runs.html">Part 2 →</a></p>
+</header>
+
+<main>
+
+<h2>1 · The mechanism: what a render is</h2>
+
+<p>A <strong>render</strong> is React calling your component function to get a new description
+of the UI. Then React compares it with the previous one and changes the DOM only where they
+differ. That second step is the <strong>commit</strong>. A render that produces the same output
+touches no DOM at all
+(<a href="https://react.dev/learn/render-and-commit">react.dev, Render and Commit</a>).</p>
+
+<p>A component renders for exactly three reasons:</p>
+
+<table class="prose">
+  <thead><tr><th>Trigger</th><th>Detail</th></tr></thead>
+  <tbody>
+    <tr><td>1 · Its own state was set</td><td>To a value that isn't <code>Object.is</code>-equal to the current one. Setting the same value skips the render.</td></tr>
+    <tr><td>2 · Its parent rendered</td><td>Every child renders by default, <strong>whether or not its props changed</strong>.</td></tr>
+    <tr><td>3 · A context it reads changed</td><td>Every consumer of that context renders.</td></tr>
+  </tbody>
+</table>
+
+<p><strong>"Its props changed" is not on the list.</strong> Props only change because the parent
+rendered, which is trigger 2, and that already renders the child anyway. This is the part people get
+wrong (<a href="https://www.developerway.com/posts/react-re-renders-guide">Developer Way,
+re-renders guide</a>).</p>
+
+<p>The second idea everything here depends on is <strong>identity</strong>. React compares
+with <code>Object.is</code>: <code>Object.is(3, 3)</code> is true, but
+<code>Object.is({}, {})</code> is false
+(<a href="https://react.dev/reference/react/memo">react.dev, memo</a>). Every
+<code>{…}</code>, <code>[…]</code> and <code>() =&gt; …</code> written in a component body is a
+<strong>new object on every render</strong>, even when its contents are identical.</p>
+
+<div class="predict" data-predict data-key="0007-triggers">
+  <span class="predict-label">Predict, then reveal</span>
+  <p class="predict-prompt">You click the button once. Which of <code>Header</code>,
+  <code>List</code> and <code>Footer</code> render? Then: if all three were wrapped in
+  <code>memo</code>, which would render?</p>
+  <pre><code>function Page() {
+  const [count, setCount] = useState(0);
+  const [items] = useState(["a", "b"]);
+  return (
+    &lt;&gt;
+      &lt;button onClick={() =&gt; setCount(count + 1)}&gt;{count}&lt;/button&gt;
+      &lt;Header /&gt;
+      &lt;List items={items} /&gt;
+      &lt;Footer style={{ color: "gray" }} /&gt;
+    &lt;/&gt;
+  );
+}</code></pre>
+  <textarea class="predict-input" placeholder="Without memo: …&#10;With memo: …&#10;Because: …"></textarea>
+  <button class="predict-btn">Reveal</button>
+  <div class="predict-answer" hidden>
+    <p><strong>Without memo: all three.</strong> <code>Page</code>'s state changed (trigger 1),
+    so every child renders (trigger 2). <code>Header</code> has no props and renders anyway.</p>
+    <p><strong>With memo: only <code>Footer</code>.</strong> <code>memo</code> compares each prop
+    with <code>Object.is</code>. <code>Header</code> has no props, so it's skipped.
+    <code>items</code> is the same array from state, so <code>List</code> is skipped.
+    <code>{ color: "gray" }</code> is a new object on every render, so <code>Footer</code>
+    renders, and its <code>memo</code> did nothing.</p>
+  </div>
+</div>
+
+<h2>2 · <code>memo</code>, <code>useMemo</code>, <code>useCallback</code>: one job, three parts</h2>
+
+<p>All three exist to stop <strong>trigger 2</strong>. They only work together:</p>
+
+<table class="prose">
+  <thead><tr><th>Tool</th><th>Caches</th><th>Worth it when</th></tr></thead>
+  <tbody>
+    <tr><td><code>memo(Child)</code></td><td>The child's render. It's skipped if every prop is <code>Object.is</code>-equal to last time</td><td>The child is expensive and its parent renders often</td></tr>
+    <tr><td><code>useMemo(() =&gt; v, deps)</code></td><td>The <strong>result</strong> of a function</td><td>An expensive calculation, or keeping an object prop stable for a <code>memo</code> child</td></tr>
+    <tr><td><code>useCallback(fn, deps)</code></td><td>The <strong>function itself</strong>. It's <code>useMemo(() =&gt; fn, deps)</code></td><td>Passing it to a <code>memo</code> child, or using it as an effect dependency</td></tr>
+  </tbody>
+</table>
+
+<ul>
+  <li>"<code>memo</code> is completely useless if the props passed to your component are
+  always different, such as if you pass an object or a plain function defined during rendering"
+  (<a href="https://react.dev/reference/react/memo">memo</a>). That's why <code>useMemo</code>
+  and <code>useCallback</code> exist.</li>
+  <li>The reverse holds too: <code>useCallback</code> has "no benefit" unless a
+  <code>memo</code> child or a hook's dependency array consumes the function
+  (<a href="https://react.dev/reference/react/useCallback">useCallback</a>).</li>
+  <li><code>memo</code> does <strong>not</strong> stop triggers 1 and 3: the component's own
+  state changing, or a context it reads changing (<a href="https://react.dev/reference/react/memo">memo</a>).</li>
+  <li>Cheaper fixes, with no memo at all: move the state down into the component that uses it, or pass the
+  expensive part as <code>children</code> (<a href="0002-render-is-a-snapshot.html">lesson 2</a>).</li>
+  <li><strong>React Compiler 1.0</strong> (October 2025) inserts this memoization at build
+  time. With it, "you can safely remove <code>React.memo</code>"
+  (<a href="https://react.dev/reference/react/memo">memo</a>). A legacy codebase you're migrating
+  probably isn't on the compiler yet, so you still need to know how it works by hand.</li>
+</ul>
+
+<div class="predict" data-predict data-key="0007-callback">
+  <span class="predict-label">Predict, then reveal</span>
+  <p class="predict-prompt"><code>Row</code> is wrapped in <code>memo</code>, and there are
+  2,000 of them. Typing in the search box is slow. Why, and what's the smallest fix?</p>
+  <pre><code>function Inbox({ messages }) {
+  const [query, setQuery] = useState("");
+  const [selected, setSelected] = useState(null);
+  return (
+    &lt;&gt;
+      &lt;input value={query} onChange={(e) =&gt; setQuery(e.target.value)} /&gt;
+      {messages.map((m) =&gt; (
+        &lt;Row key={m.id} message={m} onSelect={(id) =&gt; setSelected(id)} /&gt;
+      ))}
+    &lt;/&gt;
+  );
+}</code></pre>
+  <textarea class="predict-input" placeholder="Why: …&#10;Fix: …"></textarea>
+  <button class="predict-btn">Reveal</button>
+  <div class="predict-answer" hidden>
+    <p><strong>Every keystroke renders all 2,000 rows.</strong> <code>setQuery</code> renders
+    <code>Inbox</code>, and <code>onSelect={(id) =&gt; …}</code> is a new function each time,
+    so <code>memo</code> sees a changed prop on every row.</p>
+    <p><strong>Smallest fix:</strong> <code>onSelect={setSelected}</code>. A state setter keeps
+    the same identity for the component's whole life, so the prop never changes. The general fix
+    is <code>const onSelect = useCallback((id) =&gt; setSelected(id), [])</code>.</p>
+    <p>Staff-level answer: also move <code>query</code> and the input into their own component.
+    The list then stops rendering on keystrokes, with no memo at all.</p>
+  </div>
+</div>
+
+<h2>3 · <code>useRef</code>: a value that doesn't cause a render</h2>
+
+<p><code>useRef(initial)</code> returns the same <code>{ current }</code> object on every
+render. Changing <code>.current</code> <strong>does not render</strong>. Two uses
+(<a href="https://react.dev/reference/react/useRef">react.dev, useRef</a>):</p>
+
+<table class="prose">
+  <thead><tr><th>Use</th><th>Example</th></tr></thead>
+  <tbody>
+    <tr><td>A handle to a DOM node</td><td><code>&lt;input ref={inputRef} /&gt;</code> then <code>inputRef.current.focus()</code> in an effect or handler</td></tr>
+    <tr><td>A value handlers need but the screen doesn't</td><td>A timer ID, an <code>AbortController</code>, a WebSocket, the previous value</td></tr>
+  </tbody>
+</table>
+
+<p><strong>Rule:</strong> don't read or write <code>ref.current</code> during render. Do it in
+effects and event handlers. If the value has to appear on screen, it's state. In React 19,
+<code>ref</code> is a normal prop on function components, so <code>forwardRef</code> is no longer
+needed (<a href="https://react.dev/blog/2024/12/05/react-19">React 19 post</a>).</p>
+
+<div class="predict" data-predict data-key="0007-ref">
+  <span class="predict-label">Predict, then reveal</span>
+  <p class="predict-prompt">You click the button three times. What does the screen show, and
+  what does the console show?</p>
+  <pre><code>function Clicks() {
+  const count = useRef(0);
+  return (
+    &lt;button onClick={() =&gt; { count.current++; console.log(count.current); }}&gt;
+      Clicked {count.current} times
+    &lt;/button&gt;
+  );
+}</code></pre>
+  <textarea class="predict-input" placeholder="Screen: …&#10;Console: …"></textarea>
+  <button class="predict-btn">Reveal</button>
+  <div class="predict-answer" hidden>
+    <p><strong>The screen shows "Clicked 0 times". The console shows 1, 2, 3.</strong> The value
+    changes, but nothing triggered a render, so the screen keeps the first render's output. It also
+    reads <code>.current</code> during render, which breaks the rule. A value that's displayed
+    belongs in <code>useState</code>.</p>
+  </div>
+</div>
+
+<h2>4 · <code>useEffectEvent</code>: read the latest value without re-running the effect</h2>
+
+<p>An effect's dependency array decides <strong>when it re-runs</strong>. Sometimes the effect
+needs the latest value of something, but a change to that thing shouldn't restart it.
+<code>useEffectEvent</code> splits that read out:</p>
+
+<pre><code>const onKeyDown = useEffectEvent((e) =&gt; {
+  if (e.key === "f" &amp;&amp; selectedId) toggleFlag(selectedId);   // always the latest values
+});
+useEffect(() =&gt; {
+  window.addEventListener("keydown", onKeyDown);
+  return () =&gt; window.removeEventListener("keydown", onKeyDown);
+}, []);   // subscribes once</code></pre>
+
+<p>Effect Events "always 'see' the latest values from render (like props and state) without
+re-synchronizing your Effect, so they're excluded from Effect dependencies"
+(<a href="https://react.dev/reference/react/useEffectEvent">react.dev, useEffectEvent</a>; new in
+<a href="https://react.dev/blog/2025/10/01/react-19-2">React 19.2</a>). Its rules:</p>
+
+<ul>
+  <li>Call it only from inside effects, or from things an effect sets up such as listeners and timers.
+  Never during render, and never pass it to children.</li>
+  <li>Never put it in a dependency array. Its identity changes on every render on purpose.</li>
+  <li><strong>Don't use it to silence the lint rule.</strong> If a change to the value
+  <em>should</em> restart the effect (a new room ID means a new connection), it's a dependency.
+  React's docs: hiding dependencies "hides bugs".</li>
+</ul>
+
+<div class="task">
+  <h3>Do it · 5 minutes</h3>
+  <p>In <code>exercises/0006-review-the-pr/src/ReviewQueue.tsx</code>, fix the keyboard
+  shortcut with <code>useEffectEvent</code> and delete the <code>eslint-disable</code> line.
+  Run it, select <em>Lunch Thursday?</em>, click outside the search box and press
+  <kbd>f</kbd>. <strong>Done when</strong> the log shows <code>PATCH /api/messages/m3</code>.
+  The badge still won't appear, because that's the mutation bug, which is separate.</p>
+</div>
+
+<h2>5 · Cold check</h2>
+
+<p>Close the tables above, or scroll them out of view. Write first, then do the quiz.</p>
+
+<div class="predict" data-predict data-key="0007-cold">
+  <span class="predict-label">From memory</span>
+  <p class="predict-prompt">Name the three things that make a component render. Say which one
+  <code>memo</code> can block, and the one condition that has to hold for it to work.</p>
+  <textarea class="predict-input" placeholder="1. …&#10;2. …&#10;3. …&#10;memo blocks … only if …"></textarea>
+  <button class="predict-btn">Reveal</button>
+  <div class="predict-answer" hidden>
+    <p>1, its own state was set. 2, its parent rendered. 3, a context it reads changed.
+    <code>memo</code> blocks only <strong>2</strong>, and only if <strong>every prop is
+    <code>Object.is</code>-equal</strong> to last time, which inline objects and functions
+    break.</p>
+  </div>
+</div>
+
+<div class="quiz" data-quiz data-lesson="0007">
+
+<div class="q" data-answer="2">
+  <span class="q-num">Q1 · memo</span>
+  <p class="q-stem">A child is wrapped in <code>memo</code> and gets <code>onSave={handleSave}</code>,
+  where <code>handleSave</code> is a plain function declared in the parent. The parent renders.
+  The child…</p>
+  <ul class="opts">
+    <li><button class="opt">skips, because the function body is unchanged</button></li>
+    <li><button class="opt">skips, because memo ignores function props entirely</button></li>
+    <li><button class="opt">renders, since the function is a new object</button></li>
+    <li><button class="opt">renders, because memo only compares primitive props</button></li>
+  </ul>
+  <div class="why" hidden><strong>New object.</strong> The function is created again on each
+  render, so <code>Object.is</code> fails. <code>useCallback</code> or React Compiler fixes it.</div>
+</div>
+
+<div class="q" data-answer="1">
+  <span class="q-num">Q2 · useCallback</span>
+  <p class="q-stem">A function wrapped in <code>useCallback</code> is passed to a plain
+  <code>&lt;button onClick&gt;</code>. What did <code>useCallback</code> buy you?</p>
+  <ul class="opts">
+    <li><button class="opt">The button skips its own re-render now</button></li>
+    <li><button class="opt">Nothing, because no consumer compares the function</button></li>
+    <li><button class="opt">The function is not created each render</button></li>
+    <li><button class="opt">Fewer event listeners attached to the DOM</button></li>
+  </ul>
+  <div class="why" hidden><strong>Nothing.</strong> A DOM element isn't a <code>memo</code>
+  component, and no dependency array reads the function. The function is still created on every
+  render; React just hands back the cached one.</div>
+</div>
+
+<div class="q" data-answer="3">
+  <span class="q-num">Q3 · useRef</span>
+  <p class="q-stem">You store a WebSocket in <code>useRef</code> and replace it on reconnect. What
+  happens on screen when <code>ref.current</code> changes?</p>
+  <ul class="opts">
+    <li><button class="opt">The component renders once with the socket</button></li>
+    <li><button class="opt">Children render but the component does not</button></li>
+    <li><button class="opt">React warns refs must not be reassigned</button></li>
+    <li><button class="opt">Nothing renders, because refs never trigger renders</button></li>
+  </ul>
+  <div class="why" hidden><strong>Nothing.</strong> Exactly the right place for a socket: the
+  handlers need it, the screen doesn't.</div>
+</div>
+
+<div class="q" data-answer="0">
+  <span class="q-num">Q4 · useEffectEvent</span>
+  <p class="q-stem">An effect connects to <code>roomId</code> and shows a toast using
+  <code>theme</code>. Changing the theme reconnects. The right fix is…</p>
+  <ul class="opts">
+    <li><button class="opt">read theme in an effect event, keep roomId</button></li>
+    <li><button class="opt">remove theme from deps, disable the lint rule</button></li>
+    <li><button class="opt">move both values into refs updated each render</button></li>
+    <li><button class="opt">wrap the whole effect body in one useEffectEvent</button></li>
+  </ul>
+  <div class="why" hidden><strong>Split it.</strong> <code>roomId</code> should restart the
+  connection, so it stays a dependency. <code>theme</code> is only read when the toast fires,
+  so it goes in the effect event. Wrapping everything hides the real dependency.</div>
+</div>
+
+</div>
+
+<div class="note">
+  <p><strong>Sentence to have ready:</strong> <em>"A component renders when its state changes,
+  when its parent renders, or when a context it reads changes. <code>memo</code> only skips the
+  parent case, and only if every prop keeps its identity, which is what <code>useMemo</code> and
+  <code>useCallback</code> are for. With React Compiler that's automatic. Without it, I'd first move
+  state down or pass children before reaching for memo."</em></p>
+</div>
+
+<div class="ask">
+  <p><strong>Ask me.</strong> If a reveal didn't convince you, ask before part 2. Bring the
+  quiz score out of 4, and paste your cold-check answer as you first wrote it.</p>
+</div>
+
+<h2>Read this</h2>
+<p><strong>Primary source:</strong> <a href="https://react.dev/reference/react/memo">react.dev, memo</a>,
+the "Minimizing props changes" and "Should you add memo everywhere?" sections (10 minutes).</p>
+
+<h2>Sources</h2>
+<ul>
+  <li>react.dev, <a href="https://react.dev/learn/render-and-commit">Render and Commit</a>. Render calls the component, commit changes only the DOM that differs.</li>
+  <li>react.dev, <a href="https://react.dev/reference/react/memo">memo</a>. <code>Object.is</code> per prop, "completely useless" with new objects or functions, own state and context still render it, removable with React Compiler.</li>
+  <li>react.dev, <a href="https://react.dev/reference/react/useCallback">useCallback</a>. It caches the function and not its result, the <code>useMemo</code> equivalence, the two cases where it's worth it.</li>
+  <li>react.dev, <a href="https://react.dev/reference/react/useRef">useRef</a>. Changing it doesn't render, and don't read or write it during render.</li>
+  <li>react.dev, <a href="https://react.dev/reference/react/useEffectEvent">useEffectEvent</a> and the <a href="https://react.dev/blog/2025/10/01/react-19-2">React 19.2 post</a>. Latest values, excluded from dependencies, where it may be called, not a way to silence the linter.</li>
+  <li>Developer Way, <a href="https://www.developerway.com/posts/react-re-renders-guide">React re-renders guide</a>. "Props change" isn't a trigger on its own.</li>
+</ul>
+
+<footer class="nav">
+  <p><strong>This lesson targets:</strong> the stale closure missed in exercise 0006 (LR-0019) and
+  his ask for hooks beyond <code>useState</code>/<code>useEffect</code> (2026-10-16).</p>
+  <ul>
+    <li><a href="0006-the-browser-attaches-the-cookie.html">← Lesson 6</a></li>
+    <li><a href="0008-when-it-runs.html">Lesson 8 →</a></li>
+    <li><a href="../reference/react-hooks.html">Hooks reference sheet</a></li>
+  </ul>
+</footer>
+
+</main>
+
+<script src="../assets/quiz.js"></script>
+<script src="../assets/predict.js"></script>
+</body>
+</html>

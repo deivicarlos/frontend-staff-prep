@@ -275,3 +275,11 @@ tbody td:last-child {
   font-size: .78rem; color: var(--ink-faint);
 }
 tbody td:last-child strong { color: var(--accent); font-weight: 600; }
+
+/* Text tables: every column reads as prose (the default styles the last column as a score). */
+table.prose tbody td:last-child {
+  text-align: left; white-space: normal;
+  font-size: inherit; color: inherit;
+}
+table.prose tbody td:last-child strong { color: inherit; font-weight: 700; }
+table.prose td { vertical-align: top; }
