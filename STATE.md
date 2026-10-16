@@ -10,9 +10,10 @@ decisions in `MISSION.md` and `career/CAREER.md`._
 **Global Relay round 1 done 2026-10-16** ([LR-0018](learning-records/0018-gr-round-1-was-js-fundamentals.md)).
 **Round 2:** he shares his screen, gets React code, and answers "what happens / what's missing / how
 does it behave / how would you review it"; maybe a small build from scratch; an AI-team interviewer
-may ask LeetCode. Date unknown. Skill `career-session` for GR; `build-exercise` for reps.
+may ask LeetCode. Likely the week of 10-19; plan as if it's **Tue 10-20**. Later: a senior leadership round.
+Pay confirmed CAD 180-200k + 4%. GR is building its AI code-review strategy: item 4 adds that answer. Skill `career-session` for GR; `build-exercise` for reps.
 
-**GR sprint (pending his OK; replaces the security track until the GR loop ends):**
+**GR sprint (agreed 10-16; replaces the security track until the GR loop ends). The challenge round is the priority: items 1 and 3 first. Sat: 1 + 2. Sun: 3 + 1. Mon: 1 + 4 + 6.**
 1. **Code-review / predict-behaviour reps:** 15-20 min each, a React component with 3-5 planted
    bugs (stale closure, missing cleanup, wrong deps, key misuse, effect ordering, race, derived
    state). He answers out loud: what renders, what breaks, the fix. This is queue item 3, moved up.
@@ -20,7 +21,7 @@ may ask LeetCode. Date unknown. Skill `career-session` for GR; `build-exercise` 
    lost `this` in callbacks), `==` coercion, closures in loops, hoisting/TDZ, event loop order
    (LR-0011 gap), promises/async.
 3. **A from-scratch build in 45 min** (Vite + React + TS: fetch, list, filter, loading/error). Exercise 0006, reshaped.
-4. **Two Staff answers out loud:** migrating a legacy JS framework to React (strangler, React
+4. **Three Staff answers out loud:** reviewing AI-written code (team policy), migrating a legacy JS framework to React (strangler, React
    islands, a shared design system, a Playwright safety net), and Redux to TanStack Query (to make
    his round-1 claim defensible; see `career/private/2026-10-16-global-relay-debrief.md`).
 5. Fix the 6 s to 3 s story's cause (TTI was removed in Lighthouse 10; re-renders don't move a load metric).
