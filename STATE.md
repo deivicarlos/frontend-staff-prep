@@ -15,6 +15,8 @@ security block 1 + BFF/tokens/SSO/multi-tenant, all in the prep file §2b–2g (
 Done 10-15 ([LR-0017](learning-records/0017-internals-and-inp-cold-misses.md)): preflight held
 2/2, CSP rollout 3/3 on re-ask, internals/INP 2.5/7 cold → ~2.5/4 re-asked. Typed mocks dropped
 (his call): he rehearses out loud alone.
+**If he returns Fri before 10:30 PDT:** 10-min warm-up only: 5 one-line cold questions on the
+open items below, a correction for each miss, no new material. Then send him to prep §1 and §3.
 **Next (after Fri 10-16):** grade the interview from his recall: which questions came, which he
 froze on, what follow-ups Benjamin pushed. Then resume S1 below (block 1 partly covers it).
 Still open: INP's three phases, render vs commit + effect timing, key change = remount (not
