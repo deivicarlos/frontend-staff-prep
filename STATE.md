@@ -7,28 +7,34 @@ decisions in `MISSION.md` and `career/CAREER.md`._
 
 ## Next session
 
-**Global Relay 1st interview: Fri 2026-10-16, 10:30–11:00 PDT** (11:30 Calgary). Lead SWD Benjamin
-DeLong, same posting as the 10-06 screen. Prep: `career/private/2026-10-16-global-relay-prep.md`.
-Skill `career-session`. Pay and logistics are settled: don't raise them. Check today's date and time
-first, then pick:
+**Global Relay round 1 done 2026-10-16** ([LR-0018](learning-records/0018-gr-round-1-was-js-fundamentals.md)).
+**Round 2:** he shares his screen, gets React code, and answers "what happens / what's missing / how
+does it behave / how would you review it"; maybe a small build from scratch; an AI-team interviewer
+may ask LeetCode. Date unknown. Skill `career-session` for GR; `build-exercise` for reps.
 
-- **Before the interview:** a 10-min warm-up only. Ask 5 one-line cold questions on the open items
-  below, give a correction for each miss, no new material. Then send him to prep §1 and §3. No mocks.
-- **After the interview:** grade it from his recall: which questions came, where he froze, which
-  follow-ups Benjamin pushed. Write an LR, update the career status. Then resume S1 below.
+**GR sprint (pending his OK; replaces the security track until the GR loop ends):**
+1. **Code-review / predict-behaviour reps:** 15-20 min each, a React component with 3-5 planted
+   bugs (stale closure, missing cleanup, wrong deps, key misuse, effect ordering, race, derived
+   state). He answers out loud: what renders, what breaks, the fix. This is queue item 3, moved up.
+2. **JS fundamentals predict-the-output drill, cold:** `this` (4 call-site rules + arrows +
+   lost `this` in callbacks), `==` coercion, closures in loops, hoisting/TDZ, event loop order
+   (LR-0011 gap), promises/async.
+3. **A from-scratch build in 45 min** (Vite + React + TS: fetch, list, filter, loading/error). Exercise 0006, reshaped.
+4. **Two Staff answers out loud:** migrating a legacy JS framework to React (strangler, React
+   islands, a shared design system, a Playwright safety net), and Redux to TanStack Query (to make
+   his round-1 claim defensible; see `career/private/2026-10-16-global-relay-debrief.md`).
+5. Fix the 6 s to 3 s story's cause (TTI was removed in Lighthouse 10; re-renders don't move a load metric).
+6. LeetCode: only easy/medium arrays, hashmaps, strings, and only if the recruiter confirms it.
 
-Warm-up done 10-16 10:55 MDT, ~2/5 cold: key=remount hit; render/commit split ok but said useEffect runs before paint; INP phase 2 (processing duration) blank; RUM/web-vitals vague; CSP nonce + strict-dynamic missed a third time. Fold into the post-interview LR.
-
-Open items (LR-0016, [LR-0017](learning-records/0017-internals-and-inp-cold-misses.md)): INP's three
-phases + fix for each, render vs commit + effect timing, key change = remount (not re-render), RUM
-behind login (Lighthouse can't measure INP), CSP `script-src` nonce + `strict-dynamic` (not URLs),
-archived email's separate origin.
+Open recall items (LR-0016/17, warm-up 10-16 ~2/5): INP phase 2 (processing), useEffect runs
+*after* paint, RUM behind login, CSP nonce + `strict-dynamic`. Fold them into the reps; no more CSP drilling.
 
 He may answer by voice dictation (macOS), so expect mistranscribed terms. Typed mocks are dropped
-(his call, 10-15): he rehearses out loud alone. Don't end turns with "move on?". He says when. Never remind him of the clock or prompt him
-for interview recall; he manages his time and brings the debrief himself (his rule, 10-16).
+(his call, 10-15): he rehearses out loud alone. Don't end turns with "move on?". He says when.
+Never remind him of the clock or prompt him for interview recall; he manages his time and
+brings the debrief himself (his rule, 10-16).
 
-### Then (paused for the interview)
+### Then (paused for the GR loop)
 
 **Security lesson S1** (he types `/teach browser security from zero`, then skill `build-lesson`).
 From zero: HTTP request/response, origin vs site, how cookies are set/stored/attached (by
