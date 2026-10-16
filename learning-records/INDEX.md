@@ -21,3 +21,4 @@ new record is written.
 | [0014](0014-auth-the-browser-model-is-missing.md) | auth, CSRF, CORS | Names BFF but can't defend it. No model of when cookies are sent or what CORS does. Drill 2/5. |
 | [0015](0015-from-zero-and-a-security-track.md) | direction | Every lesson starts from zero (his rule). Security/AuthN/AuthZ becomes a zero-to-hero track. |
 | [0016](0016-preflight-closed-csp-and-layers-open.md) | CORS, preflight, CSP, BFF | Preflight closed after teaching the reason (4 rounds). CSP and layered answers open. Questions must use only taught concepts. |
+| [0017](0017-internals-and-inp-cold-misses.md) | CSP, INP, internals, key | Preflight held overnight. Internals/INP 2.5/7 cold, read-once material fell out in 24 h. Typed mocks dropped (his call). |

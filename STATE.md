@@ -1,6 +1,6 @@
 # State
 
-_Updated 2026-10-14. Interview Fri 2026-10-16 with Global Relay; prep in
+_Updated 2026-10-15. Interview Fri 2026-10-16 with Global Relay; prep in
 `career/private/2026-10-16-global-relay-prep.md`. Earlier: 2026-10-08. Lesson 6 graded and repaired. New rule: every lesson starts from zero.
 Security becomes a track ([LR-0015](learning-records/0015-from-zero-and-a-security-track.md)).
 Plan re-set 2026-09-24 ([LR-0012](learning-records/0012-reweight-to-what-screens-grade.md));
@@ -12,12 +12,14 @@ decisions in `MISSION.md` and `career/CAREER.md`._
 the 10-06 screen). Skill `career-session`. Pay and logistics are settled with the recruiter: don't raise them.
 Done 10-14/15: GR summary, Core Web Vitals, SPA/SSR (he has no SSR experience; knowing it is enough),
 security block 1 + BFF/tokens/SSO/multi-tenant, all in the prep file §2b–2g ([LR-0016](learning-records/0016-preflight-closed-csp-and-layers-open.md)).
-**Next (Thu 10-15):** (1) cold preflight re-check, E/F style, 2 scenarios. (2) Cold check on CSP rollout,
-email layers, session ID vs token. (3) **Mock**: Claude as Benjamin, mixed (opener, perf/CWV, state,
-security, a verbal design question like "a UI to review millions of archived messages"), follow-ups,
-grade on answer-first / correct / concise. Questions use only taught concepts. Don't end turns with
-"move on?". He says when.
-After Friday: grade the interview from his recall, then resume S1 below (block 1 partly covers it).
+Done 10-15 ([LR-0017](learning-records/0017-internals-and-inp-cold-misses.md)): preflight held
+2/2, CSP rollout 3/3 on re-ask, internals/INP 2.5/7 cold → ~2.5/4 re-asked. Typed mocks dropped
+(his call): he rehearses out loud alone.
+**Next (after Fri 10-16):** grade the interview from his recall: which questions came, which he
+froze on, what follow-ups Benjamin pushed. Then resume S1 below (block 1 partly covers it).
+Still open: INP's three phases, render vs commit + effect timing, key change = remount (not
+re-render), RUM behind login, CSP `script-src` nonce, email separate origin. Re-check cold if
+the interview leads to a 2nd round. Don't end turns with "move on?". He says when.
 
 ### Then (paused for the interview)
 
