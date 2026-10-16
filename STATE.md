@@ -14,7 +14,7 @@ may ask LeetCode. Likely the week of 10-19; plan as if it's **Tue 10-20**. Later
 Pay confirmed CAD 180-200k + 4%. GR is building its AI code-review strategy: item 4 adds that answer. Skill `career-session` for GR; `build-exercise` for reps.
 
 **GR sprint (agreed 10-16; replaces the security track until the GR loop ends). The challenge round is the priority: items 1 and 3 first. Sat: 1 + 2. Sun: 3 + 1. Mon: 1 + 4 + 6.** He works in slots as they open, including before Sat: always tell him the length of the next item up front. If items run out before round 2, add more.
-1. **Code-review reps (30 min each incl. grading).** Rep 1 built: `exercises/0006-review-the-pr` (7 planted bugs, verified red/green with Playwright; grade with `AFTER-THE-TIMER.md`). Reps 2-3 to build: 15-20 min each, a React component with 3-5 planted
+1. **Code-review reps (30 min each incl. grading).** Rep 1 done: 0006, **4/7** ([LR-0019](learning-records/0019-review-finds-lines-not-sequences.md)): missed stale closure, race, error path; no impact lines. Rep 2 next (build it): new domain, same three bug families hidden differently, graded on the three-question pass + impact. Reps 2-3 to build: 15-20 min each, a React component with 3-5 planted
    bugs (stale closure, missing cleanup, wrong deps, key misuse, effect ordering, race, derived
    state). He answers out loud: what renders, what breaks, the fix. This is queue item 3, moved up.
 2. **JS fundamentals drill (20 min):** `this` (4 call-site rules + arrows +

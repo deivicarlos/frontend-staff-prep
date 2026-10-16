@@ -23,3 +23,4 @@ new record is written.
 | [0016](0016-preflight-closed-csp-and-layers-open.md) | CORS, preflight, CSP, BFF | Preflight closed after teaching the reason (4 rounds). CSP and layered answers open. Questions must use only taught concepts. |
 | [0017](0017-internals-and-inp-cold-misses.md) | CSP, INP, internals, key | Preflight held overnight. Internals/INP 2.5/7 cold, read-once material fell out in 24 h. Typed mocks dropped (his call). |
 | [0018](0018-gr-round-1-was-js-fundamentals.md) | GR round 1, JS fundamentals | Round 1 probed key (held), `this` (confused with scope), `==` (loose wording). Round 2 = code review/predict. Security track paused. |
+| [0019](0019-review-finds-lines-not-sequences.md) | code review, effects | 0006: 4/7. Finds single-line bugs; misses stale closure, race, error path (need time simulated). No impact statements. |
