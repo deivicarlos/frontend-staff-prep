@@ -25,7 +25,8 @@ behind login (Lighthouse can't measure INP), CSP `script-src` nonce + `strict-dy
 archived email's separate origin.
 
 He may answer by voice dictation (macOS), so expect mistranscribed terms. Typed mocks are dropped
-(his call, 10-15): he rehearses out loud alone. Don't end turns with "move on?". He says when.
+(his call, 10-15): he rehearses out loud alone. Don't end turns with "move on?". He says when. Never remind him of the clock or prompt him
+for interview recall; he manages his time and brings the debrief himself (his rule, 10-16).
 
 ### Then (paused for the interview)
 
