@@ -17,6 +17,8 @@ first, then pick:
 - **After the interview:** grade it from his recall: which questions came, where he froze, which
   follow-ups Benjamin pushed. Write an LR, update the career status. Then resume S1 below.
 
+Warm-up done 10-16 10:55 MDT, ~2/5 cold: key=remount hit; render/commit split ok but said useEffect runs before paint; INP phase 2 (processing duration) blank; RUM/web-vitals vague; CSP nonce + strict-dynamic missed a third time. Fold into the post-interview LR.
+
 Open items (LR-0016, [LR-0017](learning-records/0017-internals-and-inp-cold-misses.md)): INP's three
 phases + fix for each, render vs commit + effect timing, key change = remount (not re-render), RUM
 behind login (Lighthouse can't measure INP), CSP `script-src` nonce + `strict-dynamic` (not URLs),
