@@ -1,5 +1,11 @@
-import { useEffect, useState } from "react";
-import { fetchBody, fetchMessages, pollNew, setFlag, type Message } from "./api";
+import { useEffect, useEffectEvent, useState } from "react";
+import {
+  fetchBody,
+  fetchMessages,
+  pollNew,
+  setFlag,
+  type Message,
+} from "./api";
 
 export function ReviewQueue() {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -8,9 +14,21 @@ export function ReviewQueue() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [live, setLive] = useState(false);
 
+  const onKeyDown = useEffectEvent((e: globalThis.KeyboardEvent) => {
+    if (e.target instanceof HTMLInputElement) return;
+    if (e.key === "f" && selectedId) toggleFlag(selectedId);
+  });
+
   // Load the review queue on mount
   useEffect(() => {
     fetchMessages().then(setMessages);
+  }, []);
+
+  // Keyboard shortcut: "f" flags the selected message
+  useEffect(() => {
+    window.addEventListener("keydown", onKeyDown);
+
+    return () => window.removeEventListener("keydown", onKeyDown);
   }, []);
 
   // Keep the filtered list in sync with the search box
@@ -38,17 +56,6 @@ export function ReviewQueue() {
     setMessages(messages);
   }
 
-  // Keyboard shortcut: "f" flags the selected message
-  useEffect(() => {
-    function onKeyDown(e: KeyboardEvent) {
-      if (e.target instanceof HTMLInputElement) return;
-      if (e.key === "f" && selectedId) toggleFlag(selectedId);
-    }
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   return (
     <div className="layout">
       <section>
@@ -60,7 +67,12 @@ export function ReviewQueue() {
             onChange={(e) => setQuery(e.target.value)}
           />
           <label>
-            <input type="checkbox" checked={live} onChange={(e) => setLive(e.target.checked)} /> Live
+            <input
+              type="checkbox"
+              checked={live}
+              onChange={(e) => setLive(e.target.checked)}
+            />{" "}
+            Live
           </label>
         </div>
         <ul className="rows">
@@ -76,7 +88,11 @@ export function ReviewQueue() {
         </ul>
       </section>
       <section className="detail">
-        {selectedId ? <MessageBody id={selectedId} /> : <p className="muted">Select a message</p>}
+        {selectedId ? (
+          <MessageBody id={selectedId} />
+        ) : (
+          <p className="muted">Select a message</p>
+        )}
       </section>
     </div>
   );

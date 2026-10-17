@@ -16,6 +16,8 @@ Archive of closed items and scores. Read on demand; STATE.md is the live file.
 | Sheet 1 cold rewrite | Three passes. Controller out of cleanup's reach, then unguarded `finally`, then correct. `Book[]` at source |
 | Exercise 0004 — finish the job | **2/4 binary in 20 min.** Debounce and cancellation both pass — the 0002 `AbortController` is armed. Error and loading never started; clock went to an API lookup |
 | Exercise 0005 — device list | **4/6 binary in 25 min.** API chain, queryKey, row key and detail-panel placement all pass. Invalidation scoped to one filter; outage not understood, not asked. Buzzer table empty |
+| Exercise 0006 — review the PR | **4/7.** Caught line-visible bugs (XSS, mutation, key, interval); missed stale closure, race, error path (LR-0019) |
+| Lesson 7 — why did it render | Quiz 4/4. Cold check: 3/3 triggers, `memo` blocks parent, **omitted the `Object.is` condition**. Task: `useEffectEvent` right; merged the listener into the mount effect, split after pushback (react.dev: one effect per sync process) |
 
 **Reps remain the primary instrument** (LR-0006, unchanged). Exercise 0003 is the first exercise
 to score above ~2/6 and the first where a lesson's central claim was visibly applied under a clock.
@@ -89,3 +91,58 @@ Alongside it sits the one knowledge axis still billing real minutes: **mechanica
   enough), security block 1 + BFF/tokens/SSO/multi-tenant, prep file §2b–2g (LR-0016).
 - 10-15: preflight held 2/2 overnight, CSP rollout 3/3 on re-ask, internals/INP 2.5/7 cold →
   ~2.5/4 re-asked (LR-0017).
+
+## Paused 2026-10-17 for the GR loop (restore to STATE when GR ends)
+
+### Security lesson S1, next when resumed
+
+**Security lesson S1** (he types `/teach browser security from zero`, then skill `build-lesson`).
+From zero: HTTP request/response, origin vs site, how cookies are set/stored/attached (by
+destination), SOP, CORS and preflight, taught as **two gates** (gate 1 CORS/preflight: is it sent;
+gate 2 SameSite/Domain/Path/Secure: does the cookie go; HttpOnly is in neither). Most of this was
+taught in chat 10-14/15 (prep §2e–2f): build on it, don't repeat it. Retrieval: lesson 6's
+cookie-flags drill + check 1, cold, target 4/5+. Fold in: where a cookieless request is rejected
+(app auth middleware), why public APIs use header tokens.
+
+## Security, AuthN and AuthZ: zero to hero (his ask, 2026-10-08)
+
+Aimed at system design rounds and Staff discussions. One lesson per session, from zero, each one
+ending in a cold retrieval check against a clock. Sources: `RESOURCES.md` auth section; fetch
+RFC 9700 (OAuth security BCP) and OWASP API Top 10 before S5 and S7.
+
+| # | Lesson | Status |
+|---|---|---|
+| S1 | How the browser talks to servers: origins, cookies, SOP, CORS, the two gates | **next** |
+| S2 | Authentication from zero: proving identity, password hashing, server sessions (ID, store, fixation, timeouts, logout), MFA/passkeys overview | |
+| S3 | Attacks on a logged-in user: XSS, CSRF, cookie flags, CSP. [Lesson 6](lessons/0006-the-browser-attaches-the-cookie.html) exists. Retake it after S1–S2, or rebuild it | lesson 6: 2/5 ([LR-0014](learning-records/0014-auth-the-browser-model-is-missing.md)) |
+| S4 | Tokens: what a JWT is, signing and validation, sessions vs JWT, access + refresh, revocation | |
+| S5 | OAuth 2 and OIDC from zero: the delegation problem, roles, Code + PKCE, ID vs access token, SSO | |
+| S6 | Login architectures for SPAs: BFF, token-mediating backend, browser client (RFC 10017 §6), server sessions; place his BFF on the map | |
+| S7 | Authorization: authN vs authZ, RBAC/ABAC/ReBAC, enforce on the server (the UI only hides), scopes vs permissions, multi-tenancy, object-level authorization bugs | |
+| S8 | Staff synthesis: auth inside a design round, out loud, against a clock; one reference sheet for the track | |
+
+Scope rule (2026-10-06): **teach the field, never VEERUM's code.** His setup (Node BFF,
+Passport + Auth0, express-session, `connect.sid` HttpOnly/Secure/Lax) is used only to place him.
+
+## Weekly rhythm (40–60 min a day; bends to his day)
+
+Mon–Thu timed exercises · Fri frontend system design · Sat or Sun a career session. The security
+track takes the daily slot while Global Relay is live.
+
+**System design is a track** (2026-10-06): Lesson 5 (RADIO, built, unworked) first. It is worked in
+~30 min, and he brings the chat-channel drill score /4 and the quiz score /3. Grade decision 1 on picking cursor
+*because of* C3. Then one design lesson a week: data grid/dashboard, autocomplete, design
+system, news feed, chat. Confirm the order against `research/2026-hiring-landscape.md`.
+
+## Queue after the security track (agreed 2026-09-26)
+
+1. Exercise 0007+: an evolving, AI-allowed build (grid robot, three requirement drops).
+2. JS utilities drill, no AI, 25 min (debounce/throttle, Promise.all, event emitter).
+3. Code review exercise: a flawed PR diff against a clock.
+4. Lesson 4: rendering, hooks and the event loop (LR-0011).
+5. Project deep dive (career session).
+6. Bonus: Web Worker vs Service Worker reference sheet, only once 1–5 are solid.
+
+Then Phase 2, engineering with AI (`MISSION.md`). The old item "auth and backend diagnostic" is
+absorbed into the security track.
+
