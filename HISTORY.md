@@ -146,3 +146,13 @@ system, news feed, chat. Confirm the order against `research/2026-hiring-landsca
 Then Phase 2, engineering with AI (`MISSION.md`). The old item "auth and backend diagnostic" is
 absorbed into the security track.
 
+## Lesson 8 (2026-10-18)
+
+Lesson 8 done 10-18: quiz 4/4. Cold check: order and blocking right; missed again that
+`useEffect` may run before paint when a click caused it (LR-0016/17 item, 2nd miss); left
+useTransition vs useDeferredValue blank. `useOptimistic` task took 4 passes: optimistic value
+not rendered, setter outside the transition, then the stale value moved around (deleted
+setMessages → `setMessages(optimisticMessages)` from the click closure → array from click-time
+`messages`) until an updater with an explicit `flag`. He skipped the A-then-B simulation
+question twice. LR-0019 confirmed: he does not simulate the sequence before writing; in rep 2
+make him state the A-then-B outcome before he edits. 0006 now carries his lesson-8 edits.
