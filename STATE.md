@@ -5,15 +5,16 @@ decisions in `MISSION.md` and `career/CAREER.md`. Scores and closed items: `HIST
 
 ## Next session
 
-**Lesson 8 (~30 min incl. a 10-min task)**: [lessons/0008-when-it-runs.html](lessons/0008-when-it-runs.html).
-He brings quiz /4, the cold check as first written, and the `useOptimistic` diff. The task builds
-on his **0006 edits** (`useEffectEvent` shortcut in its own effect, 10-17):
-keep them; the rest of 0006's planted bugs are still in place.
+**Code-review rep 2 (30 min incl. grading). Build it** (GR sprint item 1 below).
 
-Lesson 7 done 10-17: quiz 4/4; cold check omitted *when `memo` fails* (`Object.is` on every
-prop). Same shape as LR-0019: he recalls what a tool does, drops the failure condition. In every
-grade, ask for "it breaks when…". He accepted one-effect-per-concern after pushback with the
-react.dev quote; he takes evidence-backed pushback well, so push back with sources.
+Lesson 8 done 10-18: quiz 4/4. Cold check: order and blocking right; missed again that
+`useEffect` may run before paint when a click caused it (LR-0016/17 item, 2nd miss); left
+useTransition vs useDeferredValue blank. `useOptimistic` task took 4 passes: optimistic value
+not rendered, setter outside the transition, then the stale value moved around (deleted
+setMessages → `setMessages(optimisticMessages)` from the click closure → array from click-time
+`messages`) until an updater with an explicit `flag`. He skipped the A-then-B simulation
+question twice. LR-0019 confirmed: he does not simulate the sequence before writing; in rep 2
+make him state the A-then-B outcome before he edits. 0006 now carries his lesson-8 edits.
 
 ## Global Relay
 
@@ -27,7 +28,7 @@ Skill `career-session` for GR; `build-exercise` for reps. Debrief: `career/priva
 first: items 1 and 3. Sat: 1 + 2. Sun: 3 + 1. Mon: 1 + 4 + 6. He works in slots as they open:
 always tell him the length of the next item up front. If items run out before round 2, add more.
 
-0. **Hooks lessons:** 7 done; **8 next** (above). Sheet: `reference/react-hooks.html`. They cover
+0. **Hooks lessons:** 7 and 8 done. Sheet: `reference/react-hooks.html`. They cover
    most of queue item 4 (lesson 4); the event-loop/microtask part is still open.
 1. **Code-review reps (30 min each incl. grading).** Rep 1: 0006, **4/7** ([LR-0019](learning-records/0019-review-finds-lines-not-sequences.md)):
    missed stale closure, race, error path. **Rep 2 next (build it):** new domain, same three

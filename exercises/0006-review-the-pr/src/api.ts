@@ -17,12 +17,42 @@ export type Message = {
 export type MessageBody = { id: string; html: string };
 
 const QUEUE: Message[] = [
-  { id: "m1", subject: "Q3 allocation call notes", from: "d.chen@bank-a.com", flagged: false },
-  { id: "m2", subject: "Re: client pricing sheet", from: "m.ortiz@bank-a.com", flagged: false },
-  { id: "m3", subject: "Lunch Thursday?", from: "j.kim@bank-a.com", flagged: false },
-  { id: "m4", subject: "Invoice attached", from: "billing@vendor-mail.net", flagged: false },
-  { id: "m5", subject: "Trade confirmation 88231", from: "ops@bank-a.com", flagged: false },
-  { id: "m6", subject: "Quarterly attestation reminder", from: "compliance@bank-a.com", flagged: false },
+  {
+    id: "m1",
+    subject: "Q3 allocation call notes",
+    from: "d.chen@bank-a.com",
+    flagged: false,
+  },
+  {
+    id: "m2",
+    subject: "Re: client pricing sheet",
+    from: "m.ortiz@bank-a.com",
+    flagged: false,
+  },
+  {
+    id: "m3",
+    subject: "Lunch Thursday?",
+    from: "j.kim@bank-a.com",
+    flagged: false,
+  },
+  {
+    id: "m4",
+    subject: "Invoice attached",
+    from: "billing@vendor-mail.net",
+    flagged: false,
+  },
+  {
+    id: "m5",
+    subject: "Trade confirmation 88231",
+    from: "ops@bank-a.com",
+    flagged: false,
+  },
+  {
+    id: "m6",
+    subject: "Quarterly attestation reminder",
+    from: "compliance@bank-a.com",
+    flagged: false,
+  },
 ];
 
 const BODIES: Record<string, string> = {
@@ -74,7 +104,14 @@ export const log = {
     emit();
   },
   note(text: string) {
-    entries.push({ n: ++counter, method: "EVENT", path: text, result: "note", startedAt: now(), endedAt: now() });
+    entries.push({
+      n: ++counter,
+      method: "EVENT",
+      path: text,
+      result: "note",
+      startedAt: now(),
+      endedAt: now(),
+    });
     emit();
   },
 };
@@ -82,8 +119,19 @@ export const log = {
 (window as unknown as { __xss: () => void }).__xss = () =>
   log.note("injected script ran inside the app's origin");
 
-function request<T>(method: string, path: string, ms: number, respond: () => T | Error): Promise<T> {
-  const entry: LogEntry = { n: ++counter, method, path, result: "in flight", startedAt: now() };
+function request<T>(
+  method: string,
+  path: string,
+  ms: number,
+  respond: () => T | Error,
+): Promise<T> {
+  const entry: LogEntry = {
+    n: ++counter,
+    method,
+    path,
+    result: "in flight",
+    startedAt: now(),
+  };
   entries.push(entry);
   emit();
   return new Promise((resolve, reject) => {
@@ -105,17 +153,28 @@ export function fetchMessages() {
 }
 
 export function fetchBody(id: string) {
-  return request<MessageBody>("GET", `/api/messages/${id}`, id === "m1" ? 1500 : 300, () =>
-    id === "m5" ? new Error("500 Internal Server Error") : { id, html: BODIES[id] },
+  return request<MessageBody>(
+    "GET",
+    `/api/messages/${id}`,
+    id === "m1" ? 1500 : 300,
+    () =>
+      id === "m5"
+        ? new Error("500 Internal Server Error")
+        : { id, html: BODIES[id] },
   );
 }
 
 export function setFlag(id: string, flagged: boolean) {
-  return request("PATCH", `/api/messages/${id} {flagged:${flagged}}`, 200, () => {
-    const m = QUEUE.find((q) => q.id === id);
-    if (m) m.flagged = flagged;
-    return { ok: true };
-  });
+  return request(
+    "PATCH",
+    `/api/messages/${id} {flagged:${flagged}}`,
+    200,
+    () => {
+      const m = QUEUE.find((q) => q.id === id);
+      if (m) m.flagged = flagged;
+      return { ok: true };
+    },
+  );
 }
 
 let polls = 0;

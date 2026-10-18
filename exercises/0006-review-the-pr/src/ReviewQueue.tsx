@@ -1,4 +1,10 @@
-import { useEffect, useEffectEvent, useState } from "react";
+import {
+  startTransition,
+  useEffect,
+  useEffectEvent,
+  useOptimistic,
+  useState,
+} from "react";
 import {
   fetchBody,
   fetchMessages,
@@ -13,6 +19,19 @@ export function ReviewQueue() {
   const [query, setQuery] = useState("");
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [live, setLive] = useState(false);
+  const [optimisticMessages, setOptimisticMessages] = useOptimistic(
+    messages,
+    (current, id: Message["id"]) => {
+      return current.map((_message) => {
+        if (_message.id !== id) return _message;
+
+        return {
+          ..._message,
+          flagged: !_message.flagged,
+        };
+      });
+    },
+  );
 
   const onKeyDown = useEffectEvent((e: globalThis.KeyboardEvent) => {
     if (e.target instanceof HTMLInputElement) return;
@@ -34,8 +53,10 @@ export function ReviewQueue() {
   // Keep the filtered list in sync with the search box
   useEffect(() => {
     const q = query.toLowerCase();
-    setFiltered(messages.filter((m) => m.subject.toLowerCase().includes(q)));
-  }, [messages, query]);
+    setFiltered(
+      optimisticMessages.filter((m) => m.subject.toLowerCase().includes(q)),
+    );
+  }, [optimisticMessages, query]);
 
   // Live mode: check for newly archived messages every 3 seconds
   useEffect(() => {
@@ -48,12 +69,30 @@ export function ReviewQueue() {
   }, [live]);
 
   // Flag or unflag a message, then persist it
-  function toggleFlag(id: string) {
+  async function toggleFlag(id: string) {
     const message = messages.find((m) => m.id === id);
+
     if (!message) return;
-    message.flagged = !message.flagged;
-    setFlag(id, message.flagged);
-    setMessages(messages);
+
+    const flag = !message.flagged;
+
+    startTransition(async () => {
+      setOptimisticMessages(message.id);
+      await setFlag(id, flag);
+
+      startTransition(() =>
+        setMessages((prev) => {
+          return prev.map((_message) => {
+            if (_message.id !== id) return _message;
+
+            return {
+              ..._message,
+              flagged: flag,
+            };
+          });
+        }),
+      );
+    });
   }
 
   return (
