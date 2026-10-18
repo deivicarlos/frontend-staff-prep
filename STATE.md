@@ -5,7 +5,13 @@ decisions in `MISSION.md` and `career/CAREER.md`. Scores and closed items: `HIST
 
 ## Next session
 
-**Code-review rep 2 (30 min incl. grading). Build it** (GR sprint item 1 below).
+**Exercise 0007, review rep 2 (30 min: 15 read, 5 run, ~10 grade)**:
+[exercises/0007-review-the-desk/START-HERE.md](exercises/0007-review-the-desk/START-HERE.md).
+Built 10-18. It has three planted bugs, one per review question: a stale `ticketId` in
+`useRef(debounce(...))`, a search race in a handler, and a `catch` that swallows and still
+shows "sent". All three verified red on the scaffold and green on a reference fix (Playwright),
+light and dark. Grade with `grade-exercise` against `AFTER-THE-TIMER.md`. The key check: was
+each bug already in his three-question pass before any comment?
 
 Lesson 8 done 10-18: quiz 4/4. Cold check: order and blocking right; missed again that
 `useEffect` may run before paint when a click caused it (LR-0016/17 item, 2nd miss); left
@@ -31,7 +37,7 @@ always tell him the length of the next item up front. If items run out before ro
 0. **Hooks lessons:** 7 and 8 done. Sheet: `reference/react-hooks.html`. They cover
    most of queue item 4 (lesson 4); the event-loop/microtask part is still open.
 1. **Code-review reps (30 min each incl. grading).** Rep 1: 0006, **4/7** ([LR-0019](learning-records/0019-review-finds-lines-not-sequences.md)):
-   missed stale closure, race, error path. **Rep 2 next (build it):** new domain, same three
+   missed stale closure, race, error path. **Rep 2 built (0007), next:** new domain, same three
    families hidden differently, graded on the three-question pass (what does it close over / what
    if it runs twice or overlaps / what if it fails). Free-form comments, no table, no impact
    column (his call 10-16). Later reps: 3-5 planted bugs (missing cleanup, wrong deps, key misuse,
