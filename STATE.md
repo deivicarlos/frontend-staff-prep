@@ -15,6 +15,7 @@ each bug already in his three-question pass before any comment?
 
 Lesson 8 result (10-18) is in `HISTORY.md`. In rep 2, make him state the A-then-B outcome before he edits.
 Asked 10-18, answered from react.dev/TanStack: why `useOptimistic` needs a transition outside form actions, why updates after `await` need re-marking, why server state goes after the `await`, and the snapshot-rollback trap in TanStack. Cold-check one of these at grading.
+His cheat sheet (10-19, `REACT CHEATSHEET.md`, his own words) had two wrong models: `useDeferredValue` "defers updating state" (it defers a render, needs `memo`) and `onSubmit` as an Action context (only the `action` prop is). Cold-check both.
 
 ## Global Relay
 
