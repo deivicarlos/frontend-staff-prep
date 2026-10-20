@@ -156,3 +156,11 @@ setMessages → `setMessages(optimisticMessages)` from the click closure → arr
 `messages`) until an updater with an explicit `flag`. He skipped the A-then-B simulation
 question twice. LR-0019 confirmed: he does not simulate the sequence before writing; in rep 2
 make him state the A-then-B outcome before he edits. 0006 now carries his lesson-8 edits.
+
+## GR sprint re-planned 2026-10-20
+
+The 10-16 sprint (review reps, JS drill, a Vite fetch build, three Staff answers, the 6 s story,
+LeetCode) was replaced by a Tue–Fri plan built from the recruiter's round-2 list (see STATE.md).
+Kept: 0007, the 6 s story, the AI-review answer. The JS drill was folded into the promises lesson
+and the Thu cold drill. Dropped for this round: the Vite fetch build and the Redux-to-TanStack
+answer.

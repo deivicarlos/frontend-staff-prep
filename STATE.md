@@ -1,50 +1,45 @@
 # State
 
-_Updated 2026-10-17. Plan re-set 2026-09-24 ([LR-0012](learning-records/0012-reweight-to-what-screens-grade.md));
+_Updated 2026-10-20. Plan re-set 2026-09-24 ([LR-0012](learning-records/0012-reweight-to-what-screens-grade.md));
 decisions in `MISSION.md` and `career/CAREER.md`. Scores and closed items: `HISTORY.md`._
 
 ## Next session
 
-**Exercise 0007, review rep 2 (30 min: 15 read, 5 run, ~10 grade)**:
-[exercises/0007-review-the-desk/START-HERE.md](exercises/0007-review-the-desk/START-HERE.md).
-Built 10-18. It has three planted bugs, one per review question: a stale `ticketId` in
-`useRef(debounce(...))`, a search race in a handler, and a `catch` that swallows and still
-shows "sent". All three verified red on the scaffold and green on a reference fix (Playwright),
-light and dark. Grade with `grade-exercise` against `AFTER-THE-TIMER.md`. The key check: was
-each bug already in his three-question pass before any comment?
+**Exercise 0008, palindrome feed (35 min clock + 15 grade = 50)**:
+[exercises/0008-palindrome-feed/START-HERE.md](exercises/0008-palindrome-feed/START-HERE.md).
+Built 10-20 from the recruiter's round-2 list. It's a from-scratch build with six requirements:
+normalisation traps, two pointers O(1) space, flag-once memo plus state colocation (the counter
+reads 0), a row cap, a live region, and expand-around-centre. Verified with Playwright: all red on
+the scaffold, all green on a reference (deleted), light and dark. Grade with `grade-exercise`
+against `AFTER-THE-TIMER.md`. Key check: did he state complexity before writing the code?
 
-Lesson 8 result (10-18) is in `HISTORY.md`. In rep 2, make him state the A-then-B outcome before he edits.
-Asked 10-18, answered from react.dev/TanStack: why `useOptimistic` needs a transition outside form actions, why updates after `await` need re-marking, why server state goes after the `await`, and the snapshot-rollback trap in TanStack. Cold-check one of these at grading.
-His cheat sheet (10-19, `REACT CHEATSHEET.md`, his own words) treated `onSubmit` as an Action context (only the `action` prop is); cold-check it. His `useDeferredValue` model ("low-priority copy of state") is correct; check he applies the `memo` consequence.
+## Global Relay round 2: **Fri 2026-10-23**
 
-## Global Relay
+Round 1 done 10-16 ([LR-0018](learning-records/0018-gr-round-1-was-js-fundamentals.md)).
+**Recruiter's list (10-20, from a past candidate in this round):** experience walkthrough; React
+principles with code; JS Promises with code; CSS selector specificity; a palindrome problem in React
+with performance and Big-O. Topics: React, JS, CSS, AWS, UI libraries, AI-assisted coding,
+Java/Python, accessibility. The round-1 interviewer said: a screen-shared React code review, maybe
+a small build, maybe LeetCode from an AI-team interviewer. Prepare for both.
+Pay CAD 180-200k + 4%. Debrief: `career/private/2026-10-16-global-relay-debrief.md`.
 
-**Round 1 done 2026-10-16** ([LR-0018](learning-records/0018-gr-round-1-was-js-fundamentals.md)).
-**Round 2:** screen-shared React code ("what happens / what's missing / how would you review it");
-maybe a small build from scratch; an AI-team interviewer may ask LeetCode. Plan as if **Tue 10-20**.
-Later: a senior leadership round. Pay CAD 180-200k + 4%. GR is building an AI code-review strategy.
-Skill `career-session` for GR; `build-exercise` for reps. Debrief: `career/private/2026-10-16-global-relay-debrief.md`.
+**Sprint to Friday (re-planned 10-20).** Tell him each item's length up front. He takes slots as
+they open.
 
-**GR sprint (agreed 10-16; replaces the security track until the GR loop ends).** Challenge round
-first: items 1 and 3. Sat: 1 + 2. Sun: 3 + 1. Mon: 1 + 4 + 6. He works in slots as they open:
-always tell him the length of the next item up front. If items run out before round 2, add more.
+| When | Item | Length | How |
+| --- | --- | --- | --- |
+| Tue | A. 0008 palindrome feed | 50 | built, `grade-exercise` |
+| Tue | B. 0007 review rep 2 (built 10-18; matches the interviewer's own description). Make him state the A-then-B outcome before he edits. At grading, cold-check one of: `onSubmit` isn't an Action context (only the `action` prop is), which his cheat sheet gets wrong; why `useOptimistic` needs a transition outside actions | 30 | `grade-exercise` |
+| Wed | C. Promises from zero: event loop, microtasks, states, chaining, error propagation, `all`/`allSettled`/`race`/`any`, async/await. Then code: write `Promise.all`, `sleep`, timeout via `race`, retry, and predict output order (closes LR-0011) | 40 + 30 | he types `/teach promises`, then `build-lesson` |
+| Wed | D. CSS cascade from zero: origin and `!important`, `@layer`, specificity (id, class, type), `:is`/`:not`/`:has` vs `:where`, inline styles, order, inheritance. Predict-the-colour drill | 30 | `/teach css specificity` |
+| Thu | E. Cold mixed drill, retention check (LR-0017): React principles with code (render/commit, key, snapshot, batching, effect timing, memo), promise output order, specificity, `this`/`==` | 30 | build it Thu, not before |
+| Thu | F. Out loud, about 10 min each: a 2-min experience walkthrough mapped to their list (React, AWS, a11y, AI-assisted coding, the JS-to-React migration); the 6 s → 3 s story with a causal chain that holds (TTI was removed in Lighthouse 10); his AI-written-code review policy; honest Java/Python/AWS depth | 40 | `career-session` |
+| Thu | G. If there's time: two LeetCode string problems at 25 min each (valid palindrome II, longest substring without repeats) | 50 | `build-exercise` |
+| Fri | Warm-up only: 5 cold questions, no new material | 15 | |
 
-0. **Hooks lessons:** 7 and 8 done. Sheet: `reference/react-hooks.html`. They cover
-   most of queue item 4 (lesson 4); the event-loop/microtask part is still open.
-1. **Code-review reps (30 min each incl. grading).** Rep 1: 0006, **4/7** ([LR-0019](learning-records/0019-review-finds-lines-not-sequences.md)):
-   missed stale closure, race, error path. **Rep 2 built (0007), next:** new domain, same three
-   families hidden differently, graded on the three-question pass (what does it close over / what
-   if it runs twice or overlaps / what if it fails). Free-form comments, no table, no impact
-   column (his call 10-16). Later reps: 3-5 planted bugs (missing cleanup, wrong deps, key misuse,
-   effect ordering, derived state, unrelated logic merged into one effect).
-2. **JS fundamentals drill (20 min):** `this` (4 call-site rules, arrows, lost `this` in
-   callbacks), `==` coercion, closures in loops, hoisting/TDZ, event loop order (LR-0011), promises.
-3. **From-scratch build (45 min + 15 grading):** Vite + React + TS: fetch, list, filter, loading/error.
-4. **Three Staff answers out loud (10 min each):** reviewing AI-written code (team policy);
-   migrating a legacy JS framework to React (strangler, React islands, shared design system,
-   Playwright safety net); Redux to TanStack Query (makes his round-1 claim defensible).
-5. Fix the 6 s to 3 s story's cause (TTI was removed in Lighthouse 10; re-renders don't move a load metric).
-6. LeetCode (25 min per problem): easy/medium arrays, hashmaps, strings, only if the recruiter confirms.
+Dropped for this round: the Vite fetch/list build (0008 covers a from-scratch build), the Redux to
+TanStack answer (fold into F only if time allows), and the review reps after 0007.
+Hooks lessons 7 and 8 are done; the sheet is `reference/react-hooks.html`.
 
 Open recall items (LR-0016/17): INP phase 2 (processing); useEffect usually runs after paint
 (before it when an interaction caused it); RUM behind login. Fold into reps; no more CSP drilling.
