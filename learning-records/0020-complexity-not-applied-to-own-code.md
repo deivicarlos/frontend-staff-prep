@@ -23,6 +23,12 @@ He asked for the approach. Regex and ASCII case conversion weren't fresh, and he
 character-range check. Algorithm retrieval (two pointers, expand around centre) is the gap
 LeetCode-style rounds probe.
 
+## After the clock
+
+He ran over 35 min, untimed, and reports freezing at the start. So 1/6 overstates nothing: the
+clock was looser than graded. He had no working method for Big-O; the loop-counting recipe was
+given 10-21. Check it cold on Thursday (E).
+
 ## Direction (Friday round)
 
 - A 20-min redo of 0008: two pointers, expand around centre, and the phrase UI with a live region,

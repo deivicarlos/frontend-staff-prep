@@ -26,3 +26,9 @@ issue in requirement 2), but not to his own React data code.
 - Buzzer notes: none. Requirements 1, 2, 4, 5 and 6 are unnamed.
 - Order: he built the feed (requirements 3 and 4) before the phrase checker, which is
   requirement 1's on-screen half.
+
+## After the clock (his report, 10-21)
+
+He ran over 35 min and didn't time it. He froze at the start ("didn't know what to do"), first
+time coding from scratch in a long while. He asked for a quick method to evaluate Big-O and was
+given the loop-counting recipe (hidden loops: spread, `includes`, string building).
