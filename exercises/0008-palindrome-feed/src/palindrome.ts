@@ -4,7 +4,21 @@ import { counter } from "./counter.ts";
 
 export function isPalindrome(text: string): boolean {
   counter.calls++;
-  throw new Error(`not implemented (${text.length} chars)`);
+
+  let reverse = "";
+  let cleanStr = "";
+
+  for (let i = text.length - 1; i >= 0; i--) {
+    const ch = text[i].toLowerCase();
+
+    if (RegExp(/[a-z0-9]/).test(ch)) {
+      reverse += ch;
+      cleanStr = ch + cleanStr;
+    }
+  }
+
+  return reverse === cleanStr;
+  // throw new Error(`not implemented (${text.length} chars)`);
 }
 
 export function longestPalindrome(text: string): string {

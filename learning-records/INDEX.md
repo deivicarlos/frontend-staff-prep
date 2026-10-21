@@ -24,3 +24,4 @@ new record is written.
 | [0017](0017-internals-and-inp-cold-misses.md) | CSP, INP, internals, key | Preflight held overnight. Internals/INP 2.5/7 cold, read-once material fell out in 24 h. Typed mocks dropped (his call). |
 | [0018](0018-gr-round-1-was-js-fundamentals.md) | GR round 1, JS fundamentals | Round 1 probed key (held), `this` (confused with scope), `==` (loose wording). Round 2 = code review/predict. Security track paused. |
 | [0019](0019-review-finds-lines-not-sequences.md) | code review, effects | 0006: 4/7. Finds single-line bugs; misses stale closure, race, error path (need time simulated). No impact statements. |
+| [0020](0020-complexity-not-applied-to-own-code.md) | algorithms, complexity, triage | 0008: 1/6. isPalindrome correct but copies; `reduce`+spread O(n²) unseen in his own feed (273 ms vs 1.2 ms). React placement right. Built one area, buzzer notes skipped. |

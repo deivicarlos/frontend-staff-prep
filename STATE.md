@@ -5,13 +5,12 @@ decisions in `MISSION.md` and `career/CAREER.md`. Scores and closed items: `HIST
 
 ## Next session
 
-**Exercise 0008, palindrome feed (35 min clock + 15 grade = 50)**:
-[exercises/0008-palindrome-feed/START-HERE.md](exercises/0008-palindrome-feed/START-HERE.md).
-Built 10-20 from the recruiter's round-2 list. It's a from-scratch build with six requirements:
-normalisation traps, two pointers O(1) space, flag-once memo plus state colocation (the counter
-reads 0), a row cap, a live region, and expand-around-centre. Verified with Playwright: all red on
-the scaffold, all green on a reference (deleted), light and dark. Grade with `grade-exercise`
-against `AFTER-THE-TIMER.md`. Key check: did he state complexity before writing the code?
+**B. 0007 review rep 2 (30 min)**, then **A2. 0008 redo (20 min)**. 0008 scored 1/6 on 10-21
+([LR-0020](learning-records/0020-complexity-not-applied-to-own-code.md)): `isPalindrome`
+correct but copying; `reduce` + spread O(n²) in his feed (273 ms vs 1.2 ms); feed placement right.
+A2: in the same folder, state Big-O out loud first, rewrite `isPalindrome` with two pointers,
+write `longestPalindrome` (expand around centre), add the phrase input with a live region, and
+swap `reduce` for `filter`. Re-run the checks.
 
 ## Global Relay round 2: **Fri 2026-10-23**
 
@@ -28,11 +27,12 @@ they open.
 
 | When | Item | Length | How |
 | --- | --- | --- | --- |
-| Tue | A. 0008 palindrome feed | 50 | built, `grade-exercise` |
+| Tue | A. 0008 palindrome feed: **done 10-21, 1/6** | 50 | |
+| Wed | A2. 0008 redo (two pointers, expand around centre, live region, `filter`) | 20 | re-run the checks |
 | Tue | B. 0007 review rep 2 (built 10-18; matches the interviewer's own description). Make him state the A-then-B outcome before he edits. At grading, cold-check one of: `onSubmit` isn't an Action context (only the `action` prop is), which his cheat sheet gets wrong; why `useOptimistic` needs a transition outside actions | 30 | `grade-exercise` |
 | Wed | C. Promises from zero: event loop, microtasks, states, chaining, error propagation, `all`/`allSettled`/`race`/`any`, async/await. Then code: write `Promise.all`, `sleep`, timeout via `race`, retry, and predict output order (closes LR-0011) | 40 + 30 | he types `/teach promises`, then `build-lesson` |
 | Wed | D. CSS cascade from zero: origin and `!important`, `@layer`, specificity (id, class, type), `:is`/`:not`/`:has` vs `:where`, inline styles, order, inheritance. Predict-the-colour drill | 30 | `/teach css specificity` |
-| Thu | E. Cold mixed drill, retention check (LR-0017): React principles with code (render/commit, key, snapshot, batching, effect timing, memo), promise output order, specificity, `this`/`==` | 30 | build it Thu, not before |
+| Thu | E. Cold mixed drill, retention check (LR-0017): the Big-O of idiomatic JS snippets (`reduce`+spread, string `+=`, `includes` in a loop) (LR-0020); React principles with code (render/commit, key, snapshot, batching, effect timing, memo), promise output order, specificity, `this`/`==` | 30 | build it Thu, not before |
 | Thu | F. Out loud, about 10 min each: a 2-min experience walkthrough mapped to their list (React, AWS, a11y, AI-assisted coding, the JS-to-React migration); the 6 s → 3 s story with a causal chain that holds (TTI was removed in Lighthouse 10); his AI-written-code review policy; honest Java/Python/AWS depth | 40 | `career-session` |
 | Thu | G. If there's time: two LeetCode string problems at 25 min each (valid palindrome II, longest substring without repeats) | 50 | `build-exercise` |
 | Fri | Warm-up only: 5 cold questions, no new material | 15 | |
@@ -60,6 +60,7 @@ Paused tracks (security S1-S8, system design, the 09-26 queue) are parked verbat
 
 - **Real voids outside React. Teach from zero** (LR-0014, LR-0015).
 - Review finds bugs on a line, misses bugs that need a sequence simulated (LR-0019).
+- Knows complexity in the abstract, doesn't apply it to his own JS (`reduce`+spread) (LR-0020).
 - Recalls what a tool does, omits when it fails (lesson 7 cold check, 10-17).
 - Placement of request-effect parts holds under a clock (LR-0013).
 - Finishes what he starts, but starts too few things (LR-0010). Protocol in `build-exercise`.
