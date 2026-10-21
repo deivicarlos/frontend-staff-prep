@@ -5,13 +5,14 @@ import { counter } from "./counter.ts";
 export function isPalindrome(text: string): boolean {
   counter.calls++;
 
+  const regex = RegExp(/[a-z0-9]/);
   let reverse = "";
   let cleanStr = "";
 
   for (let i = text.length - 1; i >= 0; i--) {
     const ch = text[i].toLowerCase();
 
-    if (RegExp(/[a-z0-9]/).test(ch)) {
+    if (regex.test(ch)) {
       reverse += ch;
       cleanStr = ch + cleanStr;
     }

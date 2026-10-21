@@ -1,16 +1,26 @@
 # State
 
-_Updated 2026-10-20. Plan re-set 2026-09-24 ([LR-0012](learning-records/0012-reweight-to-what-screens-grade.md));
+_Updated 2026-10-21 (2:20 am). Plan re-set 2026-09-24 ([LR-0012](learning-records/0012-reweight-to-what-screens-grade.md));
 decisions in `MISSION.md` and `career/CAREER.md`. Scores and closed items: `HISTORY.md`._
 
-## Next session
+## Next session (Wed 10-22 morning)
 
-**B. 0007 review rep 2 (30 min)**, then **A2. 0008 redo (20 min)**. 0008 scored 1/6 on 10-21
-([LR-0020](learning-records/0020-complexity-not-applied-to-own-code.md)): `isPalindrome`
-correct but copying; `reduce` + spread O(n²) in his feed (273 ms vs 1.2 ms); feed placement right.
-A2: in the same folder, state Big-O out loud first, rewrite `isPalindrome` with two pointers,
-write `longestPalindrome` (expand around centre), add the phrase input with a live region, and
-swap `reduce` for `filter`. Re-run the checks.
+**Wednesday, in order (about 2.5 h):** A2 (20) → C (70) → D (30) → B (30). B moves to Thu if it
+doesn't fit. Start with **A2: the 0008 redo, 20 min**. Spec: the "Redo" section at the bottom of
+[START-HERE.md](exercises/0008-palindrome-feed/START-HERE.md), with the exact screen output (his
+rule). 0008 scored 1/6 ([LR-0020](learning-records/0020-complexity-not-applied-to-own-code.md)),
+over time, untimed, and he froze at the start. **Time the redo.** He opens with the start routine:
+say input → output, write a slow version that works, then name its Big-O and improve it.
+
+Taught 10-21 after grading. Cold-check one at A2 grading and the rest in E:
+- Big-O by counting loops, including hidden ones (spread, `includes`, `str = ch + str`).
+- `while (i < j)`: the pointers cross on even lengths; move only the pointer that skips punctuation.
+- Local mutation is fine (`acc.push` on an array you just made). Don't mutate state or props.
+- `useDeferredValue` isn't a debounce (no delay; interruptible background render). It needs `memo`.
+- Not Actions: `onChange`, `onSubmit`. Actions are the `action`/`formAction` prop or a
+  `startTransition` callback. Never put controlled-input state in a transition (react.dev);
+  defer the list, not the checkbox. (This closes the cheat-sheet `onSubmit` item.)
+- Module-level compute works only for static data; otherwise `useMemo` keyed on the data.
 
 ## Global Relay round 2: **Fri 2026-10-23**
 
@@ -28,18 +38,16 @@ they open.
 | When | Item | Length | How |
 | --- | --- | --- | --- |
 | Tue | A. 0008 palindrome feed: **done 10-21, 1/6** | 50 | |
-| Wed | A2. 0008 redo (two pointers, expand around centre, live region, `filter`) | 20 | re-run the checks |
-| Tue | B. 0007 review rep 2 (built 10-18; matches the interviewer's own description). Make him state the A-then-B outcome before he edits. At grading, cold-check one of: `onSubmit` isn't an Action context (only the `action` prop is), which his cheat sheet gets wrong; why `useOptimistic` needs a transition outside actions | 30 | `grade-exercise` |
-| Wed | C. Promises from zero: event loop, microtasks, states, chaining, error propagation, `all`/`allSettled`/`race`/`any`, async/await. Then code: write `Promise.all`, `sleep`, timeout via `race`, retry, and predict output order (closes LR-0011) | 40 + 30 | he types `/teach promises`, then `build-lesson` |
-| Wed | D. CSS cascade from zero: origin and `!important`, `@layer`, specificity (id, class, type), `:is`/`:not`/`:has` vs `:where`, inline styles, order, inheritance. Predict-the-colour drill | 30 | `/teach css specificity` |
-| Thu | E. Cold mixed drill, retention check (LR-0017): the Big-O of idiomatic JS snippets (`reduce`+spread, string `+=`, `includes` in a loop) (LR-0020); React principles with code (render/commit, key, snapshot, batching, effect timing, memo), promise output order, specificity, `this`/`==` | 30 | build it Thu, not before |
+| Wed 1 | A2. 0008 redo (two pointers, expand around centre, live region, `filter`), timed | 20 | re-run the checks, `grade-exercise` |
+| Wed 4 (else Thu) | B. 0007 review rep 2 (built 10-18; matches the interviewer's own description). Make him state the A-then-B outcome before he edits. At grading, cold-check why `useOptimistic` needs a transition outside actions | 30 | `grade-exercise` |
+| Wed 2 | C. Promises from zero: event loop, microtasks, states, chaining, error propagation, `all`/`allSettled`/`race`/`any`, async/await. Then code: write `Promise.all`, `sleep`, timeout via `race`, retry, and predict output order (closes LR-0011) | 40 + 30 | he types `/teach promises`, then `build-lesson` |
+| Wed 3 | D. CSS cascade from zero: origin and `!important`, `@layer`, specificity (id, class, type), `:is`/`:not`/`:has` vs `:where`, inline styles, order, inheritance. Predict-the-colour drill | 30 | `/teach css specificity` |
+| Thu | E. Cold mixed drill, retention check (LR-0017): the Big-O of idiomatic JS snippets (`reduce`+spread, string `+=`, `includes` in a loop) (LR-0020); the 10-21 list above; React principles with code (render/commit, key, snapshot, batching, effect timing, memo), promise output order, specificity, `this`/`==` | 30 | build it Thu, not before |
 | Thu | F. Out loud, about 10 min each: a 2-min experience walkthrough mapped to their list (React, AWS, a11y, AI-assisted coding, the JS-to-React migration); the 6 s → 3 s story with a causal chain that holds (TTI was removed in Lighthouse 10); his AI-written-code review policy; honest Java/Python/AWS depth | 40 | `career-session` |
 | Thu | G. If there's time: two LeetCode string problems at 25 min each (valid palindrome II, longest substring without repeats) | 50 | `build-exercise` |
 | Fri | Warm-up only: 5 cold questions, no new material | 15 | |
 
-Dropped for this round: the Vite fetch/list build (0008 covers a from-scratch build), the Redux to
-TanStack answer (fold into F only if time allows), and the review reps after 0007.
-Hooks lessons 7 and 8 are done; the sheet is `reference/react-hooks.html`.
+Dropped for this round: see `HISTORY.md` (re-planned 10-20). Hooks sheet: `reference/react-hooks.html`.
 
 Open recall items (LR-0016/17): INP phase 2 (processing); useEffect usually runs after paint
 (before it when an interaction caused it); RUM behind login. Fold into reps; no more CSP drilling.
