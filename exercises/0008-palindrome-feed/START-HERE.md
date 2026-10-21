@@ -70,3 +70,51 @@ space complexity.
 **Stretch, not scored:** the accented row (`Ésope reste ici et se repose`).
 
 **Do not open `AFTER-THE-TIMER.md` until the 35 minutes are up.**
+
+---
+
+## Redo (20 minutes, added 10-21): exactly what the screen shows
+
+Same folder, same code. Keep what you have and change only what's listed. When you're done,
+the page reads top to bottom like this. The text must match; the styling doesn't matter.
+
+**Checks panel** (already there): after *run checks*, every `isPalindrome` row and every
+`longestPalindrome` row says `pass`.
+
+**Phrase checker** (requirements 1 and 5), above the feed:
+
+```
+Phrase [__________________]        ← an <input>; its label text is "Phrase"
+Palindrome                         ← verdict line
+```
+
+- Empty input: the verdict line is empty, but the element is still on the page.
+- Typing `Never odd or even` shows `Palindrome`. Adding an `s` shows `Not a palindrome`.
+- Done when DevTools → Elements shows the verdict element on load (empty) with
+  `role="status"`, and DevTools → Accessibility shows the input's *Name* as `Phrase`.
+
+**Feed** (requirements 3 and 4), below it:
+
+```
+Search [__________]  [x] Palindromes only      ← search label text is "Search"
+3956 matches                                    ← the TOTAL that match, not the rows shown
+<ul id="feed">
+  #8 · bo · wow                                ← first row with the toggle on; format: #id · player · text
+  …at most 100 rows…
+</ul>
+```
+
+- Toggle on with an empty search: the count reads `3956 matches`, the same as the Truth line.
+- Type `radar`: the count drops, and the rows all contain "radar".
+- Console: `document.querySelectorAll("#feed li").length` is `100` or less, and never 20000.
+- Counter check unchanged: *reset counter*, type `radar`, toggle on, off, on → `isPalindrome
+  calls: 0`.
+
+**Code** (requirements 2 and 6): a comment above `isPalindrome` and above `longestPalindrome`
+in this form:
+
+```ts
+// Time: O(?)  Space: O(?)  — one line on why
+```
+
+`isPalindrome` builds no new string. The feed filters use no spread inside `reduce`.

@@ -32,6 +32,10 @@ description: Build a timed exercise in exercises/. Use when STATE.md's next item
 
 - Keep them **scenario-shaped**, the way real briefs are ("the service falls over; the user
   needs to know and carry on"). Concise in words, never flattened into instructions (LR-0009).
+- **Show the exact output** (his rule, 2026-10-21). Every requirement that puts something on
+  screen gives a literal example of it: the element, its text, and the format of each row
+  (e.g. `#1 · bo · stats thunder`). Keep the scenario sentence for the why. The example says
+  what to show, never how to build it.
 - **Binary scoring:** a requirement is 1 only if its done-condition passes (LR-0010).
 - When triage is the axis, include **more requirements than fit in the clock**, and the brief
   says so. A requirement he names as skipped scores better than one silently untouched.
