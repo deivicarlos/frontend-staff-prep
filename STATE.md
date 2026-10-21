@@ -5,12 +5,13 @@ decisions in `MISSION.md` and `career/CAREER.md`. Scores and closed items: `HIST
 
 ## Next session (Wed 10-22 morning)
 
-**Wednesday, in order (about 2.5 h):** A2 (20) → C (70) → D (30) → B (30). B moves to Thu if it
-doesn't fit. Start with **A2: the 0008 redo, 20 min**. Spec: the "Redo" section at the bottom of
-[START-HERE.md](exercises/0008-palindrome-feed/START-HERE.md), with the exact screen output (his
-rule). 0008 scored 1/6 ([LR-0020](learning-records/0020-complexity-not-applied-to-own-code.md)),
-over time, untimed, and he froze at the start. **Time the redo.** He opens with the start routine:
-say input → output, write a slow version that works, then name its Big-O and improve it.
+**Wednesday, in order (about 3 h):** A2 (50) → C (70) → D (30) → B (30). B moves to Thu if it
+doesn't fit. Start with **A2: 0008 from scratch again, 35 min timed + 15 grade** (his call, 2:30 am
+10-21). His files are reset to the scaffold; attempt 1 is in git (`a177684`). The brief
+[START-HERE.md](exercises/0008-palindrome-feed/START-HERE.md) was rewritten with the exact screen
+output per requirement. Attempt 1: 1/6, over time, untimed, froze at the start
+([LR-0020](learning-records/0020-complexity-not-applied-to-own-code.md)). Grade as attempt 2,
+compare with `EVALUATION.md`, and append the result there.
 
 Taught 10-21 after grading. Cold-check one at A2 grading and the rest in E:
 - Big-O by counting loops, including hidden ones (spread, `includes`, `str = ch + str`).
@@ -38,7 +39,7 @@ they open.
 | When | Item | Length | How |
 | --- | --- | --- | --- |
 | Tue | A. 0008 palindrome feed: **done 10-21, 1/6** | 50 | |
-| Wed 1 | A2. 0008 redo (two pointers, expand around centre, live region, `filter`), timed | 20 | re-run the checks, `grade-exercise` |
+| Wed 1 | A2. 0008 from scratch again, timed | 50 | `grade-exercise` |
 | Wed 4 (else Thu) | B. 0007 review rep 2 (built 10-18; matches the interviewer's own description). Make him state the A-then-B outcome before he edits. At grading, cold-check why `useOptimistic` needs a transition outside actions | 30 | `grade-exercise` |
 | Wed 2 | C. Promises from zero: event loop, microtasks, states, chaining, error propagation, `all`/`allSettled`/`race`/`any`, async/await. Then code: write `Promise.all`, `sleep`, timeout via `race`, retry, and predict output order (closes LR-0011) | 40 + 30 | he types `/teach promises`, then `build-lesson` |
 | Wed 3 | D. CSS cascade from zero: origin and `!important`, `@layer`, specificity (id, class, type), `:is`/`:not`/`:has` vs `:where`, inline styles, order, inheritance. Predict-the-colour drill | 30 | `/teach css specificity` |

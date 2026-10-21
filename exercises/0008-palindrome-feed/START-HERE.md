@@ -1,120 +1,94 @@
 # Exercise 0008: palindrome feed (build from scratch)
 
-**35 minutes, then about 15 to paste and grade. Plan 50. Six requirements, which don't all fit,
-and that's deliberate.**
+**35 minutes on a timer, then about 15 to grade. Six requirements, which may not all fit. Name
+what you skip.**
 
-This is Friday's format: a palindrome problem in React, then "how fast is it, and can you make it
-faster?". **Talk out loud the whole time, as you would on the call.** Before you write each
-function, say its time and space complexity, and say it again once it works. No AI and no docs.
-MDN is fine for one API lookup; say which one.
+Friday's format: a palindrome problem in React, then "how fast is it, and can you make it
+faster?". **Talk out loud the whole time.** No AI and no docs.
 
 ```sh
-npm install
 npm run dev
 ```
 
-**Palindrome Cup** is a word game. Players submit phrases, and a palindrome scores. Your files
-are `src/palindrome.ts` and `src/Palindromes.tsx`, and you can add more. `data.ts` (20,000
-submissions), `counter.ts` and `main.tsx` are not yours and are correct. The **Checks** panel at
-the top runs fixed cases against your functions, counts every `isPalindrome` call (keep the
-counter line in it), and shows the true palindrome count. In dev, StrictMode runs each `useMemo`
-calculation twice, so the counter's load-time number is doubled. Only its value after **reset
-counter** matters.
+## The app
 
-## Protocol
+**Palindrome Cup** is a word game: players submit phrases, and a palindrome scores.
 
-1. Before the clock, copy the six requirements into the comment block in `Palindromes.tsx`.
-2. Finish each requirement against its done-condition before moving on to the next one.
-3. Budget the clock. Take one cheap pass first: sketch the component tree and name the
-   algorithm before you go deep on anything.
-4. At the buzzer, write under each requirement in that comment: pass, or what's unmet. A
-   requirement you name as skipped scores better than one left untouched without a word.
+- **Yours:** `src/palindrome.ts` and `src/Palindromes.tsx`. You can add files.
+- **Not yours, and correct:** `data.ts` (20,000 submissions, each `{ id, player, text }`),
+  `counter.ts`, `main.tsx`.
+- **The Checks panel** at the top of the page:
+  - *run checks* tests your two functions against fixed cases.
+  - *isPalindrome calls* counts every call. Keep the `counter.calls++` line.
+  - *Truth* shows the correct number of palindromes in the feed: 3,956.
+
+## Start routine (first 2 minutes)
+
+1. Copy the six requirements into the comment at the top of `Palindromes.tsx`.
+2. Say out loud what goes in and what comes out.
+3. Write the simplest version that works, then say its Big-O, then improve it.
+
+## What the page must look like when you're done
+
+The text must match; styling doesn't matter.
+
+```
+[ Checks panel — already there ]
+
+Phrase [__________________]           ← an <input> with the label "Phrase"
+Palindrome                            ← verdict line
+
+Search [__________]  [x] Palindromes only
+3956 matches                          ← TOTAL that match, not the rows shown
+  #8 · bo · wow                       ← one <li> per row: #id · player · text
+  #13 · gus · wow
+  …at most 100 rows, inside <ul id="feed">
+```
 
 ## Requirements
 
-A requirement scores **1 only if its done-condition passes** when re-run.
+Each scores **1 only if every check under it passes.**
 
-**1 · Does it score?** A player types a phrase and wants to know whether it's a palindrome. Case,
-spaces and punctuation don't count. Letters and digits do.
-**Done when:** *run checks* shows every `isPalindrome` row as pass (the *stretch* row may fail),
-and the verdict on screen differs between `Never odd or even` and `Never odd or evens`.
+**1 · Does it score?** A player types a phrase and sees whether it's a palindrome. Case, spaces
+and punctuation don't count; letters and digits do.
+- *run checks*: every `isPalindrome` row says `pass` (the *stretch* row may fail).
+- Type `Never odd or even` → the verdict line shows `Palindrome`.
+- Type `Never odd or evens` → it shows `Not a palindrome`.
 
-**2 · Someone pasted a novel.** Some players paste whole books. A reviewer left a comment on the
-first version: "this makes several full copies of the text before it compares a single
-character."
-**Done when:** `isPalindrome` makes no copy of its input (no `replace`, `split`, `reverse`,
-`join`, spread, or whole-string `toLowerCase`), the checks still pass, and a comment above it
-states its time and space complexity.
+**2 · Someone pasted a novel.** Players paste whole books, so `isPalindrome` must not copy the
+text.
+- `isPalindrome` builds no new string or array: no `replace`, `split`, `reverse`, `join`,
+  spread, `+=` on a string, or `toLowerCase()` on the whole text.
+- A comment above it: `// Time: O(?)  Space: O(?)  — why`.
+- *run checks* still passes.
 
-**3 · The feed stutters.** Moderators see every submission, with a search box and a *palindromes
-only* toggle. They say typing in the search stutters.
-**Done when:** click *reset counter*, type `radar` into the search, then toggle *palindromes
-only* on, off, on. The counter still reads **0**.
+**3 · The feed stutters.** Typing in the search must stay smooth.
+- Click *reset counter*.
+- Type `radar` in the search, then click *Palindromes only* on, off, on.
+- The counter still reads `isPalindrome calls: 0`.
 
-**4 · The feed freezes on open.** Opening the feed locks the tab for a moment.
-**Done when:** `document.querySelectorAll("#feed li").length` in the console is at most 200 with
-any filter, and the screen says how many submissions match in total. With *palindromes only* on
-and an empty search, that number equals the Truth line.
+**4 · The feed freezes on open.** Never put all 20,000 rows on the page.
+- In the console, `document.querySelectorAll("#feed li").length` is `100` or less, whatever
+  the filter.
+- The match count shows the total: with *Palindromes only* on and an empty search, it reads
+  `3956 matches`.
+- Type `radar`: the count goes down, and every row contains "radar".
 
-**5 · A moderator uses a screen reader.** They need to hear the verdict from requirement 1 as
-they type.
-**Done when:** in the DevTools Accessibility pane, the phrase input has a non-empty *Name*, and
-the verdict sits in a live region that is already in the DOM on page load, before any text is
-typed.
+**5 · A moderator uses a screen reader.** They must hear the verdict as they type.
+- DevTools → Accessibility, with the phrase input selected: *Name* is `Phrase`.
+- DevTools → Elements on page load, before typing: the verdict element is already there,
+  empty, with `role="status"`.
 
-**6 · Partial credit.** A non-palindrome scores the length of the longest palindromic run inside
-it, taken from the raw text (exact characters, case-sensitive). Write `longestPalindrome`.
-**Done when:** every `longestPalindrome` row passes, and a comment above it states its time and
-space complexity.
+**6 · Partial credit.** A non-palindrome scores the length of the longest palindrome inside its
+raw text (exact characters, case-sensitive). Write `longestPalindrome`.
+- *run checks*: every `longestPalindrome` row says `pass`.
+- A comment above it: `// Time: O(?)  Space: O(?)  — why`.
 
 **Stretch, not scored:** the accented row (`Ésope reste ici et se repose`).
 
-**Do not open `AFTER-THE-TIMER.md` until the 35 minutes are up.**
+## At the buzzer
 
----
+Under each requirement in your comment, write `pass` or what's unmet. A requirement you name
+as skipped scores better than one left blank.
 
-## Redo (20 minutes, added 10-21): exactly what the screen shows
-
-Same folder, same code. Keep what you have and change only what's listed. When you're done,
-the page reads top to bottom like this. The text must match; the styling doesn't matter.
-
-**Checks panel** (already there): after *run checks*, every `isPalindrome` row and every
-`longestPalindrome` row says `pass`.
-
-**Phrase checker** (requirements 1 and 5), above the feed:
-
-```
-Phrase [__________________]        ← an <input>; its label text is "Phrase"
-Palindrome                         ← verdict line
-```
-
-- Empty input: the verdict line is empty, but the element is still on the page.
-- Typing `Never odd or even` shows `Palindrome`. Adding an `s` shows `Not a palindrome`.
-- Done when DevTools → Elements shows the verdict element on load (empty) with
-  `role="status"`, and DevTools → Accessibility shows the input's *Name* as `Phrase`.
-
-**Feed** (requirements 3 and 4), below it:
-
-```
-Search [__________]  [x] Palindromes only      ← search label text is "Search"
-3956 matches                                    ← the TOTAL that match, not the rows shown
-<ul id="feed">
-  #8 · bo · wow                                ← first row with the toggle on; format: #id · player · text
-  …at most 100 rows…
-</ul>
-```
-
-- Toggle on with an empty search: the count reads `3956 matches`, the same as the Truth line.
-- Type `radar`: the count drops, and the rows all contain "radar".
-- Console: `document.querySelectorAll("#feed li").length` is `100` or less, and never 20000.
-- Counter check unchanged: *reset counter*, type `radar`, toggle on, off, on → `isPalindrome
-  calls: 0`.
-
-**Code** (requirements 2 and 6): a comment above `isPalindrome` and above `longestPalindrome`
-in this form:
-
-```ts
-// Time: O(?)  Space: O(?)  — one line on why
-```
-
-`isPalindrome` builds no new string. The feed filters use no spread inside `reduce`.
+**Don't open `AFTER-THE-TIMER.md` until the 35 minutes are up.**
