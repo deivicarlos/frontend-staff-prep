@@ -4,7 +4,9 @@
 what you skip.**
 
 Friday's format: a palindrome problem in React, then "how fast is it, and can you make it
-faster?". **Talk out loud the whole time.** No AI and no docs.
+faster?". **Talk out loud the whole time.** No AI. MDN lookups for an API or attribute name are fine:
+say out loud what you're looking up, and list each lookup at the buzzer. Don't search for
+solutions ("palindrome javascript").
 
 ```sh
 npm run dev
