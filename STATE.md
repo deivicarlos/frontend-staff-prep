@@ -8,7 +8,7 @@ decisions in `MISSION.md` and `career/CAREER.md`. Scores and closed items: `HIST
 **A2 done 10-22: 3/6** (coached mid-attempt, so not clean; `EVALUATION.md`). He rates #2 (comment)
 and #5 (empty-on-load) minor. Brief defect he called out: requirement 1 never said "build a
 separate Phrase input". In future briefs, name every element to build in the requirement text.
-**Next: C (promises) → D (CSS, compressed) → B.** He proposed dropping D. His own CSS answer (10-22)
+**Next: C in progress (lesson 9 + `exercises/0009-promise-drills`, built 10-22; grade his 4 predictions, quiz /4, `node check.mjs` output; stubs read 3/10) → D (CSS, compressed) → B.** He proposed dropping D. His own CSS answer (10-22)
 showed two misconceptions: `div .selected` read as "divs with the class" (it's descendant), and
 cascade conflated with inheritance. No specificity tuple. So D stays, shortened to those gaps.
 
@@ -40,7 +40,7 @@ they open.
 | Tue | A. 0008 palindrome feed: **done 10-21, 1/6** | 50 | |
 | Wed 1 | A2. 0008 from scratch again, timed | 50 | `grade-exercise` |
 | Wed 4 (else Thu) | B. 0007 review rep 2 (built 10-18; matches the interviewer's own description). Make him state the A-then-B outcome before he edits. At grading, cold-check why `useOptimistic` needs a transition outside actions | 30 | `grade-exercise` |
-| Wed 2 | C. Promises from zero: event loop, microtasks, states, chaining, error propagation, `all`/`allSettled`/`race`/`any`, async/await. Then code: write `Promise.all`, `sleep`, timeout via `race`, retry, and predict output order (closes LR-0011) | 40 + 30 | he types `/teach promises`, then `build-lesson` |
+| Wed 2 | C. Promises from zero: event loop, microtasks, states, chaining, error propagation, `all`/`allSettled`/`race`/`any`, async/await. Then code: write `Promise.all`, `sleep`, timeout via `race`, retry, and predict output order (closes LR-0011) | 40 + 30 | built: `lessons/0009-the-microtask-queue.html` |
 | Wed 3 | D. CSS cascade from zero: origin and `!important`, `@layer`, specificity (id, class, type), `:is`/`:not`/`:has` vs `:where`, inline styles, order, inheritance. Predict-the-colour drill | 30 | `/teach css specificity` |
 | Thu | E. Cold mixed drill, retention check (LR-0017): the Big-O of idiomatic JS snippets (`reduce`+spread, string `+=`, `includes` in a loop) (LR-0020); the 10-21 list above; React principles with code (render/commit, key, snapshot, batching, effect timing, memo), promise output order, specificity, `this`/`==` | 30 | build it Thu, not before |
 | Thu | F. Out loud, about 10 min each: a 2-min experience walkthrough mapped to their list (React, AWS, a11y, AI-assisted coding, the JS-to-React migration); the 6 s → 3 s story with a causal chain that holds (TTI was removed in Lighthouse 10); his AI-written-code review policy; honest Java/Python/AWS depth | 40 | `career-session` |

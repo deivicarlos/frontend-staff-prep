@@ -49,6 +49,15 @@ substitute. Prune anything that turns out shallow or off-mission.
 - [Josh Comeau's blog](https://www.joshwcomeau.com/) — Use for: CSS mental models,
   layout, animation. Notably ["Understanding useEffect"](https://www.joshwcomeau.com/react/) and his CSS series.
 
+## Knowledge — JavaScript runtime (primary)
+
+- [MDN, Using promises](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Using_promises)
+  and [Promise reference](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise).
+  Use for: chaining, error propagation, the combinators. Lesson 9.
+- [MDN, Microtasks in depth](https://developer.mozilla.org/en-US/docs/Web/API/HTML_DOM_API/Microtask_guide/In_depth)
+  and [await](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/await).
+  Use for: task vs microtask ordering, where an async function yields.
+
 ## Knowledge — TypeScript
 
 - [Total TypeScript](https://www.totaltypescript.com) — Matt Pocock.

@@ -1,0 +1,359 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lesson 9 — The Microtask Queue</title>
+<link rel="stylesheet" href="../assets/course.css">
+</head>
+<body>
+
+<header>
+  <h1>The microtask queue</h1>
+  <p class="subtitle">What a promise is, when its callbacks run, and how errors travel down a
+  chain. Then you write <code>Promise.all</code>, a timeout and a retry yourself.</p>
+  <p class="meta">Lesson 09 · JS fundamentals · ~40 min + 30 min drills · <a href="0008-when-it-runs.html">← Lesson 8</a></p>
+</header>
+
+<main>
+
+<h2>1 · The mechanism: one thread, two queues</h2>
+
+<p>JavaScript runs on one thread. Anything that has to wait (a timer, a click, a network
+response) gets queued and runs later. There are two queues, and the event loop treats them
+differently. "During each iteration, it runs at most one pending JavaScript task, then any
+pending microtasks, then performs any needed rendering"
+(<a href="https://developer.mozilla.org/en-US/docs/Web/API/HTML_DOM_API/Microtask_guide/In_depth">MDN, microtasks in depth</a>).</p>
+
+<table class="prose">
+  <thead><tr><th>Queue</th><th>What goes in it</th><th>How much runs per loop</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Task</strong></td><td>The script itself, <code>setTimeout</code>, <code>setInterval</code>, events (clicks, network callbacks)</td><td><strong>One</strong></td></tr>
+    <tr><td><strong>Microtask</strong></td><td>Promise callbacks (<code>then</code>/<code>catch</code>/<code>finally</code>), code after an <code>await</code>, <code>queueMicrotask</code></td><td><strong>All of them</strong>, including any added while draining</td></tr>
+  </tbody>
+</table>
+
+<p>So the loop is: <strong>run the current task to the end → drain every microtask → render → take
+the next task.</strong> "Microtasks can enqueue new microtasks and those new microtasks will
+execute before the next task begins." A <code>setTimeout(fn, 0)</code> therefore always comes after
+every promise callback that is already queued
+(<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Using_promises">MDN, Using promises</a>:
+"Promise callbacks are handled as a microtask whereas <code>setTimeout()</code> callbacks are
+handled as task queues").</p>
+
+<div class="predict" data-predict data-key="0009-order">
+  <span class="predict-label">Predict, then reveal</span>
+  <p class="predict-prompt">Write the seven numbers in the order they print.</p>
+<pre><code>console.log("1");
+setTimeout(() =&gt; console.log("2"), 0);
+Promise.resolve().then(() =&gt; {
+  console.log("3");
+  setTimeout(() =&gt; console.log("4"), 0);
+  queueMicrotask(() =&gt; console.log("5"));
+});
+queueMicrotask(() =&gt; console.log("6"));
+console.log("7");</code></pre>
+  <textarea class="predict-input" placeholder="1 …"></textarea>
+  <button class="predict-btn">Reveal</button>
+  <div class="predict-answer" hidden>
+    <p><strong>1 7 3 6 5 2 4</strong> (run in Node 22).</p>
+    <ul>
+      <li><strong>The task (the script):</strong> prints 1 and 7. It queues timer 2, microtask 3 and microtask 6, in that order.</li>
+      <li><strong>Drain the microtasks:</strong> 3 runs and queues timer 4 and microtask 5. Then 6. Then 5: it was added while draining, so it still runs before any task.</li>
+      <li><strong>Next tasks:</strong> 2, then 4.</li>
+    </ul>
+  </div>
+</div>
+
+<h2>2 · A promise: three states, settled once</h2>
+
+<p>A promise is an object for a value that isn't there yet. It is <strong>pending</strong>, then
+either <strong>fulfilled</strong> (with a value) or <strong>rejected</strong> (with a reason).
+Fulfilled or rejected means <strong>settled</strong>, and it never changes after that: "Only the
+first call to <code>resolveFunc</code> or <code>rejectFunc</code> affects the promise's eventual
+state." The function you pass to <code>new Promise</code> runs <strong>synchronously</strong>; only
+the callbacks run later
+(<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/Promise">MDN, Promise()</a>).</p>
+
+<p><strong><code>then</code> always returns a new promise.</strong> That is what makes a chain.
+How the new promise settles depends on what the callback does
+(<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">MDN, Promise</a>):</p>
+
+<table class="prose">
+  <thead><tr><th>The callback…</th><th>The next promise…</th></tr></thead>
+  <tbody>
+    <tr><td>returns a value</td><td>fulfills with that value</td></tr>
+    <tr><td>returns a promise</td><td>waits for it and copies its result</td></tr>
+    <tr><td>throws</td><td>rejects with the error</td></tr>
+    <tr><td>doesn't exist for this state (no <code>catch</code> on a rejection)</td><td>copies the previous result. An error <strong>skips</strong> every <code>then</code> until a <code>catch</code></td></tr>
+  </tbody>
+</table>
+
+<p>A <code>catch</code> that returns normally <strong>recovers</strong> the chain: the next
+<code>then</code> runs as if nothing failed. To keep it failed, rethrow. A callback that starts a
+promise and doesn't <code>return</code> it leaves that promise "floating": nothing waits for it
+and its error is lost
+(<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Using_promises">MDN, Using promises</a>).</p>
+
+<div class="predict" data-predict data-key="0009-chain">
+  <span class="predict-label">Predict, then reveal</span>
+  <p class="predict-prompt">What prints?</p>
+<pre><code>Promise.resolve(1)
+  .then((x) =&gt; { console.log("a", x); throw new Error("boom"); })
+  .then((x) =&gt; console.log("b", x))
+  .catch((e) =&gt; { console.log("c", e.message); return 2; })
+  .then((x) =&gt; console.log("d", x))
+  .finally(() =&gt; console.log("e"));</code></pre>
+  <textarea class="predict-input" placeholder="a 1&#10;…"></textarea>
+  <button class="predict-btn">Reveal</button>
+  <div class="predict-answer" hidden>
+    <p><strong><code>a 1</code>, <code>c boom</code>, <code>d 2</code>, <code>e</code>.</strong>
+    The throw rejects the next promise, so <code>b</code> is skipped. The <code>catch</code> returns
+    2, which recovers the chain, so <code>d</code> gets 2. <code>finally</code> runs whatever the
+    result and takes no argument.</p>
+  </div>
+</div>
+
+<h2>3 · <code>async</code>/<code>await</code>: the same promises, written straight</h2>
+
+<table class="prose">
+  <thead><tr><th>Rule</th><th>What it means</th></tr></thead>
+  <tbody>
+    <tr><td>An <code>async</code> function always returns a promise</td><td><code>return x</code> fulfills it; <code>throw</code> rejects it</td></tr>
+    <tr><td>It runs <strong>synchronously</strong> until the first <code>await</code></td><td>Then "control exits the function and returns to the caller"</td></tr>
+    <tr><td>Everything after an <code>await</code> is a microtask</td><td>"Even if the awaited value is an already-resolved promise or not a promise"</td></tr>
+    <tr><td>Awaiting a rejected promise <strong>throws</strong> there</td><td>So <code>try</code>/<code>catch</code> works around an <code>await</code></td></tr>
+  </tbody>
+</table>
+<p>Quotes from <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/await">MDN, await</a>.</p>
+
+<div class="predict" data-predict data-key="0009-async">
+  <span class="predict-label">Predict, then reveal</span>
+  <p class="predict-prompt">What prints, in order?</p>
+<pre><code>async function load(name) {
+  console.log(name, "start");
+  await null;
+  console.log(name, "after await");
+  return name;
+}
+console.log("before");
+load("A").then((v) =&gt; console.log("done", v));
+load("B");
+console.log("after");</code></pre>
+  <textarea class="predict-input" placeholder="before&#10;…"></textarea>
+  <button class="predict-btn">Reveal</button>
+  <div class="predict-answer" hidden>
+    <p><strong>before, A start, B start, after, A after await, B after await, done A</strong> (run in Node 22).</p>
+    <p>Both calls run synchronously up to <code>await</code>, and each queues its continuation.
+    <code>after</code> ends the task. Then the microtasks run: A resumes and returns, which queues
+    the <code>.then</code> callback <em>behind</em> B's continuation, which was already waiting.</p>
+  </div>
+</div>
+
+<p><strong>Sequential vs concurrent.</strong> <code>await a(); await b();</code> starts
+<code>b</code> only after <code>a</code> finishes. If they don't depend on each other, start both
+and then wait: <code>await Promise.all([a(), b()])</code>. MDN: "it's always better to run promises
+concurrently … unless one promise's execution depends on another's result." Two independent
+100&nbsp;ms requests take 200&nbsp;ms written the first way and 100&nbsp;ms the second.</p>
+
+<h2>4 · The four combinators</h2>
+
+<table class="prose">
+  <thead><tr><th></th><th>Fulfills when</th><th>Rejects when</th><th>Use it for</th></tr></thead>
+  <tbody>
+    <tr><td><code>all</code></td><td>all fulfill: values <strong>in input order</strong>, not finish order</td><td><strong>any one</strong> rejects, with that first reason</td><td>Everything is required</td></tr>
+    <tr><td><code>allSettled</code></td><td>all settle: <code>{status, value}</code> or <code>{status, reason}</code> each</td><td>never, because of an input</td><td>Show what worked and what failed</td></tr>
+    <tr><td><code>race</code></td><td colspan="2">the <strong>first to settle</strong>, either way</td><td>Timeouts</td></tr>
+    <tr><td><code>any</code></td><td>the <strong>first to fulfill</strong></td><td><strong>all</strong> reject, with an <code>AggregateError</code></td><td>Fastest mirror wins</td></tr>
+  </tbody>
+</table>
+
+<p>Two traps. <code>Promise.all</code> rejecting "does not cancel the remaining operations":
+the other requests keep running, and stopping them takes an <code>AbortController</code>.
+<code>Promise.all([])</code> fulfills straight away with <code>[]</code>
+(<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/all">MDN, Promise.all</a>,
+<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/allSettled">allSettled</a>).</p>
+
+<div class="quiz" data-quiz data-lesson="0009">
+
+<div class="q" data-answer="1">
+  <span class="q-num">Q1 · combinators</span>
+  <p class="q-stem">A dashboard loads three widgets. Show each one that loaded, and an error in the
+  slot of any that failed. Which call?</p>
+  <ul class="opts">
+    <li><button class="opt">Promise.all with a catch</button></li>
+    <li><button class="opt">Promise.allSettled over all three</button></li>
+    <li><button class="opt">Promise.race over all three</button></li>
+    <li><button class="opt">Promise.any over all three</button></li>
+  </ul>
+  <div class="why" hidden><strong><code>allSettled</code>.</strong> It waits for every widget
+  and tells you which failed. <code>all</code> with a <code>catch</code> loses the two that worked.</div>
+</div>
+
+<div class="q" data-answer="2">
+  <span class="q-num">Q2 · all</span>
+  <p class="q-stem"><code>Promise.all</code> over three fetches. The second rejects at 20&nbsp;ms. What
+  happens to the other two?</p>
+  <ul class="opts">
+    <li><button class="opt">They are cancelled by the runtime</button></li>
+    <li><button class="opt">They are paused until a retry</button></li>
+    <li><button class="opt">They keep running until they finish</button></li>
+    <li><button class="opt">They reject with the same error</button></li>
+  </ul>
+  <div class="why" hidden><strong>They keep running.</strong> A promise is a result, not a
+  handle on the work. Only an <code>AbortController</code> signal stops a fetch.</div>
+</div>
+
+<div class="q" data-answer="0">
+  <span class="q-num">Q3 · any</span>
+  <p class="q-stem">All three promises passed to <code>Promise.any</code> reject. What does it
+  reject with?</p>
+  <ul class="opts">
+    <li><button class="opt">An AggregateError holding every rejection reason</button></li>
+    <li><button class="opt">The first rejection reason it saw</button></li>
+    <li><button class="opt">The last rejection reason it saw</button></li>
+    <li><button class="opt">Nothing at all, it stays pending</button></li>
+  </ul>
+  <div class="why" hidden><strong><code>AggregateError</code></strong>, with the reasons in
+  its <code>errors</code> array.</div>
+</div>
+
+<div class="q" data-answer="3">
+  <span class="q-num">Q4 · await</span>
+  <p class="q-stem"><code>const u = await getUser(); const p = await getPosts();</code> Each takes
+  100&nbsp;ms and they don't depend on each other. How long, and the fix?</p>
+  <ul class="opts">
+    <li><button class="opt">100 ms, the awaits already overlap</button></li>
+    <li><button class="opt">100 ms, wrap both in async</button></li>
+    <li><button class="opt">200 ms, add a retry block</button></li>
+    <li><button class="opt">200 ms, await them in Promise.all</button></li>
+  </ul>
+  <div class="why" hidden><strong>200&nbsp;ms.</strong> The second request doesn't start until
+  the first finishes. <code>const [u, p] = await Promise.all([getUser(), getPosts()])</code>.</div>
+</div>
+
+</div>
+
+<h2>5 · The React case: the spinner that drops</h2>
+
+<p>This is the bug from your async request layer rewrite
+(<a href="../reference/async-request-layer.html">reference sheet</a>). The ordering model it needs is
+the one above.</p>
+
+<div class="predict" data-predict data-key="0009-react">
+  <span class="predict-label">Predict, then reveal</span>
+<pre><code>useEffect(() =&gt; {
+  const c = new AbortController();
+  setLoading(true);
+  search(query, { signal: c.signal })
+    .then(setResults)
+    .catch(() =&gt; {})
+    .finally(() =&gt; setLoading(false));
+  return () =&gt; c.abort();
+}, [query]);</code></pre>
+  <p class="predict-prompt">The query goes from <code>"a"</code> to <code>"ab"</code> while
+  <code>"a"</code> is still loading. List the three things that run, in order: the cleanup, the new
+  effect, and the old request's <code>finally</code>. Is the spinner on or off while
+  <code>"ab"</code> loads? What's the one-line fix?</p>
+  <textarea class="predict-input" placeholder="1. …&#10;2. …&#10;3. …&#10;Spinner: …&#10;Fix: …"></textarea>
+  <button class="predict-btn">Reveal</button>
+  <div class="predict-answer" hidden>
+    <p><strong>1. Cleanup:</strong> <code>abort()</code> rejects the old request. Its callbacks are
+    now queued as microtasks, but they can't run yet: React runs the cleanup and the new effect
+    back to back, in one synchronous pass. <strong>2. New effect:</strong> <code>setLoading(true)</code>, and
+    <code>"ab"</code> starts. <strong>3. The task ends and the microtasks drain:</strong> the old
+    <code>catch</code>, then the old <code>finally</code> calls <code>setLoading(false)</code>.</p>
+    <p><strong>The spinner is off while <code>"ab"</code> is still loading.</strong> The fix:
+    <code>.finally(() =&gt; { if (!c.signal.aborted) setLoading(false); })</code>. Each effect's
+    <code>c</code> is its own, so only the current request can clear the flag.</p>
+  </div>
+</div>
+
+<h2>6 · Write them yourself · 30 minutes</h2>
+
+<div class="task">
+  <h3>Do it</h3>
+  <p>In <code>exercises/0009-promise-drills/drills.mjs</code>, write the four functions without using
+  <code>Promise.all</code>, <code>allSettled</code> or <code>any</code>. Run
+  <code>node check.mjs</code> in that folder after each one.</p>
+  <ol>
+    <li><code>sleep(ms)</code>: resolves after <code>ms</code>.</li>
+    <li><code>promiseAll(items)</code>: behaves like <code>Promise.all</code>. Values in input
+    order, the first rejection wins, <code>[]</code> fulfills with <code>[]</code>, and plain
+    values pass through.</li>
+    <li><code>withTimeout(promise, ms)</code>: rejects with <code>new Error("timeout")</code> if
+    <code>promise</code> hasn't settled within <code>ms</code>. Use <code>Promise.race</code>.</li>
+    <li><code>retry(fn, attempts, delayMs)</code>: calls <code>fn()</code>, and on rejection waits
+    <code>delayMs</code> and calls it again, up to <code>attempts</code> calls in total. It rejects
+    with the last error.</li>
+  </ol>
+  <p><strong>Done when</strong> the last line reads <code>10/10 pass</code>. With the stubs it reads
+  <code>3/10 pass</code>.</p>
+  <p>Then say out loud the Big-O of <code>promiseAll</code>, and what your
+  <code>withTimeout</code> leaves running when the promise wins.</p>
+</div>
+
+<h2>7 · Cold check</h2>
+
+<div class="predict" data-predict data-key="0009-cold">
+  <span class="predict-label">From memory</span>
+  <p class="predict-prompt">State the event loop in one sentence. Then: what does a
+  <code>catch</code> that returns a value do to the rest of the chain?</p>
+  <textarea class="predict-input" placeholder="Each loop: …&#10;catch returning a value: …"></textarea>
+  <button class="predict-btn">Reveal</button>
+  <div class="predict-answer" hidden>
+    <p><strong>One task, then every microtask (including ones added while draining), then render,
+    then the next task.</strong> Promise callbacks and code after <code>await</code> are microtasks;
+    <code>setTimeout</code> and events are tasks.</p>
+    <p><strong>It recovers the chain.</strong> The next <code>then</code> gets the returned value.
+    Rethrow to keep it rejected.</p>
+  </div>
+</div>
+
+<div class="note">
+  <p><strong>Sentence to have ready:</strong> <em>"Each turn of the event loop runs one task, then
+  drains the whole microtask queue, then renders. Promise callbacks and anything after an await are
+  microtasks, so they run before any setTimeout. A then returns a new promise; a throw skips ahead
+  to the next catch, and a catch that returns recovers. For independent requests I start them all
+  and await Promise.all, or allSettled when partial results are useful, and I remember that a
+  rejection doesn't cancel the others."</em></p>
+</div>
+
+<div class="ask">
+  <p><strong>Ask me.</strong> Bring your four predictions as first written, the quiz score out of
+  4, and the <code>node check.mjs</code> output. If any of the ordering still feels arbitrary, say
+  which step.</p>
+</div>
+
+<h2>Read this</h2>
+<p><strong>Primary source:</strong> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Using_promises">MDN,
+Using promises</a>: the chaining, error propagation, and composition sections (15 minutes). For
+the loop itself: <a href="https://developer.mozilla.org/en-US/docs/Web/API/HTML_DOM_API/Microtask_guide/In_depth">MDN,
+microtasks in depth</a>.</p>
+
+<h2>Sources</h2>
+<ul>
+  <li>MDN, <a href="https://developer.mozilla.org/en-US/docs/Web/API/HTML_DOM_API/Microtask_guide/In_depth">In depth: Microtasks and the JavaScript runtime environment</a>. One task, then the microtasks drained (including new ones), then rendering. <code>setTimeout</code> is a task.</li>
+  <li>MDN, <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Using_promises">Using promises</a>. Promise callbacks are microtasks; floating promises; chaining after a <code>catch</code>; concurrent over sequential.</li>
+  <li>MDN, <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a>. States, settled, how <code>then</code>'s new promise settles, the four combinators.</li>
+  <li>MDN, <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/Promise">Promise() constructor</a>. The executor runs synchronously; only the first resolve or reject counts.</li>
+  <li>MDN, <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/await">await</a>. Returns to the caller; the continuation is a microtask even for non-promises; a rejection throws.</li>
+  <li>MDN, <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/all">Promise.all</a> and <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/allSettled">Promise.allSettled</a>. Input order; empty input; no cancellation; the result shape.</li>
+  <li>The predicted outputs in sections 1 and 3 were checked by running them in Node 22.21.</li>
+</ul>
+
+<footer class="nav">
+  <p><strong>This lesson targets:</strong> microtask ordering relative to effects (LR-0011) and GR
+  round 2's "JS Promises with code".</p>
+  <ul>
+    <li><a href="0008-when-it-runs.html">← Lesson 8</a></li>
+    <li><a href="../reference/async-request-layer.html">Async request layer sheet</a></li>
+  </ul>
+</footer>
+
+</main>
+
+<script src="../assets/quiz.js"></script>
+<script src="../assets/predict.js"></script>
+</body>
+</html>
