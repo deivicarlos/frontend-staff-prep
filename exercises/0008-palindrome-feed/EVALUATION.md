@@ -33,7 +33,7 @@ He ran over 35 min and didn't time it. He froze at the start ("didn't know what 
 time coding from scratch in a long while. He asked for a quick method to evaluate Big-O and was
 given the loop-counting recipe (hidden loops: spread, `includes`, string building).
 
-## Attempt 2 (2026-10-22): 2 of 6
+## Attempt 2 (2026-10-22): 3 of 6 (re-scored on mechanism, his rule)
 
 He stopped before finishing. Not a clean measure: he asked for three mid-attempt checks, I listed
 the bugs each time, and I explained requirement 1's Phrase input, which the brief doesn't spell out
@@ -44,8 +44,8 @@ the bugs each time, and I explained requirement 1's Phrase input, which the brie
 | 1 · does it score | 1 | All 12 rows pass, and the feed count is 3,956. The verdict shows `Palindrome` / `Not a palindrome`. |
 | 2 · novel paste | 0 | Two pointers, no copies: the code is right. The Big-O comment is missing. |
 | 3 · feed stutters | 1 | Module-level flags, plus `useMemo([phrase])` on the verdict. The counter stays 0. |
-| 4 · feed freezes | 0 | All rows rendered in a `<table>`, no `ul#feed`, "Total items" instead of "N matches". |
-| 5 · screen reader | 0 | The Phrase label is right. The `role="status"` element shows `Palindrome` on load (`isPalindrome("")` is true) instead of being empty. |
+| 4 · feed freezes | 0 | No row cap: all matching rows are rendered. The total count is shown (as "Total items"), which is fine. |
+| 5 · screen reader | 1 | The Phrase label is right, and the `role="status"` region is on the page from load, so changes are announced. Small bug: it says `Palindrome` for an empty phrase. |
 | 6 · partial credit | 0 | Not attempted. |
 
 Fixed since attempt 1: `reduce` + spread replaced by `push` (O(n)); `isPalindrome` uses two pointers.

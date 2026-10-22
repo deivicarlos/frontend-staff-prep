@@ -5,7 +5,7 @@ decisions in `MISSION.md` and `career/CAREER.md`. Scores and closed items: `HIST
 
 ## Next session (Wed 10-22 morning)
 
-**A2 done 10-22: 2/6** (coached mid-attempt, so not clean; `EVALUATION.md`). He rates #2 (comment)
+**A2 done 10-22: 3/6** (coached mid-attempt, so not clean; `EVALUATION.md`). He rates #2 (comment)
 and #5 (empty-on-load) minor. Brief defect he called out: requirement 1 never said "build a
 separate Phrase input". In future briefs, name every element to build in the requirement text.
 **Next: C (promises) → D (CSS, compressed) → B.** He proposed dropping D. His own CSS answer (10-22)

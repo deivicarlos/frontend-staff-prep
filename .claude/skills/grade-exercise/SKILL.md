@@ -11,7 +11,9 @@ description: Grade an exercise he has finished. Use when he says he is done with
    claim to check, not a result (LR-0011).
 2. **Score each requirement 1 or 0** against its done-condition, checking what the code does,
    not what it looks like. Run the check yourself where you can. Done when every requirement
-   has a score and a one-line cause.
+   has a score and a one-line cause. Score the mechanism, never exact wording or markup: "PASS"
+   for "Palindrome" or a `<table>` for a `<ul>` is not a miss (his rule, 2026-10-22). The brief's
+   exact output tells him what to build; it isn't what gets graded.
 3. **Flag placement separately:** the right technique in the wrong place is its own finding
    (LR-0011).
 4. **Report back** in a few lines: the score, each failure with its cause, and what passed.
