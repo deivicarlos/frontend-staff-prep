@@ -3,12 +3,11 @@
 _Updated 2026-10-22. Plan re-set 2026-09-24 ([LR-0012](learning-records/0012-reweight-to-what-screens-grade.md));
 decisions in `MISSION.md` and `career/CAREER.md`. Scores and closed items: `HISTORY.md`._
 
-## Next session (Fri 10-23, GR interview day)
+## Next session (Thu 10-22 afternoon)
 
-**Date error:** this file labelled Thu 10-22 as "Wednesday", so a whole day was lost. He stopped
-10-22 after A2 and the lesson 9 build. The remaining items (C 70, D 20, B 30, F 40, E 30) don't
-fit before the interview. Ask the interview time, then pick by the recruiter's list. Proposed: F
-(out loud), C's sections 1-4 plus the quiz, and D's two misconceptions.
+**Thursday, in order (about 3 h 10):** C (70) → D (20) → B (30) → F (40) → E (30). G only if
+time is left. Say each item's length up front. (His Wednesday session ran past midnight; no day
+was lost. Earlier entries dated "Wed 10-22" mean that same night.)
 
 **A2 done 10-22: 3/6** (coached mid-attempt, so not clean; `EVALUATION.md`). He rates #2 (comment)
 and #5 (empty-on-load) minor. Brief defect he called out: requirement 1 never said "build a
