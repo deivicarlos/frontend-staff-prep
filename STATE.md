@@ -1,17 +1,16 @@
 # State
 
-_Updated 2026-10-21 (2:20 am). Plan re-set 2026-09-24 ([LR-0012](learning-records/0012-reweight-to-what-screens-grade.md));
+_Updated 2026-10-22. Plan re-set 2026-09-24 ([LR-0012](learning-records/0012-reweight-to-what-screens-grade.md));
 decisions in `MISSION.md` and `career/CAREER.md`. Scores and closed items: `HISTORY.md`._
 
 ## Next session (Wed 10-22 morning)
 
-**Wednesday, in order (about 3 h):** A2 (50) → C (70) → D (30) → B (30). B moves to Thu if it
-doesn't fit. Start with **A2: 0008 from scratch again, 35 min timed + 15 grade** (his call, 2:30 am
-10-21). His files are reset to the scaffold; attempt 1 is in git (`a177684`). The brief
-[START-HERE.md](exercises/0008-palindrome-feed/START-HERE.md) was rewritten with the exact screen
-output per requirement. Attempt 1: 1/6, over time, untimed, froze at the start
-([LR-0020](learning-records/0020-complexity-not-applied-to-own-code.md)). Grade as attempt 2,
-compare with `EVALUATION.md`, and append the result there.
+**A2 done 10-22: 2/6** (coached mid-attempt, so not clean; `EVALUATION.md`). He rates #2 (comment)
+and #5 (empty-on-load) minor. Brief defect he called out: requirement 1 never said "build a
+separate Phrase input". In future briefs, name every element to build in the requirement text.
+**Next: C (promises) → D (CSS, compressed) → B.** He proposed dropping D. His own CSS answer (10-22)
+showed two misconceptions: `div .selected` read as "divs with the class" (it's descendant), and
+cascade conflated with inheritance. No specificity tuple. So D stays, shortened to those gaps.
 
 Taught 10-21 after grading. Cold-check one at A2 grading and the rest in E:
 - Big-O by counting loops, including hidden ones (spread, `includes`, `str = ch + str`).
