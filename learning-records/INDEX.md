@@ -25,3 +25,4 @@ new record is written.
 | [0018](0018-gr-round-1-was-js-fundamentals.md) | GR round 1, JS fundamentals | Round 1 probed key (held), `this` (confused with scope), `==` (loose wording). Round 2 = code review/predict. Security track paused. |
 | [0019](0019-review-finds-lines-not-sequences.md) | code review, effects | 0006: 4/7. Finds single-line bugs; misses stale closure, race, error path (need time simulated). No impact statements. |
 | [0020](0020-complexity-not-applied-to-own-code.md) | algorithms, complexity, triage | 0008: 1/6. isPalindrome correct but copies; `reduce`+spread O(n²) unseen in his own feed (273 ms vs 1.2 ms). React placement right. Built one area, buzzer notes skipped. |
+| [0021](0021-ignore-flag-read-as-noise.md) | code review, effects, cleanup | 0007: 0/3. Called the `ignore` flag unnecessary, then asked for abort to fix the race it already prevents. No model of when cleanup runs. Reached 3 of 6 blocks. |

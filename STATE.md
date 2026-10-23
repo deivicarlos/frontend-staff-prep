@@ -18,7 +18,9 @@ conditions: `promiseAll` used a sparse `results.length`, `withTimeout` drops the
 rejection, `retry` setInterval is never cleared (LR-0019 pattern). Attempt 2: 11/13, he moved on;
 `withTimeout` still drops rejections. Cold-check in E. **Next:
 C's predictions + quiz skipped (his call). D built 10-22: `lessons/0010-which-declaration-wins.html`
-(5 drills + retrieval check, answers verified in Chrome); grade his answers → B → F → E.** He proposed dropping D. His own CSS answer (10-22)
+(5 drills + retrieval check, verified in Chrome); he did it, no review (his call).
+**B graded 10-22: 0/3** (LR-0021: calls the `ignore` flag unnecessary; no model of when cleanup
+runs). E must cold-check cleanup timing and a stale-response sequence. **Next: F → E.** He proposed dropping D. His own CSS answer (10-22)
 showed two misconceptions: `div .selected` read as "divs with the class" (it's descendant), and
 cascade conflated with inheritance. No specificity tuple. So D stays, shortened to those gaps.
 
@@ -77,7 +79,8 @@ Paused tracks (security S1-S8, system design, the 09-26 queue) are parked verbat
 ## What we know about him (detail in `learning-records/INDEX.md`)
 
 - **Real voids outside React. Teach from zero** (LR-0014, LR-0015).
-- Review finds bugs on a line, misses bugs that need a sequence simulated (LR-0019).
+- Review finds bugs on a line, misses bugs that need a sequence simulated (LR-0019, held on rep 2).
+- Reads the effect `ignore` flag as noise; no model of when cleanup runs (LR-0021).
 - Knows complexity in the abstract, doesn't apply it to his own JS (`reduce`+spread) (LR-0020).
 - Recalls what a tool does, omits when it fails (lesson 7 cold check, 10-17).
 - Placement of request-effect parts holds under a clock (LR-0013).
