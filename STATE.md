@@ -23,7 +23,10 @@ C's predictions + quiz skipped (his call). D built 10-22: `lessons/0010-which-de
 runs). E must cold-check cleanup timing and a stale-response sequence.
 **He skipped F for now (10-22) and asked for no-boilerplate drills. Built: `exercises/0010-hook-drills`
 (30 min, 13 vitest tests) and `exercises/0011-string-drills` (50 min, LC 125/680/3/5, 12 checks; this is G).
-Both verified red on stubs, green on a reference, brute force fails timing. Next: 0010 → 0011 → grade → E/F.** He proposed dropping D. His own CSS answer (10-22)
+Both verified red on stubs, green on a reference, brute force fails timing. Next: 0010 → 0011 → grade → E/F.**
+**0010 at bedtime 10-22: 5/13.** #1 right. #2 had no fn ref and no timer (returned raw `fn`). #3 had no
+guard in `catch`, no `return` after the empty-query branch, and loading never cleared. He got the fixed
+version in chat. Fri warm-up: rewrite #2 and #3 cold (10 min), then the 5 cold questions. He proposed dropping D. His own CSS answer (10-22)
 showed two misconceptions: `div .selected` read as "divs with the class" (it's descendant), and
 cascade conflated with inheritance. No specificity tuple. So D stays, shortened to those gaps.
 

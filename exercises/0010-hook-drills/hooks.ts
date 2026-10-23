@@ -1,12 +1,24 @@
 // Write the three hooks. No libraries. Run `npm test` after each one (`npm run watch` reruns on save).
 // Done when every test passes. With the stubs, most fail.
-import { useEffect, useRef, useState } from "react";
+import { ErrorInfo, useCallback, useEffect, useRef, useState } from "react";
 
 // 1 · useDebouncedValue(value, ms)
 // Returns `value`, but only once it has stopped changing for `ms`. The first render returns
 // the initial value right away. Nothing may still be pending after unmount.
 export function useDebouncedValue<T>(value: T, ms: number): T {
-  return value; // replace
+  const [debounced, setDebounced] = useState(value);
+
+  useEffect(() => {
+    const timerId = setTimeout(() => {
+      setDebounced(value);
+    }, ms);
+
+    return () => {
+      clearTimeout(timerId);
+    };
+  }, [value]);
+
+  return debounced; // replace
 }
 
 // 2 · useDebouncedCallback(fn, ms)
@@ -17,7 +29,15 @@ export function useDebouncedCallback<A extends unknown[]>(
   fn: (...args: A) => void,
   ms: number,
 ): (...args: A) => void {
-  return fn; // replace
+  const _fn = useCallback(
+    (...args: A) => {
+      return () => setTimeout(() => fn(...args), ms);
+    },
+    [fn, ms],
+  );
+  const ref = useRef(fn);
+
+  return ref.current; // replace
 }
 
 // 3 · useSearch(query, fetcher)
@@ -27,13 +47,56 @@ export function useDebouncedCallback<A extends unknown[]>(
 // - Only the response for the CURRENT query may reach the screen: a slow response for an old
 //   query, success or failure, is dropped.
 // - A failure for the current query sets error (the thrown Error) and loading false.
-export type SearchState<T> = { data: T | null; error: Error | null; loading: boolean };
+export type SearchState<T> = {
+  data: T | null;
+  error: Error | null;
+  loading: boolean;
+};
 
 export function useSearch<T>(
   query: string,
   fetcher: (q: string) => Promise<T>,
 ): SearchState<T> {
-  return { data: null, error: null, loading: false }; // replace
+  const initialState: SearchState<T> = {
+    data: null,
+    error: null,
+    loading: false,
+  };
+
+  const [searchState, setSearchState] = useState<SearchState<T>>(initialState);
+
+  useEffect(() => {
+    async function apiCall() {
+      try {
+        setSearchState((prev) => ({ ...prev, loading: true }));
+        const dt = await fetcher(query);
+
+        if (isCurrent) {
+          setSearchState((prev) => ({ ...prev, data: dt }));
+        }
+      } catch (_err: unknown) {
+        setSearchState((prev) => ({
+          ...prev,
+          loading: false,
+          error: _err as Error,
+        }));
+      }
+    }
+
+    let isCurrent = true;
+
+    if (!query) {
+      setSearchState(initialState);
+    }
+
+    apiCall();
+
+    return () => {
+      isCurrent = false;
+    };
+  }, [query]);
+
+  return { ...searchState }; // replace
 }
 
 // Then say out loud: why does #2 need a ref, and which line of #3 is the guard that #3's
