@@ -20,7 +20,10 @@ rejection, `retry` setInterval is never cleared (LR-0019 pattern). Attempt 2: 11
 C's predictions + quiz skipped (his call). D built 10-22: `lessons/0010-which-declaration-wins.html`
 (5 drills + retrieval check, verified in Chrome); he did it, no review (his call).
 **B graded 10-22: 1/3** (LR-0021: missed that the `[ticketId]` cleanup already drops stale responses; no model of when cleanup
-runs). E must cold-check cleanup timing and a stale-response sequence. **Next: F → E.** He proposed dropping D. His own CSS answer (10-22)
+runs). E must cold-check cleanup timing and a stale-response sequence.
+**He skipped F for now (10-22) and asked for no-boilerplate drills. Built: `exercises/0010-hook-drills`
+(30 min, 13 vitest tests) and `exercises/0011-string-drills` (50 min, LC 125/680/3/5, 12 checks; this is G).
+Both verified red on stubs, green on a reference, brute force fails timing. Next: 0010 → 0011 → grade → E/F.** He proposed dropping D. His own CSS answer (10-22)
 showed two misconceptions: `div .selected` read as "divs with the class" (it's descendant), and
 cascade conflated with inheritance. No specificity tuple. So D stays, shortened to those gaps.
 
