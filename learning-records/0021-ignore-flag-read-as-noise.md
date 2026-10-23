@@ -1,6 +1,6 @@
 # He reads the effect-cleanup `ignore` flag as noise; he has no model of when cleanup runs
 
-2026-10-22, exercise 0007 (review rep 2). **0/3.** See [the evaluation](../exercises/0007-review-the-desk/EVALUATION.md).
+2026-10-22, exercise 0007 (review rep 2). **1/3** (re-scored). See [the evaluation](../exercises/0007-review-the-desk/EVALUATION.md).
 
 ## Finding 1: the guard is pattern-matched, not understood
 

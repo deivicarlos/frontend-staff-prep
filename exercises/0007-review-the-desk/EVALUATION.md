@@ -1,13 +1,13 @@
 # Exercise 0007: evaluation
 
-**0 of 3** (2026-10-22). It wasn't run, and there's no ranked comment list or top comment.
+**1 of 3** (2026-10-22, re-scored from 0 after he pointed at his fix). It wasn't run, and there's no ranked comment list or top comment.
 His three-question pass covers 3 of the 6 effects and handlers. It never reached
 `saveLater`, `handleDraftChange` or `handleSend`.
 
 | # | Score | Cause |
 | --- | --- | --- |
 | 1 · `saveLater` saves to the first ticket (L87–88) | 0 | Not reviewed. |
-| 2 · Search race (`handleSearch`, L29–34) | 0 | Right line and a working fix (an effect on `query` with abort, plus debounce). But his "it breaks when…" is "it doesn't cancel the ongoing call", which isn't a sequence or something the agent sees. He never says that the `?q=r` response lands after `?q=refund` and the list shows all 6. He matched on a missing abort, and didn't trace the order. One sentence away from a 1. |
+| 2 · Search race (`handleSearch`, L29–34) | 1 | Right line. Cause: no cancellation, so an in-flight request isn't stopped. Fix: move the fetch into an effect keyed on `query` with cancellation, plus debounce. That fix also closes the mount-request race. Re-scored 10-22 under his rule (score the mechanism, not the wording). Still missing the impact sentence: "`?q=r` lands after `?q=refund`, and the list shows all 6".
 | 3 · Failed send shows "Reply sent" and wipes the draft (L117–131) | 0 | Not reviewed. |
 
 ## Wrong claims (worse in an interview than a miss)
