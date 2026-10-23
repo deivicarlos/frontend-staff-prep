@@ -12,9 +12,11 @@ His three-question pass covers 3 of the 6 effects and handlers. It never reached
 
 ## Wrong claims (worse in an interview than a miss)
 
-1. **Mount effect, L18–26: "the ignore flag is unnecessary, it only runs once".** False. Cleanup
-   runs on unmount and, in StrictMode, between the two mount runs. The flag turns a response
-   that lands after cleanup into a no-op. Removing it is a regression.
+1. ~~Mount effect: "the ignore flag is unnecessary"~~. **Retracted 10-22 after he challenged it.**
+   With `[]`, cleanup runs only on unmount (and once between StrictMode's dev double mount). A
+   `setState` after unmount is a harmless no-op (React 18 removed the warning). So the flag
+   protects nothing there. His comment was essentially right. "It only runs once" is still
+   loose: StrictMode runs it twice in dev.
 2. **Ticket effect, L91–109: "needs abort; the slowest one will be the last to render, so an
    older ticket shows".** False. The `ignore` flag already prevents exactly that. Click A then B:
    the cleanup for A runs before the effect for B, so A's response finds `ignore === true` and

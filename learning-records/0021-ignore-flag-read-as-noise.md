@@ -4,8 +4,9 @@
 
 ## Finding 1: the guard is pattern-matched, not understood
 
-He called `let ignore = false` in a `[]` effect "confusing and unnecessary, it only runs once".
-In the next effect he asked for an abort, because "the slowest response renders last". The
+(His call that the flag is unnecessary in the `[]` mount effect was right, and I retracted it
+10-22: there, cleanup runs only on unmount, where a late `setState` is a no-op.) In the
+`[ticketId]` effect he asked for an abort, because "the slowest response renders last". The
 existing `ignore` flag already prevents that. He doesn't run the sequence: deps change →
 **cleanup of the previous run** → new run, and a stale response lands with `ignore` already true.
 He placed this guard correctly when *writing* code in 0005 (LR-0013). Reading it, he doesn't

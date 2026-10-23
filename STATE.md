@@ -19,7 +19,7 @@ rejection, `retry` setInterval is never cleared (LR-0019 pattern). Attempt 2: 11
 `withTimeout` still drops rejections. Cold-check in E. **Next:
 C's predictions + quiz skipped (his call). D built 10-22: `lessons/0010-which-declaration-wins.html`
 (5 drills + retrieval check, verified in Chrome); he did it, no review (his call).
-**B graded 10-22: 0/3** (LR-0021: calls the `ignore` flag unnecessary; no model of when cleanup
+**B graded 10-22: 0/3** (LR-0021: missed that the `[ticketId]` cleanup already drops stale responses; no model of when cleanup
 runs). E must cold-check cleanup timing and a stale-response sequence. **Next: F → E.** He proposed dropping D. His own CSS answer (10-22)
 showed two misconceptions: `div .selected` read as "divs with the class" (it's descendant), and
 cascade conflated with inheritance. No specificity tuple. So D stays, shortened to those gaps.

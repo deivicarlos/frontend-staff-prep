@@ -14,8 +14,6 @@
 export async function sleep(ms) {
   return new Promise((res) => setTimeout(res, ms));
 
-  // return Promise.resolve(); // replace with a promise that resolves after ms
-}
 
 export function promiseAll(items) {
   return new Promise((resolve, reject) => {
@@ -45,26 +43,14 @@ export function promiseAll(items) {
   });
 }
 
-export function withTimeout(promise, ms) {
+\export function withTimeout(promise, ms) {
   const now = Date.now();
 
   return new Promise((resolve, reject) => {
     Promise.resolve(promise).then((val) => resolve(val));
-    Promise.reject(setTimeout(() => reject(new Error("timeout")), ms));
+    setTimeout(() => reject(new Error("timeout")), ms);
   });
-
-  // return new Promise((resolve, reject) => {
-  //   setTimeout(() => {
-  //     reject(new Error("timeout"));
-  //   }, ms);
-
-  //   Promise.resolve(promise).then((val) => resolve(val));
-  // });
-
-  // replace with Promise.race against a timer
 }
-
-// retry(fn, attempts, delayMs): calls fn(), and on rejection waits delayMs and calls it again, up to attempts calls in total. It rejects with the last error.
 
 export async function retry(fn, attempts, delayMs) {
   let retries = 0;
