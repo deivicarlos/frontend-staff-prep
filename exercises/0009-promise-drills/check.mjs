@@ -93,6 +93,35 @@ await check("retry waits delayMs between calls (2 waits of 40 ms)", async () => 
   return (d >= 75 && d < 200) || `took ${d.toFixed(0)} ms`;
 });
 
+// Added 10-22 after grading: cases the first ten let through.
+await check("promiseAll waits for every input when an earlier one finishes first", async () => {
+  const got = await withGuard(promiseAll([1, after(30, 2)]));
+  return JSON.stringify(got) === "[1,2]" || `got ${JSON.stringify(got)}`;
+});
+
+await check("withTimeout passes the input's own rejection through, before the timer", async () => {
+  const t = performance.now();
+  try {
+    await withTimeout(after(10, "boom", true), 100);
+    return "fulfilled";
+  } catch (e) {
+    const d = performance.now() - t;
+    if (e.message !== "boom") return `rejected with ${e.message}`;
+    return d < 60 || `took ${d.toFixed(0)} ms`;
+  }
+});
+
+await check("retry calls fn right away and stops calling it after success", async () => {
+  let calls = 0;
+  const t = performance.now();
+  await withGuard(retry(() => (++calls, after(1, "ok")), 3, 40));
+  const d = performance.now() - t;
+  const atResolve = calls;
+  await after(150);
+  if (d >= 30) return `first call waited ${d.toFixed(0)} ms`;
+  return (atResolve === 1 && calls === 1) || `${atResolve} call(s) at resolve, ${calls} after 150 ms more`;
+});
+
 function withGuard(p) {
   return Promise.race([p, after(200, "never settled", true)]);
 }
