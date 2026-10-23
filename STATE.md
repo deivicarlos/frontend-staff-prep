@@ -17,7 +17,8 @@ for the gaps; `exercises/0009-promise-drills/EVALUATION.md`). The failures were 
 conditions: `promiseAll` used a sparse `results.length`, `withTimeout` drops the input's
 rejection, `retry` setInterval is never cleared (LR-0019 pattern). Attempt 2: 11/13, he moved on;
 `withTimeout` still drops rejections. Cold-check in E. **Next:
-then 4 predictions + quiz /4 still ungraded → D (CSS, compressed) → B.** He proposed dropping D. His own CSS answer (10-22)
+C's predictions + quiz skipped (his call). D built 10-22: `lessons/0010-which-declaration-wins.html`
+(5 drills + retrieval check, answers verified in Chrome); grade his answers → B → F → E.** He proposed dropping D. His own CSS answer (10-22)
 showed two misconceptions: `div .selected` read as "divs with the class" (it's descendant), and
 cascade conflated with inheritance. No specificity tuple. So D stays, shortened to those gaps.
 

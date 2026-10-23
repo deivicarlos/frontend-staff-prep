@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lesson 10 — Which Declaration Wins</title>
+<link rel="stylesheet" href="../assets/course.css">
+</head>
+<body>
+
+<header>
+  <h1>Which declaration wins</h1>
+  <p class="subtitle">How the browser picks one value per property per element: matching, then the
+  cascade, then inheritance if nothing matched. Then you predict the colour, five times.</p>
+  <p class="meta">Lesson 10 · CSS fundamentals · ~20 min · <a href="0009-the-microtask-queue.html">← Lesson 9</a></p>
+</header>
+
+<main>
+
+<h2>1 · The mechanism: one question per element, per property</h2>
+
+<p>For every element and every property (say, the <code>color</code> of one <code>&lt;a&gt;</code>), the browser
+answers one question: <strong>which declaration applies?</strong> It works in this order:</p>
+
+<table class="prose">
+  <thead><tr><th>Step</th><th>What happens</th></tr></thead>
+  <tbody>
+    <tr><td><strong>1. Match</strong></td><td>Collect every declaration whose selector matches <em>this</em> element. Rules that don't match are out, no matter how specific they are.</td></tr>
+    <tr><td><strong>2. Cascade</strong></td><td>If more than one matched, sort them: origin and <code>!important</code> (layers sit inside this step), then <strong>specificity</strong>, then <strong>order of appearance</strong>. The first one in the sorted list wins.</td></tr>
+    <tr><td><strong>3. Inherit or default</strong></td><td>Only when <strong>nothing matched</strong>. An inherited property (<code>color</code>, <code>font-*</code>) takes the parent's computed value. A non-inherited one (<code>border</code>, <code>margin</code>) takes its initial value.</td></tr>
+  </tbody>
+</table>
+
+<p>The cascade and inheritance are <strong>separate mechanisms</strong>. The cascade chooses between
+declarations that target the element. Inheritance applies only when no declaration targets it
+(<a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Cascade/Inheritance">MDN,
+Inheritance</a>: "inheritance controls what happens when no value is specified for a property on an
+element"). So an inherited value never competes in the cascade. Any rule that targets the element,
+even <code>h1</code>, beats it.</p>
+
+<h3>Matching: the space is a combinator</h3>
+
+<p>A <strong>space</strong> between two selectors is the <strong>descendant combinator</strong>.
+<code>A B</code> selects the B elements that have an A ancestor at any depth
+(<a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Selectors/Descendant_combinator">MDN</a>).
+<strong>No space</strong> makes a compound selector: "a set of simultaneous conditions on a single
+element" (<a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Selectors/Selector_structure">MDN,
+Selector structure</a>).</p>
+
+<table class="prose">
+  <thead><tr><th>Selector</th><th>Matches</th></tr></thead>
+  <tbody>
+    <tr><td><code>div.selected</code></td><td>A <code>div</code> that has class <code>selected</code>. One element, two conditions.</td></tr>
+    <tr><td><code>div .selected</code></td><td>Any element with class <code>selected</code> that is <strong>inside</strong> a <code>div</code>. Two elements.</td></tr>
+    <tr><td><code>div &gt; .selected</code></td><td>The same, but the div must be the direct parent.</td></tr>
+  </tbody>
+</table>
+
+<div class="predict" data-predict data-key="0010-match">
+  <span class="predict-label">Predict, then reveal</span>
+  <p class="predict-prompt">Both divs are direct children of <code>body</code>. Which of A, B
+  and C turn red with <code>div .selected</code>? Which turn red with <code>div.selected</code>?</p>
+<pre><code>&lt;div class="selected"&gt;A&lt;/div&gt;
+&lt;div&gt;&lt;span class="selected"&gt;B&lt;/span&gt;&lt;/div&gt;
+&lt;div class="selected"&gt;&lt;span class="selected"&gt;C&lt;/span&gt;&lt;/div&gt;</code></pre>
+  <textarea class="predict-input" placeholder="div .selected: …&#10;div.selected: …"></textarea>
+  <button class="predict-btn">Reveal</button>
+  <div class="predict-answer" hidden>
+    <p><strong><code>div .selected</code>: B and C</strong>, meaning the spans. The div holding A has
+    no div ancestor, so it doesn't match. The span holding C matches because its parent is a div.</p>
+    <p><strong><code>div.selected</code>: the div holding A and the div holding C.</strong> The
+    span inside C still shows red here, but only because <code>color</code> inherits from its red
+    parent. That's step 3, not a match.</p>
+  </div>
+</div>
+
+<h2>2 · Specificity: three columns, compared left to right</h2>
+
+<p>When matched declarations tie on origin and importance, specificity decides. It's a
+<strong>count in three columns, ID-CLASS-TYPE</strong>
+(<a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Cascade/Specificity">MDN,
+Specificity</a>):</p>
+
+<table class="prose">
+  <thead><tr><th>Column</th><th>Counts</th><th>Adds 0</th></tr></thead>
+  <tbody>
+    <tr><td><strong>ID</strong></td><td><code>#nav</code></td><td rowspan="3"><code>*</code>, combinators (<code>&nbsp;</code> <code>&gt;</code> <code>+</code> <code>~</code>), <code>:where(…)</code></td></tr>
+    <tr><td><strong>CLASS</strong></td><td><code>.link</code>, <code>[type="radio"]</code>, pseudo-classes such as <code>:hover</code> and <code>:nth-child()</code></td></tr>
+    <tr><td><strong>TYPE</strong></td><td><code>a</code>, <code>h1</code>, pseudo-elements such as <code>::before</code></td></tr>
+  </tbody>
+</table>
+
+<p><strong>Compare left to right. The first column that differs decides.</strong> "The selector
+with the greater value in the ID column wins no matter what the values are in the other columns."
+1-0-0 beats 0-15-0. It is not a sum. If all three columns are equal, <strong>the later declaration
+wins</strong>. How close an element is in the DOM tree has no effect: MDN says "the proximity of an
+element to other elements that are referenced in a given selector has no impact on specificity."</p>
+
+<p>Three special cases:</p>
+<ul>
+  <li><code>:is()</code>, <code>:not()</code>, <code>:has()</code> add nothing themselves. They
+  take the specificity of their <strong>most specific argument</strong>, so <code>:is(#a, .b)</code> counts as 1-0-0.</li>
+  <li><code>:where()</code> is always <strong>0-0-0</strong>, whatever is inside it. Libraries use it so
+  their defaults are easy to override.</li>
+  <li>An <strong>inline <code>style</code></strong> attribute beats every selector (think 1-0-0-0).
+  Only <code>!important</code> overrides it.</li>
+</ul>
+
+<p>Every drill below uses this markup:</p>
+<pre><code>&lt;ul id="nav" class="menu"&gt;
+  &lt;li&gt;&lt;a class="link" href="/"&gt;Home&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;</code></pre>
+
+<div class="predict" data-predict data-key="0010-d1">
+  <span class="predict-label">Drill 1 · Colour of Home?</span>
+  <p class="predict-prompt">Write each tuple, then the winner.</p>
+<pre><code>.menu li .link { color: green; }
+#nav a         { color: blue; }
+a.link         { color: red; }</code></pre>
+  <textarea class="predict-input" placeholder="tuples … → colour"></textarea>
+  <button class="predict-btn">Reveal</button>
+  <div class="predict-answer" hidden>
+    <p><strong>Blue.</strong> The tuples are 0-2-1, <strong>1-0-1</strong> and 0-1-1. The ID column
+    differs first, so <code>#nav a</code> wins. Its order in the file doesn't matter.</p>
+  </div>
+</div>
+
+<div class="predict" data-predict data-key="0010-d2">
+  <span class="predict-label">Drill 2 · Colour of Home?</span>
+<pre><code>.menu .link       { color: green; }
+ul li a.link      { color: red; }</code></pre>
+  <textarea class="predict-input" placeholder="tuples … → colour"></textarea>
+  <button class="predict-btn">Reveal</button>
+  <div class="predict-answer" hidden>
+    <p><strong>Green.</strong> The tuples are <strong>0-2-0</strong> and 0-1-3. The ID columns tie,
+    so the CLASS column decides: 2 beats 1. Three type selectors can't make up for a missing class.
+    Red being declared later doesn't matter, because order only breaks a full tie.</p>
+  </div>
+</div>
+
+<div class="predict" data-predict data-key="0010-d3">
+  <span class="predict-label">Drill 3 · Colour of Home?</span>
+<pre><code>:is(#nav, .menu) a    { color: blue; }
+:where(#nav) a.link   { color: red; }</code></pre>
+  <textarea class="predict-input" placeholder="tuples … → colour"></textarea>
+  <button class="predict-btn">Reveal</button>
+  <div class="predict-answer" hidden>
+    <p><strong>Blue.</strong> <code>:is()</code> takes its most specific argument, <code>#nav</code>,
+    so the first rule is <strong>1-0-1</strong>. <code>:where()</code> counts as zero, so the second
+    is 0-1-1, from <code>a.link</code> alone.</p>
+  </div>
+</div>
+
+<h2>3 · Inheritance loses to anything that targets the element</h2>
+
+<p>MDN: "Styles for a directly targeted element will always take precedence over inherited styles,
+regardless of the specificity of the inherited rule."</p>
+
+<div class="predict" data-predict data-key="0010-d4">
+  <span class="predict-label">Drill 4 · Colours of the h2 and the p? Does the p get a border?</span>
+<pre><code>&lt;section id="card" class="card"&gt;
+  &lt;h2&gt;Title&lt;/h2&gt;
+  &lt;p&gt;Body&lt;/p&gt;
+&lt;/section&gt;
+
+#card.card { color: green; border: 1px solid; }
+h2         { color: purple; }</code></pre>
+  <textarea class="predict-input" placeholder="h2: …  p: …  border on p: …"></textarea>
+  <button class="predict-btn">Reveal</button>
+  <div class="predict-answer" hidden>
+    <p><strong>h2 purple. p green. No border on the p.</strong></p>
+    <ul>
+      <li><code>#card.card</code> (1-1-0) matches the <em>section</em>, not the h2. For the h2, only
+      <code>h2</code> matches, so there is nothing to compare: it wins and the colour is purple.
+      The 1-1-0 never competes.</li>
+      <li>No rule matches the p, so step 3 applies. <code>color</code> inherits, so the p is green.</li>
+      <li><code>border</code> doesn't inherit, so the p gets the initial value, <code>none</code>.</li>
+    </ul>
+  </div>
+</div>
+
+<h2>4 · Above specificity: importance, origin and layers</h2>
+
+<p>Specificity only decides among declarations that already tie on the steps above it. The full
+order (<a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Cascade/Introduction">MDN,
+Introduction to the cascade</a>):</p>
+
+<ol>
+  <li><strong>Origin and importance.</strong> For normal declarations, author CSS beats the user's,
+  which beats the browser's. <code>!important</code> <strong>reverses</strong> that order: browser
+  <code>!important</code> beats user <code>!important</code>, which beats author <code>!important</code>,
+  and every <code>!important</code> beats every normal declaration.</li>
+  <li><strong>Layers</strong> (<code>@layer</code>), still inside step 1. For normal declarations,
+  later layers beat earlier ones, and <strong>unlayered CSS beats every layer, regardless of
+  specificity</strong>. For <code>!important</code> the order reverses again: the first layer
+  wins, and unlayered CSS loses.</li>
+  <li><strong>Specificity.</strong></li>
+  <li><strong>Order of appearance:</strong> the last one wins.</li>
+</ol>
+
+<div class="predict" data-predict data-key="0010-d5">
+  <span class="predict-label">Drill 5 · Two separate cases. Colour of Home in each?</span>
+<pre><code>/* (a) */
+@layer base { #nav a { color: red; } }
+a { color: blue; }
+
+/* (b) — the a has style="color: orange" */
+.link { color: green !important; }</code></pre>
+  <textarea class="predict-input" placeholder="(a) …  (b) …"></textarea>
+  <button class="predict-btn">Reveal</button>
+  <div class="predict-answer" hidden>
+    <p><strong>(a) Blue.</strong> Unlayered normal CSS beats layered normal CSS before specificity
+    is ever compared, so the 1-0-1 inside the layer loses to a plain <code>a</code>. This is why
+    putting a library's or reset's CSS in a layer makes it easy to override.</p>
+    <p><strong>(b) Green.</strong> An inline style beats every selector, but <code>!important</code>
+    beats any normal declaration, and the inline style is normal.</p>
+  </div>
+</div>
+
+<h2>5 · Retrieval check</h2>
+
+<div class="predict" data-predict data-key="0010-check">
+  <span class="predict-label">Without scrolling up</span>
+  <p class="predict-prompt">(1) What's the difference between <code>p.note</code> and <code>p .note</code>?
+  (2) Give the tuples for <code>#app .card:hover &gt; h2::before</code> and <code>:where(.x) ul li</code>.
+  (3) A rule <code>#main { color: red }</code> and an element inside <code>#main</code> with a
+  <code>p { color: blue }</code> rule. What colour, and is that the cascade or inheritance?</p>
+  <textarea class="predict-input" placeholder="(1) …&#10;(2) …&#10;(3) …"></textarea>
+  <button class="predict-btn">Reveal</button>
+  <div class="predict-answer" hidden>
+    <p><strong>(1)</strong> <code>p.note</code> is a p that has the class. <code>p .note</code> is a
+    <code>.note</code> element inside a p.</p>
+    <p><strong>(2) 1-2-2</strong>: <code>#app</code>, then <code>.card</code> and <code>:hover</code>,
+    then <code>h2</code> and <code>::before</code>. <strong>0-0-2</strong>: <code>:where</code> adds
+    zero, leaving <code>ul</code> and <code>li</code>.</p>
+    <p><strong>(3) Blue, and it's the cascade.</strong> <code>p</code> matches the element directly.
+    <code>#main</code> matches only the ancestor, so its red would reach the p only through
+    inheritance, and inheritance applies only when nothing targets the element.</p>
+  </div>
+</div>
+
+<div class="note">
+  <p><strong>Sentence to have ready:</strong> <em>"For each element and property, the browser
+  collects the declarations whose selectors match. The cascade sorts them by origin and importance,
+  then layers, then specificity, then source order. Specificity is an ID-class-type count compared
+  column by column, so one ID beats any number of classes. :where is zero and :is takes its most
+  specific argument. Inheritance only kicks in when nothing matched the element, so a bare h1 rule
+  beats a color inherited from an ID-styled parent. In practice I keep specificity flat with single
+  classes, and use layers or :where for defaults that should be easy to override."</em></p>
+</div>
+
+<div class="ask">
+  <p><strong>Ask me.</strong> Bring your five drill answers and the retrieval check exactly as
+  first written. If any result surprised you, say which step of the algorithm you skipped.</p>
+</div>
+
+<h2>Read this</h2>
+<p><strong>Primary source:</strong> <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Cascade/Specificity">MDN,
+Specificity</a> (10 minutes, especially "How is specificity calculated?" and "Directly targeted elements
+vs. inherited styles").</p>
+
+<h2>Sources</h2>
+<ul>
+  <li>MDN, <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Cascade/Specificity">Specificity</a>. The ID-CLASS-TYPE columns, comparison left to right, <code>:is</code>/<code>:not</code>/<code>:has</code> versus <code>:where</code>, inline styles, tree proximity irrelevant, targeted beats inherited.</li>
+  <li>MDN, <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Cascade/Introduction">Introduction to the cascade</a>. The sorting steps, the origin table with importance reversed, layer order for normal and important declarations, unlayered beats layered.</li>
+  <li>MDN, <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Cascade/Inheritance">Inheritance</a>. Inherited properties take the parent's computed value and non-inherited ones their initial value, only when no value is specified.</li>
+  <li>MDN, <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Selectors/Descendant_combinator">Descendant combinator</a> and <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Selectors/Selector_structure">Selector structure</a>. A space is a combinator; a compound selector is one element.</li>
+  <li>Every drill answer was checked with <code>getComputedStyle</code> in headless Chrome, 2026-10-22.</li>
+</ul>
+
+<footer class="nav">
+  <p><strong>This lesson targets:</strong> GR round 2's "CSS selector specificity", plus his two
+  misconceptions from 10-22: <code>div .selected</code> read as a compound selector, and the
+  cascade confused with inheritance.</p>
+  <ul>
+    <li><a href="0009-the-microtask-queue.html">← Lesson 9</a></li>
+  </ul>
+</footer>
+
+</main>
+
+<script src="../assets/predict.js"></script>
+</body>
+</html>
