@@ -15,7 +15,8 @@ separate Phrase input". In future briefs, name every element to build in the req
 **C drills graded 10-22: 1/4 on mechanism** (10/10 on the original checks, 10/13 after I added 3
 for the gaps; `exercises/0009-promise-drills/EVALUATION.md`). The failures were all stop
 conditions: `promiseAll` used a sparse `results.length`, `withTimeout` drops the input's
-rejection, `retry` setInterval is never cleared (LR-0019 pattern). **Next: he fixes to 13/13,
+rejection, `retry` setInterval is never cleared (LR-0019 pattern). Attempt 2: 11/13, he moved on;
+`withTimeout` still drops rejections. Cold-check in E. **Next:
 then 4 predictions + quiz /4 still ungraded → D (CSS, compressed) → B.** He proposed dropping D. His own CSS answer (10-22)
 showed two misconceptions: `div .selected` read as "divs with the class" (it's descendant), and
 cascade conflated with inheritance. No specificity tuple. So D stays, shortened to those gaps.

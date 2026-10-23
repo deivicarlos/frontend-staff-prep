@@ -22,3 +22,14 @@ read a line.
 
 The 4 output-order predictions, the /4 quiz, and the spoken Big-O / "what does withTimeout
 leave running" question.
+
+## Attempt 2 (10-22): 11/13, stopped by him to move on
+
+- `promiseAll`: **fixed** (`completed === items.length`).
+- `retry`: **fixed in structure** (an await loop, called right away, stops on success). One
+  remaining defect: `throw new Error(err)` wraps the error, so the message becomes "Error: e3"
+  and the original stack and type are lost. Rethrow `err`.
+- `withTimeout`: **still 0**. The input's rejection is still unhandled. The new line
+  `Promise.reject(setTimeout(...))` creates a rejected promise whose reason is a timer handle,
+  which is a second unhandled rejection. The timer is still not cleared. Rejected promise
+  vs. reject callback remains unclear to him. Cold-check it in E.

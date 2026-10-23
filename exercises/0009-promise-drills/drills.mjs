@@ -23,7 +23,7 @@ export function promiseAll(items) {
     let completed = 0;
 
     try {
-      if (!items.length) {
+      if (items.length === 0) {
         resolve(results);
       }
 
@@ -33,7 +33,7 @@ export function promiseAll(items) {
             results[index] = val;
             completed++;
 
-            if (completed === results.length) {
+            if (completed === items.length) {
               resolve(results);
             }
           })
@@ -43,16 +43,23 @@ export function promiseAll(items) {
       reject(err);
     }
   });
-  // return Promise.resolve([]); // replace
 }
 
 export function withTimeout(promise, ms) {
+  const now = Date.now();
+
   return new Promise((resolve, reject) => {
     Promise.resolve(promise).then((val) => resolve(val));
-    setTimeout(() => {
-      reject(new Error("timeout"));
-    }, ms);
+    Promise.reject(setTimeout(() => reject(new Error("timeout")), ms));
   });
+
+  // return new Promise((resolve, reject) => {
+  //   setTimeout(() => {
+  //     reject(new Error("timeout"));
+  //   }, ms);
+
+  //   Promise.resolve(promise).then((val) => resolve(val));
+  // });
 
   // replace with Promise.race against a timer
 }
@@ -60,21 +67,19 @@ export function withTimeout(promise, ms) {
 // retry(fn, attempts, delayMs): calls fn(), and on rejection waits delayMs and calls it again, up to attempts calls in total. It rejects with the last error.
 
 export async function retry(fn, attempts, delayMs) {
-  return new Promise((resolve, reject) => {
-    let retries = 0;
+  let retries = 0;
 
-    setInterval(() => {
-      Promise.resolve(fn())
-        .then((val) => resolve(val))
-        .catch((err) => {
-          retries++;
+  while (retries < attempts) {
+    try {
+      return await fn();
+    } catch (err) {
+      retries++;
 
-          if (retries === attempts) {
-            reject(err);
-          }
-        });
-    }, delayMs);
-  });
+      if (retries === attempts) {
+        throw new Error(err);
+      }
 
-  return fn(); // replace
+      await sleep(delayMs);
+    }
+  }
 }
