@@ -9,15 +9,13 @@ Global Relay round 2 done 10-23; offer at **Senior**, not Staff. **Never raise t
 ask about it** (his rule, 10-26). The sprint record is in `HISTORY.md` → "GR loop closed". Back on
 the Staff roadmap: the tracks paused 10-17 are restored below.
 
-## Next session: Security S1
+## Next session: grade S1 (lesson 11)
 
-He types `/teach browser security from zero`, then skill `build-lesson`. From zero: HTTP
-request/response, origin vs site, how cookies are set/stored/attached (by destination), SOP, CORS
-and preflight, taught as **two gates** (gate 1 CORS/preflight: is it sent; gate 2
-SameSite/Domain/Path/Secure: does the cookie go; HttpOnly is in neither). Chat 10-14/15 (prep
-§2e–2f) covered part of this: build on it, don't repeat it. Retrieval: lesson 6's cookie-flags
-drill + check 1, cold, target 4/5+. Fold in: where a cookieless request is rejected (app auth
-middleware), why public APIs use header tokens.
+Built 10-26: `lessons/0011-the-request-pipeline.html` (~35 min). Four stops (gate 1 sent?, gate 2
+cookies?, server, gate 3 read?), jar rules, origin vs site, 8-scenario trace, header tokens vs
+cookies. Retrieval = lesson 6's 5-item drill cold + "CORS protects our API?" (target 4/5+, verdict
+**and** rule). He pastes the cold answer, traces A–H and the check as first written. Grade, write an
+LR, then S2 (`/teach authentication from zero`). Lesson 6 check 1 (token storage) moves to S3.
 
 ## Security, AuthN and AuthZ: zero to hero (his ask, 2026-10-08)
 
@@ -27,7 +25,7 @@ OWASP API Top 10 before S5 and S7.
 
 | # | Lesson | Status |
 |---|---|---|
-| S1 | How the browser talks to servers: origins, cookies, SOP, CORS, the two gates | **next** |
+| S1 | How the browser talks to servers: origins, cookies, SOP, CORS, the two gates | lesson 11 built 10-26, ungraded |
 | S2 | AuthN from zero: password hashing, server sessions (ID, store, fixation, timeouts, logout), MFA/passkeys | |
 | S3 | Attacks on a logged-in user: XSS, CSRF, cookie flags, CSP. [Lesson 6](lessons/0006-the-browser-attaches-the-cookie.html) exists: retake or rebuild after S1–S2 | lesson 6: 2/5 (LR-0014) |
 | S4 | Tokens: JWT, signing and validation, sessions vs JWT, access + refresh, revocation | |

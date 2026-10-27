@@ -1,0 +1,370 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lesson 11 — The Request Pipeline</title>
+<link rel="stylesheet" href="../assets/course.css">
+<style>
+  /* Prose in every column (same override as lesson 6). */
+  main table { display: block; overflow-x: auto; }
+  main tbody td:first-child,
+  main tbody td:last-child { white-space: normal; text-align: left; font-size: inherit; color: inherit; }
+  main td { min-width: 6rem; }
+  pre.http { font-size: 0.85rem; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>The request pipeline</h1>
+  <p class="subtitle">Every cross-origin request goes through the same four stops: is it sent, which
+  cookies go with it, what the server does, and whether the script may read the answer. Learn the
+  four stops, then trace eight requests through them.</p>
+  <p class="meta">Lesson 11 · Security track S1 · ~35 min · have a timer ready ·
+  <a href="0010-which-declaration-wins.html">← Lesson 10</a></p>
+</header>
+
+<main>
+
+<div class="predict" data-predict data-key="0011-cold">
+  <span class="predict-label">Cold, 2 minutes, before reading</span>
+  <p class="predict-prompt">You're logged in to <code>bank.com</code>. You open
+  <code>evil.com</code>, which runs <code>fetch("https://bank.com/api/balance", { credentials: "include" })</code>.
+  Say step by step what the browser and the server do, and whether evil.com ends up with your balance.</p>
+  <textarea class="predict-input" placeholder="1. … 2. … 3. …"></textarea>
+  <button class="predict-btn">Lock it</button>
+  <div class="predict-answer" hidden>
+    <p>Locked. Section 3 traces this exact request (scenario C). Compare your answer then.</p>
+  </div>
+</div>
+
+<h2>1 · What a request is, and why cookies exist</h2>
+
+<p>HTTP is text. The client sends a <strong>request</strong>: a method, a URL, headers, and an
+optional body. The server answers with a <strong>response</strong>: a status, headers, and a body.
+The server keeps no memory between requests, so every request has to say who it's from on its own.
+A cookie is how a browser does that.</p>
+
+<pre class="http"><code>POST /api/cart HTTP/1.1
+Host: api.shop.com
+Origin: https://app.shop.com      ← browser: who started it
+Sec-Fetch-Site: same-site         ← browser: same site?
+Cookie: sid=8f3a…                 ← browser: from the jar
+Content-Type: application/json
+
+{"item": 42}
+
+HTTP/1.1 201 Created
+Access-Control-Allow-Origin: https://app.shop.com
+Set-Cookie: sid=8f3a…; HttpOnly; Secure; SameSite=Lax</code></pre>
+
+<p>Your code doesn't write the three marked headers. The browser adds them, and scripts can't
+fake <code>Origin</code> or <code>Sec-Fetch-Site</code>
+(<a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Sec-Fetch-Site">MDN</a>:
+forbidden headers). That's why the server can trust them as a statement about the browser.</p>
+
+<h3>The cookie jar</h3>
+
+<p><code>Set-Cookie</code> puts a name, a value and some rules into the browser's jar. Before
+<em>every</em> request, the browser checks <strong>each cookie on its own</strong> against the
+request's <strong>destination</strong> and joins the cookies that pass into one <code>Cookie:</code>
+header. Which page started the request doesn't change which jar is used. It is only checked by
+SameSite, in section 3.</p>
+
+<table class="prose">
+  <thead><tr><th>Rule</th><th>The cookie goes only if…</th></tr></thead>
+  <tbody>
+    <tr><td><code>Domain</code></td><td>If it's left out, the destination host is exactly the one that set it ("host-only"). <code>Domain=shop.com</code> also covers every subdomain. It can't be a public suffix such as <code>com</code> or <code>github.io</code>.</td></tr>
+    <tr><td><code>Path</code></td><td>The URL path starts with it. MDN: Path "is not intended as a security measure".</td></tr>
+    <tr><td><code>Secure</code></td><td>The request is <code>https:</code> (localhost is exempt).</td></tr>
+    <tr><td><code>Expires</code> / <code>Max-Age</code></td><td>It hasn't expired.</td></tr>
+    <tr><td><code>SameSite</code></td><td>The <em>initiator</em> passes the site test. This is the only rule that looks at who started the request. See section 3.</td></tr>
+    <tr><td><code>HttpOnly</code></td><td><strong>Not a sending rule.</strong> It hides the cookie from <code>document.cookie</code>. MDN: it "will still be sent with JavaScript-initiated requests".</td></tr>
+  </tbody>
+</table>
+
+<div class="predict" data-predict data-key="0011-jar">
+  <span class="predict-label">Apply, 3 minutes</span>
+  <p class="predict-prompt"><code>https://shop.com</code> responds with
+  <code>Set-Cookie: sid=abc; Path=/api; Secure; HttpOnly</code> (no Domain). All of these requests start on a
+  shop.com page. For each one, write <em>sent</em> or <em>not sent</em> and the rule that decides it.<br>
+  (1) <code>GET https://shop.com/api/cart</code><br>
+  (2) <code>GET https://shop.com/account</code><br>
+  (3) <code>GET http://shop.com/api/cart</code><br>
+  (4) <code>GET https://api.shop.com/api/cart</code><br>
+  (5) <code>console.log(document.cookie)</code>, followed by <code>fetch("/api/cart")</code>.<br>
+  (6) The server adds <code>Domain=shop.com</code>. Which of your answers changes?</p>
+  <textarea class="predict-input" placeholder="(1) … (2) … (3) … (4) … (5) … (6) …"></textarea>
+  <button class="predict-btn">Reveal</button>
+  <div class="predict-answer" hidden>
+    <p>(1) <strong>Sent.</strong> Every rule passes.
+    (2) <strong>Not sent</strong>, because of Path.
+    (3) <strong>Not sent</strong>, because of Secure.
+    (4) <strong>Not sent</strong>: there's no Domain, so it's host-only and <code>api.shop.com</code> is a different host.
+    (5) <code>sid</code> isn't in the log (HttpOnly), and the fetch <strong>sends it anyway</strong>. HttpOnly hides it from your code, not from the request.
+    (6) <strong>(4) changes to sent.</strong> Domain extends the cookie to every subdomain.</p>
+  </div>
+</div>
+
+<h2>2 · Origin and site: two different "same" tests</h2>
+
+<table class="prose">
+  <thead><tr><th></th><th>Origin</th><th>Site</th></tr></thead>
+  <tbody>
+    <tr><td>Made of</td><td>Scheme + host + port</td><td>Scheme + registrable domain (a <a href="https://publicsuffix.org/">public suffix</a> plus one label in front). The port is ignored</td></tr>
+    <tr><td><code>app.shop.com</code> vs <code>api.shop.com</code></td><td>Different</td><td>Same (<code>shop.com</code>)</td></tr>
+    <tr><td>Used by</td><td>The same-origin policy, CORS, <code>fetch</code>'s default credentials</td><td>SameSite cookies, <code>Sec-Fetch-Site</code></td></tr>
+  </tbody>
+</table>
+
+<p>SameSite compares sites <em>including the scheme</em>, so <code>http://shop.com</code> and
+<code>https://shop.com</code> are cross-site
+(<a href="https://developer.mozilla.org/en-US/docs/Glossary/Site">MDN, Site</a>: "schemeful
+same-site").</p>
+
+<div class="predict" data-predict data-key="0011-origin">
+  <span class="predict-label">Apply, 2 minutes</span>
+  <p class="predict-prompt">For each pair, write <em>same-origin</em>, <em>cross-origin but same-site</em>, or <em>cross-site</em>.
+  Pairs 1 to 5 are all compared with <code>https://app.shop.com</code>.<br>
+  (1) <code>https://app.shop.com/admin</code><br>
+  (2) <code>https://app.shop.com:8443</code><br>
+  (3) <code>https://api.shop.com</code><br>
+  (4) <code>http://app.shop.com</code><br>
+  (5) <code>https://shop.co.uk</code><br>
+  (6) <code>https://alice.github.io</code> vs <code>https://bob.github.io</code></p>
+  <textarea class="predict-input" placeholder="(1) … (6) …"></textarea>
+  <button class="predict-btn">Reveal</button>
+  <div class="predict-answer" hidden>
+    <p>(1) <strong>Same-origin</strong>: only the path differs.
+    (2) <strong>Cross-origin, same-site</strong>: the port changes the origin but not the site.
+    (3) <strong>Cross-origin, same-site.</strong>
+    (4) <strong>Cross-site</strong>: the scheme differs, and SameSite uses schemeful site.
+    (5) <strong>Cross-site.</strong>
+    (6) <strong>Cross-site</strong>: <code>github.io</code> is a public suffix, so each user's subdomain is its own site. That's the reason a site's cookies can't use <code>Domain=github.io</code>.</p>
+  </div>
+</div>
+
+<h2>3 · The pipeline: four stops</h2>
+
+<p>On 10-14 you learned two gates. The full picture adds the server and a read check after it. The
+<strong>same-origin policy</strong> (SOP) is the browser's default rule: a page may <em>send</em>
+cross-origin (links, form submits) and <em>embed</em> (img, script), but its scripts may not
+<em>read</em> cross-origin responses
+(<a href="https://developer.mozilla.org/en-US/docs/Web/Security/Same-origin_policy">MDN, SOP</a>).
+<strong>CORS</strong> is the server's way of relaxing that rule for specific origins.</p>
+
+<table class="prose">
+  <thead><tr><th>Stop</th><th>Question</th><th>Who decides, by what</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Gate 1</strong></td><td>Is the request sent?</td><td>
+      Navigations and embeds (link, form submit, <code>&lt;img&gt;</code>) are always sent. For a <strong>script</strong> request
+      to another origin, it depends on whether the request is simple:<br>
+      · <strong>Simple</strong> (GET/HEAD/POST, only safelisted headers, Content-Type one of
+      <code>application/x-www-form-urlencoded</code>, <code>multipart/form-data</code>, <code>text/plain</code>): <strong>sent</strong>, with no question asked.<br>
+      · Anything else (a JSON body, PUT/DELETE, any other header, <strong><code>Authorization</code> included</strong>): an
+      <code>OPTIONS</code> <strong>preflight</strong> goes first, without cookies. If the server's answer doesn't approve this origin, method and headers, the
+      real request is <strong>never sent</strong>.
+    </td></tr>
+    <tr><td><strong>Gate 2</strong></td><td>Which cookies go?</td><td>
+      The jar rules from section 1, for each cookie, plus two more:<br>
+      · <strong>SameSite</strong> compares the initiator's site with the destination's.
+      <code>Strict</code>: same-site only. <code>Lax</code>: also cross-site top-level navigations with a safe
+      method (clicking a link). <code>None</code>: always, and requires <code>Secure</code>.<br>
+      · <strong><code>fetch</code>'s <code>credentials</code></strong> defaults to <code>same-origin</code>, so a
+      cross-origin fetch sends <strong>no cookies</strong> unless it sets <code>credentials: "include"</code>.
+    </td></tr>
+    <tr><td><strong>Server</strong></td><td>What happens?</td><td>
+      The request runs. Auth middleware checks for a session: none means <strong>401</strong>, the wrong user means
+      403/404. <strong>Side effects happen here</strong>, before the browser decides anything about reading.
+      The browser never blocks a request because a cookie is missing. The server rejects it.
+    </td></tr>
+    <tr><td><strong>Gate 3</strong></td><td>May the script read the response?</td><td>
+      Only if <code>Access-Control-Allow-Origin</code> matches the calling origin. For a request sent
+      with credentials, the response also needs <code>Access-Control-Allow-Credentials: true</code>, and
+      <code>*</code> isn't accepted. If the check fails, the script gets a network error with no detail, but the
+      server has already done the work.
+    </td></tr>
+  </tbody>
+</table>
+
+<div class="note">
+  <p><strong>Why preflight exists.</strong> Forms and links could always send GET, and POST with a
+  form or text body. Servers already had to survive those. <code>fetch</code> gave scripts new
+  powers (a JSON body, DELETE, custom headers), so the browser asks first before using them against a
+  server that never opted in. MDN: "the server doesn't have to opt-in … to receive any request that looks like
+  a form submission."</p>
+  <p><strong>CORS protects the user's browser, not your server.</strong> It decides what another
+  site's scripts can do <em>with your users' cookies</em>. <code>curl</code> has no gates at all.
+  Only the server's own checks stop it.</p>
+</div>
+
+<h3>Trace it</h3>
+
+<p>The same setup holds for every scenario in this section. You're logged in to <code>app.shop.com</code>. The
+API is <code>api.shop.com</code>, which set <code>sid=…; HttpOnly; Secure; SameSite=Lax; Path=/</code>
+(no Domain). The API's CORS policy allows origin <code>https://app.shop.com</code> with credentials,
+methods GET/POST/DELETE, and header Content-Type. Answer all four stops for each scenario:
+<strong>sent? · cookie? · what the server does · readable?</strong></p>
+
+<div class="predict" data-predict data-key="0011-trace-1">
+  <span class="predict-label">Trace, 5 minutes</span>
+  <p class="predict-prompt">
+  <strong>A.</strong> On app.shop.com: <code>fetch("https://api.shop.com/cart", { credentials: "include" })</code><br>
+  <strong>B.</strong> The same, but without the <code>credentials</code> option.<br>
+  <strong>C.</strong> On evil.com: <code>fetch("https://api.shop.com/cart", { credentials: "include" })</code><br>
+  <strong>D.</strong> On evil.com: <code>fetch("https://api.shop.com/cart/items/7", { method: "DELETE", credentials: "include" })</code></p>
+  <textarea class="predict-input" placeholder="A: sent? cookie? server? readable?&#10;B: …&#10;C: …&#10;D: …"></textarea>
+  <button class="predict-btn">Reveal</button>
+  <div class="predict-answer" hidden>
+    <p><strong>A.</strong> Sent: it's a simple GET. Cookie: yes, because the call is same-site and Lax allows it, and <code>include</code> is set. The server returns the cart.
+    Readable: yes, ACAO matches and ACAC is true. This is the normal app path.</p>
+    <p><strong>B.</strong> Sent. Cookie: <strong>no</strong>. It's cross-origin, and the default <code>same-origin</code> mode leaves cookies off.
+    The server returns <strong>401</strong>. Readable: yes, the script reads a 401. This is the most common real bug: "the API says I'm logged out on every call."</p>
+    <p><strong>C.</strong> Sent: it's a simple GET, so gate 1 doesn't apply. Cookie: <strong>no</strong>. It's cross-site and not a top-level navigation, so Lax keeps
+    it home. The server returns 401. Readable: no, ACAO doesn't match evil.com. Two separate stops each protect you.
+    Check your cold answer: did you say the request goes out?</p>
+    <p><strong>D.</strong> DELETE isn't simple, so an <code>OPTIONS</code> preflight goes first, with no cookie. The server's policy doesn't
+    list evil.com, so the <strong>DELETE is never sent</strong>. Cookie, server and read don't apply.</p>
+  </div>
+</div>
+
+<div class="predict" data-predict data-key="0011-trace-2">
+  <span class="predict-label">Trace, 5 minutes</span>
+  <p class="predict-prompt">
+  <strong>E.</strong> evil.com auto-submits <code>&lt;form method="POST" action="https://api.shop.com/cart/clear"&gt;</code>.<br>
+  <strong>F.</strong> A stored XSS runs <strong>inside app.shop.com</strong> and calls
+  <code>fetch("https://api.shop.com/cart/items/7", { method: "DELETE", credentials: "include" })</code>.<br>
+  <strong>G.</strong> An attacker who copied the <code>sid</code> value out of a log runs
+  <code>curl -X DELETE https://api.shop.com/cart/items/7 -H "Cookie: sid=…"</code>.<br>
+  <strong>H.</strong> Two mistakes ship together. The API now copies any request's <code>Origin</code> into
+  <code>Access-Control-Allow-Origin</code> with <code>Allow-Credentials: true</code>, and <code>sid</code>
+  becomes <code>SameSite=None; Secure</code> for a partner widget. Run scenario C again, in Chrome.</p>
+  <textarea class="predict-input" placeholder="E: …&#10;F: …&#10;G: …&#10;H: …"></textarea>
+  <button class="predict-btn">Reveal</button>
+  <div class="predict-answer" hidden>
+    <p><strong>E.</strong> Sent: a form submit is a navigation, so there's no preflight. Cookie: <strong>no</strong>. A cross-site POST isn't Lax's exception.
+    The server returns 401, and nothing is cleared. SameSite is the stop that saved you here.</p>
+    <p><strong>F.</strong> The preflight's Origin is app.shop.com, so it's <strong>approved</strong> and the request is sent. Cookie: yes, it's same-site.
+    The server <strong>deletes the item</strong>. Readable: yes. Every stop passes, because to the browser this script <em>is</em> your app.
+    HttpOnly changes nothing. No gate stops XSS. That's lesson S3.</p>
+    <p><strong>G.</strong> <strong>It succeeds.</strong> curl isn't a browser, so there's no preflight, no SameSite and no CORS. The server sees a valid session.
+    CORS never protected the server. Only server-side controls do: short sessions, binding the session to a device, detecting anomalies.</p>
+    <p><strong>H.</strong> Sent (simple GET). Cookie: <strong>yes</strong>. With <code>None</code>, the cookie goes cross-site, and Chrome
+    still sends third-party cookies. The server returns your cart. Readable: <strong>yes</strong>, because the reflected ACAO matches evil.com and ACAC is true.
+    <strong>evil.com reads your data.</strong> Either mistake alone stays blocked, because gates 2 and 3 are independent. Ship both and you have a full breach.
+    The fix is an explicit allowlist of origins, never reflection.</p>
+  </div>
+</div>
+
+<h2>4 · Why public APIs take a header token, not a cookie</h2>
+
+<p>A cookie is an <strong>ambient credential</strong>: the browser attaches it to any request that
+passes gate 2, whoever started it. That's what CSRF exploits. An
+<code>Authorization: Bearer …</code> header is attached only by code that holds the token.</p>
+
+<table class="prose">
+  <thead><tr><th></th><th>Session cookie</th><th>Bearer token in a header</th></tr></thead>
+  <tbody>
+    <tr><td>Attached by</td><td>The browser, automatically</td><td>Your code, deliberately</td></tr>
+    <tr><td>CSRF exposure</td><td>Yes. Needs SameSite and a CSRF defence</td><td>None. Another site can't make the browser add it</td></tr>
+    <tr><td>Clients</td><td>Browsers, on your own site(s)</td><td>Any: other origins, mobile apps, servers, curl</td></tr>
+    <tr><td>Gate 1</td><td>Simple requests skip the preflight</td><td><code>Authorization</code> isn't safelisted, so every call is preflighted</td></tr>
+    <tr><td>XSS</td><td>HttpOnly: the script can use the session in the tab, but can't take it away</td><td>The token is reachable from JS, so it can be stolen and used anywhere until it expires</td></tr>
+  </tbody>
+</table>
+
+<div class="predict" data-predict data-key="0011-public">
+  <span class="predict-label">Apply, 3 minutes</span>
+  <p class="predict-prompt">You run <code>api.acme.com</code>. Customers call it from SPAs on their own
+  domains (<code>app.customer1.com</code>, …), and from their backends. A teammate proposes the
+  session cookie your own dashboard uses, set to <code>SameSite=None</code>. Write your answer: what
+  you'd use instead, and what the CORS policy has to say.</p>
+  <textarea class="predict-input" placeholder="…"></textarea>
+  <button class="predict-btn">Reveal</button>
+  <div class="predict-answer" hidden>
+    <p><strong>A token in the <code>Authorization</code> header.</strong> A <code>SameSite=None</code> cookie works
+    from every site on the web, including evil ones, so it's CSRF exposure on every endpoint. It also does
+    nothing for backend callers, which have no cookie jar.</p>
+    <p><strong>CORS:</strong> answer the preflight with each customer's origin, taken from an
+    allowlist, and allow the <code>Authorization</code> header. You don't need <code>Allow-Credentials</code>,
+    because no cookies are involved. Since a header token can't be forged cross-site, <code>Allow-Origin: *</code> is
+    even acceptable for a truly public, token-only API. The token's own weakness is XSS on the
+    customer's side, which is why those tokens are short-lived and scoped. That's S4.</p>
+  </div>
+</div>
+
+<h2>5 · Retrieval check (cold, 8 minutes)</h2>
+
+<p>Scroll so nothing above is on screen. This is lesson 6's drill (2/5 on 10-07). The target is 4/5,
+and each point needs a correct verdict <em>and</em> the rule that decides it.</p>
+
+<div class="predict" data-predict data-key="0011-check">
+  <span class="predict-label">Without scrolling up</span>
+  <p class="predict-prompt">A BFF session cookie is set as <code>sid=…; HttpOnly; Secure; SameSite=Lax; Path=/</code>
+  on <code>app.example.com</code>, with no other CSRF defence. For each attack, write <em>succeeds</em> or <em>blocked</em>,
+  and name the stop and rule that decide it.<br>
+  (1) evil.com auto-submits a form POST to <code>/api/projects/42/delete</code>.<br>
+  (2) The API also accepts <code>GET /api/projects/42/delete</code>, and evil.com shows a link to it that the user clicks.<br>
+  (3) The same GET URL, but as <code>&lt;img src&gt;</code> on evil.com.<br>
+  (4) A stored XSS on <code>blog.example.com</code> (another team's app) auto-submits the form POST from (1).<br>
+  (5) A stored XSS inside <code>app.example.com</code> runs <code>fetch("/api/projects/42", { method: "DELETE" })</code>.<br>
+  (6) One sentence: "We have CORS locked down, so our API is protected." What's wrong with it?</p>
+  <textarea class="predict-input" placeholder="(1) … (6) …"></textarea>
+  <button class="predict-btn">Reveal</button>
+  <div class="predict-answer" hidden>
+    <p>(1) <strong>Blocked</strong> at gate 2. It's a cross-site POST, which isn't Lax's exception, so the cookie stays home. The server returns 401.</p>
+    <p>(2) <strong>Succeeds.</strong> A link click is a top-level navigation with a safe method, which is exactly Lax's exception. The bug is a GET that changes state.</p>
+    <p>(3) <strong>Blocked</strong> at gate 2. An <code>&lt;img&gt;</code> is a subresource load, not a top-level navigation.</p>
+    <p>(4) <strong>Succeeds.</strong> blog.example.com and app.example.com are the <strong>same site</strong>, so SameSite never applies. Fetch Metadata that accepts only <code>same-origin</code>, or a CSRF token, would stop it.</p>
+    <p>(5) <strong>Succeeds.</strong> It's same-origin, so every stop passes. HttpOnly doesn't stop the cookie from being sent.</p>
+    <p>(6) CORS limits what <em>other sites' scripts in your users' browsers</em> can do. It doesn't stop simple requests from being sent, and it does nothing against curl, a stolen session, or XSS in your own origin. The server is protected only by its own authN and authZ.</p>
+  </div>
+</div>
+
+<div class="note">
+  <p><strong>Sentence to have ready:</strong> <em>"A cross-origin request passes four stops. The
+  browser decides whether it's sent: simple requests always go, anything else waits for a preflight.
+  Then it decides which cookies go: Domain, Path and Secure by destination, SameSite by who started
+  it, and fetch only sends them cross-origin with credentials include. Then the server runs it. Last,
+  CORS decides whether the calling script may read the response. HttpOnly is in none of those.
+  So CORS protects users' browsers from other sites. It never protects the server, which needs its
+  own authentication and authorization."</em></p>
+</div>
+
+<div class="ask">
+  <p><strong>Ask me.</strong> Paste the cold answer, the two traces (A–H) and the retrieval check
+  exactly as first written. If a reveal surprised you, name the stop you skipped.</p>
+</div>
+
+<h2>Read this</h2>
+<p><strong>Primary source:</strong> <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CORS">MDN,
+Cross-Origin Resource Sharing</a> (15 minutes: "Simple requests", "Preflighted requests", "Requests with
+credentials").</p>
+
+<h2>Sources</h2>
+<ul>
+  <li>MDN, <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CORS">CORS</a>. Simple-request conditions and the three content types; the <code>OPTIONS</code> preflight is sent before the real request, which is sent only after approval; "CORS-preflight requests must never include credentials"; no <code>*</code> with credentials; browsers don't send credentials cross-origin by default; CORS errors carry no detail to JS.</li>
+  <li>MDN, <a href="https://developer.mozilla.org/en-US/docs/Web/API/RequestInit">RequestInit</a>. <code>credentials</code> defaults to <code>same-origin</code>.</li>
+  <li>MDN, <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Set-Cookie">Set-Cookie</a>. Host-only when Domain is omitted, no public-suffix Domain, Path isn't a security measure, Secure and the localhost exemption, HttpOnly cookies are still sent, the SameSite definitions, and None requires Secure.</li>
+  <li>MDN, <a href="https://developer.mozilla.org/en-US/docs/Web/Security/Same-origin_policy">Same-origin policy</a>. The definition of origin; writes and embeds allowed, reads disallowed.</li>
+  <li>MDN, <a href="https://developer.mozilla.org/en-US/docs/Glossary/Site">Site</a>. Registrable domain, port ignored, schemeful same-site for SameSite.</li>
+  <li>MDN, <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Sec-Fetch-Site">Sec-Fetch-Site</a>. Its values, and that it's a forbidden header scripts can't set.</li>
+  <li>Chrome keeping third-party cookies (scenario H): <a href="https://engadget.com/cybersecurity/google-has-killed-privacy-sandbox-130029899.html">Engadget, Oct 2025</a>, on Google's April 2025 decision and the retirement of Privacy Sandbox.</li>
+</ul>
+
+<footer class="nav">
+  <p><strong>This lesson targets:</strong> LR-0014 (a missing cookie read as "request blocked"; CORS read as
+  a server-side filter) and LR-0016 (CORS protects the user, not the server). Next: S2, authentication
+  from zero.</p>
+  <ul>
+    <li><a href="0010-which-declaration-wins.html">← Lesson 10</a></li>
+    <li><a href="0006-the-browser-attaches-the-cookie.html">Lesson 6 (S3 builds on it)</a></li>
+  </ul>
+</footer>
+
+</main>
+
+<script src="../assets/predict.js"></script>
+</body>
+</html>
