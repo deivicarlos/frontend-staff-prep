@@ -20,7 +20,7 @@ overcorrected: app.shop.com → api.shop.com read as same-origin (subdomain = sa
 and thought fetch defaults to `include`. Round 3: origin 4/5 (`www.shop.com` read as same-origin as `shop.com`), preflight 5/5. Still says
 "cookies included because of Lax": SameSite only removes; fetch defaults to `same-origin`.
 **Next session opens with lesson 11 §5 cold** (fresh tab, answers cleared:
-`localStorage.removeItem("fsp:predictions")`), target 4/5, then S2 if it holds. Then retest lesson 11's check cold on a later day, target 4/5. S2 waits.
+in the console: `p=JSON.parse(localStorage["fsp:predictions"]);delete p["0011-check"];delete p["0011-check:revealed"];localStorage["fsp:predictions"]=JSON.stringify(p)`), target 4/5, then S2 if it holds. Then retest lesson 11's check cold on a later day, target 4/5. S2 waits.
 
 ## Security, AuthN and AuthZ: zero to hero (his ask, 2026-10-08)
 
