@@ -17,7 +17,10 @@ before the server. Repair in chat, no reading: rapid verdicts on (1) when a pref
 (2) the server runs before the read check. Repair round 1 (10-26): preflight 4/6. He preflighted a same-origin DELETE and a string-body POST
 (fetch sets text/plain); he skipped "does the server run it". Round 2: preflight 1/4. He had believed preflight runs on every request (his words), then
 overcorrected: app.shop.com → api.shop.com read as same-origin (subdomain = same origin, also jar #6),
-and thought fetch defaults to `include`. Round 3 (origin check first, 5 items) given in chat. Then retest lesson 11's check cold on a later day, target 4/5. S2 waits.
+and thought fetch defaults to `include`. Round 3: origin 4/5 (`www.shop.com` read as same-origin as `shop.com`), preflight 5/5. Still says
+"cookies included because of Lax": SameSite only removes; fetch defaults to `same-origin`.
+**Next session opens with lesson 11 §5 cold** (fresh tab, answers cleared:
+`localStorage.removeItem("fsp:predictions")`), target 4/5, then S2 if it holds. Then retest lesson 11's check cold on a later day, target 4/5. S2 waits.
 
 ## Security, AuthN and AuthZ: zero to hero (his ask, 2026-10-08)
 
