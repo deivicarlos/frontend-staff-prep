@@ -9,13 +9,13 @@ Global Relay round 2 done 10-23; offer at **Senior**, not Staff. **Never raise t
 ask about it** (his rule, 10-26). The sprint record is in `HISTORY.md` → "GR loop closed". Back on
 the Staff roadmap: the tracks paused 10-17 are restored below.
 
-## Next session: grade S1 (lesson 11)
+## Next session: S1 repair, then retest (LR-0022)
 
-Built 10-26: `lessons/0011-the-request-pipeline.html` (~35 min). Four stops (gate 1 sent?, gate 2
-cookies?, server, gate 3 read?), jar rules, origin vs site, 8-scenario trace, header tokens vs
-cookies. Retrieval = lesson 6's 5-item drill cold + "CORS protects our API?" (target 4/5+, verdict
-**and** rule). He pastes the cold answer, traces A–H and the check as first written. Grade, write an
-LR, then S2 (`/teach authentication from zero`). Lesson 6 check 1 (token storage) moves to S3.
+Lesson 11 graded 10-26: check **1/5** (lesson 6 drill; 2/5 on 10-07), jar 2/6, origin 4/6, traces
+~3/8. He applies preflight/CORS to every request (simple GET, same-origin, forms, curl) and places it
+before the server. Repair in chat, no reading: rapid verdicts on (1) when a preflight happens,
+(2) the server runs before the read check. Rapid round 1 was given in chat 10-26: grade his answers if
+he brings them. Then retest lesson 11's check cold on a later day, target 4/5. S2 waits.
 
 ## Security, AuthN and AuthZ: zero to hero (his ask, 2026-10-08)
 
@@ -25,7 +25,7 @@ OWASP API Top 10 before S5 and S7.
 
 | # | Lesson | Status |
 |---|---|---|
-| S1 | How the browser talks to servers: origins, cookies, SOP, CORS, the two gates | lesson 11 built 10-26, ungraded |
+| S1 | How the browser talks to servers: origins, cookies, SOP, CORS, the two gates | lesson 11: 1/5 (LR-0022), repair |
 | S2 | AuthN from zero: password hashing, server sessions (ID, store, fixation, timeouts, logout), MFA/passkeys | |
 | S3 | Attacks on a logged-in user: XSS, CSRF, cookie flags, CSP. [Lesson 6](lessons/0006-the-browser-attaches-the-cookie.html) exists: retake or rebuild after S1–S2 | lesson 6: 2/5 (LR-0014) |
 | S4 | Tokens: JWT, signing and validation, sessions vs JWT, access + refresh, revocation | |
