@@ -1,74 +1,68 @@
 # State
 
-_Updated 2026-10-22. Plan re-set 2026-09-24 ([LR-0012](learning-records/0012-reweight-to-what-screens-grade.md));
+_Updated 2026-10-26. Plan re-set 2026-09-24 ([LR-0012](learning-records/0012-reweight-to-what-screens-grade.md));
 decisions in `MISSION.md` and `career/CAREER.md`. Scores and closed items: `HISTORY.md`._
 
-## Next session (Thu 10-22 afternoon)
+## GR loop closed (10-26)
 
-**Thursday, in order (about 3 h 10):** C (70) → D (20) → B (30) → F (40) → E (30). G only if
-time is left. Say each item's length up front. (His Wednesday session ran past midnight; no day
-was lost. Earlier entries dated "Wed 10-22" mean that same night.)
+Global Relay round 2 done 10-23; offer at **Senior**, not Staff. **Never raise the interview or
+ask about it** (his rule, 10-26). The sprint record is in `HISTORY.md` → "GR loop closed". Back on
+the Staff roadmap: the tracks paused 10-17 are restored below.
 
-**A2 done 10-22: 3/6** (coached mid-attempt, so not clean; `EVALUATION.md`). He rates #2 (comment)
-and #5 (empty-on-load) minor. Brief defect he called out: requirement 1 never said "build a
-separate Phrase input". In future briefs, name every element to build in the requirement text.
-**C drills graded 10-22: 1/4 on mechanism** (10/10 on the original checks, 10/13 after I added 3
-for the gaps; `exercises/0009-promise-drills/EVALUATION.md`). The failures were all stop
-conditions: `promiseAll` used a sparse `results.length`, `withTimeout` drops the input's
-rejection, `retry` setInterval is never cleared (LR-0019 pattern). Attempt 2: 11/13, he moved on;
-`withTimeout` still drops rejections. Cold-check in E. **Next:
-C's predictions + quiz skipped (his call). D built 10-22: `lessons/0010-which-declaration-wins.html`
-(5 drills + retrieval check, verified in Chrome); he did it, no review (his call).
-**B graded 10-22: 1/3** (LR-0021: missed that the `[ticketId]` cleanup already drops stale responses; no model of when cleanup
-runs). E must cold-check cleanup timing and a stale-response sequence.
-**He skipped F for now (10-22) and asked for no-boilerplate drills. Built: `exercises/0010-hook-drills`
-(30 min, 13 vitest tests) and `exercises/0011-string-drills` (50 min, LC 125/680/3/5, 12 checks; this is G).
-Both verified red on stubs, green on a reference, brute force fails timing. Next: 0010 → 0011 → grade → E/F.**
-**0010 at bedtime 10-22: 5/13.** #1 right. #2 had no fn ref and no timer (returned raw `fn`). #3 had no
-guard in `catch`, no `return` after the empty-query branch, and loading never cleared. He got the fixed
-version in chat. Fri warm-up: rewrite #2 and #3 cold (10 min), then the 5 cold questions. He proposed dropping D. His own CSS answer (10-22)
-showed two misconceptions: `div .selected` read as "divs with the class" (it's descendant), and
-cascade conflated with inheritance. No specificity tuple. So D stays, shortened to those gaps.
+## Next session: Security S1
 
-Taught 10-21 after grading. Cold-check one at A2 grading and the rest in E:
-- Big-O by counting loops, including hidden ones (spread, `includes`, `str = ch + str`).
-- `while (i < j)`: the pointers cross on even lengths; move only the pointer that skips punctuation.
-- Local mutation is fine (`acc.push` on an array you just made). Don't mutate state or props.
-- `useDeferredValue` isn't a debounce (no delay; interruptible background render). It needs `memo`.
-- Not Actions: `onChange`, `onSubmit`. Actions are the `action`/`formAction` prop or a
-  `startTransition` callback. Never put controlled-input state in a transition (react.dev);
-  defer the list, not the checkbox. (This closes the cheat-sheet `onSubmit` item.)
-- Module-level compute works only for static data; otherwise `useMemo` keyed on the data.
+He types `/teach browser security from zero`, then skill `build-lesson`. From zero: HTTP
+request/response, origin vs site, how cookies are set/stored/attached (by destination), SOP, CORS
+and preflight, taught as **two gates** (gate 1 CORS/preflight: is it sent; gate 2
+SameSite/Domain/Path/Secure: does the cookie go; HttpOnly is in neither). Chat 10-14/15 (prep
+§2e–2f) covered part of this: build on it, don't repeat it. Retrieval: lesson 6's cookie-flags
+drill + check 1, cold, target 4/5+. Fold in: where a cookieless request is rejected (app auth
+middleware), why public APIs use header tokens.
 
-## Global Relay round 2: **Fri 2026-10-23**
+## Security, AuthN and AuthZ: zero to hero (his ask, 2026-10-08)
 
-Round 1 done 10-16 ([LR-0018](learning-records/0018-gr-round-1-was-js-fundamentals.md)).
-**Recruiter's list (10-20, from a past candidate in this round):** experience walkthrough; React
-principles with code; JS Promises with code; CSS selector specificity; a palindrome problem in React
-with performance and Big-O. Topics: React, JS, CSS, AWS, UI libraries, AI-assisted coding,
-Java/Python, accessibility. The round-1 interviewer said: a screen-shared React code review, maybe
-a small build, maybe LeetCode from an AI-team interviewer. Prepare for both.
-Pay CAD 180-200k + 4%. Debrief: `career/private/2026-10-16-global-relay-debrief.md`.
+For system design rounds and Staff discussions. One lesson per session, from zero, each ending in
+a cold retrieval check against a clock. Sources: `RESOURCES.md` auth section; fetch RFC 9700 and
+OWASP API Top 10 before S5 and S7.
 
-**Sprint to Friday (re-planned 10-20).** Tell him each item's length up front. He takes slots as
-they open.
+| # | Lesson | Status |
+|---|---|---|
+| S1 | How the browser talks to servers: origins, cookies, SOP, CORS, the two gates | **next** |
+| S2 | AuthN from zero: password hashing, server sessions (ID, store, fixation, timeouts, logout), MFA/passkeys | |
+| S3 | Attacks on a logged-in user: XSS, CSRF, cookie flags, CSP. [Lesson 6](lessons/0006-the-browser-attaches-the-cookie.html) exists: retake or rebuild after S1–S2 | lesson 6: 2/5 (LR-0014) |
+| S4 | Tokens: JWT, signing and validation, sessions vs JWT, access + refresh, revocation | |
+| S5 | OAuth 2 and OIDC: delegation, roles, Code + PKCE, ID vs access token, SSO | |
+| S6 | SPA login architectures: BFF, token-mediating backend, browser client, server sessions | |
+| S7 | AuthZ: RBAC/ABAC/ReBAC, enforce on the server, scopes vs permissions, multi-tenancy, BOLA | |
+| S8 | Staff synthesis: auth in a design round, out loud, against a clock; one reference sheet | |
 
-| When | Item | Length | How |
-| --- | --- | --- | --- |
-| Tue | A. 0008 palindrome feed: **done 10-21, 1/6** | 50 | |
-| Wed (done) | A2. 0008 from scratch again, timed | 50 | `grade-exercise` |
-| Thu 3 | B. 0007 review rep 2 (built 10-18; matches the interviewer's own description). Make him state the A-then-B outcome before he edits. At grading, cold-check why `useOptimistic` needs a transition outside actions | 30 | `grade-exercise` |
-| Thu 1 | C. Promises from zero: event loop, microtasks, states, chaining, error propagation, `all`/`allSettled`/`race`/`any`, async/await. Then code: write `Promise.all`, `sleep`, timeout via `race`, retry, and predict output order (closes LR-0011) | 40 + 30 | built: `lessons/0009-the-microtask-queue.html` |
-| Thu 2 | D. CSS cascade from zero: origin and `!important`, `@layer`, specificity (id, class, type), `:is`/`:not`/`:has` vs `:where`, inline styles, order, inheritance. Predict-the-colour drill. Cut to his two misconceptions plus the specificity tuple | 20 | `/teach css specificity` |
-| Thu 5 | E. Cold mixed drill, retention check (LR-0017): the Big-O of idiomatic JS snippets (`reduce`+spread, string `+=`, `includes` in a loop) (LR-0020); the 10-21 list above; React principles with code (render/commit, key, snapshot, batching, effect timing, memo), promise output order, specificity, `this`/`==` | 30 | build it Thu, not before |
-| Thu 4 | F. Out loud, about 10 min each: a 2-min experience walkthrough mapped to their list (React, AWS, a11y, AI-assisted coding, the JS-to-React migration); the 6 s → 3 s story with a causal chain that holds (TTI was removed in Lighthouse 10); his AI-written-code review policy; honest Java/Python/AWS depth | 40 | `career-session` |
-| Thu, if time | G. two LeetCode string problems at 25 min each (valid palindrome II, longest substring without repeats) | 50 | `build-exercise` |
-| Fri | Warm-up only: 5 cold questions, no new material | 15 | |
+His setup (Node BFF, Passport + Auth0, express-session) only places him; never teach VEERUM's code.
 
-Dropped for this round: see `HISTORY.md` (re-planned 10-20). Hooks sheet: `reference/react-hooks.html`.
+## Weekly rhythm (40–60 min a day; bends to his day)
 
-Open recall items (LR-0016/17): INP phase 2 (processing); useEffect usually runs after paint
-(before it when an interaction caused it); RUM behind login. Fold into reps; no more CSP drilling.
+Mon–Thu: security lesson or a timed exercise · Fri: frontend system design · Sat/Sun: career.
+**System design track:** Lesson 5 (RADIO, built, unworked) first, ~30 min; he brings the
+chat-channel drill /4 and quiz /3; grade decision 1 on picking cursor *because of* C3. Then one a
+week: data grid/dashboard, autocomplete, design system, news feed, chat (confirm order against
+`research/2026-hiring-landscape.md`).
+
+## Queue after the security track (09-26; GR already covered some)
+
+1. Exercise: evolving AI-allowed build (grid robot, three requirement drops).
+2. Code review exercise: a flawed PR diff against a clock (0007 reps done; next must need a sequence simulated, LR-0019).
+3. Lesson 4: rendering, hooks and the event loop (LR-0011; lessons 8–9 covered part).
+4. Project deep dive (career session).
+5. Bonus: Web Worker vs Service Worker sheet.
+Then Phase 2, engineering with AI (`MISSION.md`).
+
+## Carry-over from GR (fold into reps as warm-ups, 5 min, cold)
+
+- Hook drills 0010 #2 (debounce: fn ref + timer) and #3 (guard in `catch`, return, clear loading): 5/13 at bedtime.
+- `withTimeout` drops the input's rejection; clear every timer you start (LR-0019 stop conditions).
+- Cleanup timing and a stale-response sequence (LR-0021).
+- CSS: `div .selected` is descendant; cascade ≠ inheritance; specificity tuple.
+- Big-O of idiomatic JS (`reduce`+spread, string `+=`, `includes` in a loop) (LR-0020).
+- INP phase 2; `useEffect` before paint when an interaction caused it.
 
 ## How to work with him now
 
@@ -76,11 +70,6 @@ He may answer by voice dictation (macOS), so expect mistranscribed terms. Typed 
 (his call, 10-15): he rehearses out loud alone. Don't end turns with "move on?". He says when.
 Never remind him of the clock or prompt him for interview recall; he manages his time and brings
 the debrief himself (his rule, 10-16).
-
-## After GR
-
-Paused tracks (security S1-S8, system design, the 09-26 queue) are parked verbatim in
-`HISTORY.md` → "Paused 2026-10-17". Restore them here when the GR loop ends.
 
 ## What we know about him (detail in `learning-records/INDEX.md`)
 
@@ -103,4 +92,4 @@ Paused tracks (security S1-S8, system design, the 09-26 queue) are parked verbat
 - Request state as a discriminated union is unmeasured.
 - Generics (Q14): fold into a component-API exercise.
 - `invalidateQueries` prefix matching missed in 0005 (LR-0013).
-- 0006's `eslint-plugin-react-hooks` is 4.6.2, which predates `useEffectEvent` (false deps warning). Upgrade before reusing the scaffold.
+- Upgrade 0006's `eslint-plugin-react-hooks` (4.6.2, predates `useEffectEvent`) before reusing it.

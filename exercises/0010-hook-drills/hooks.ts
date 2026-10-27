@@ -16,7 +16,7 @@ export function useDebouncedValue<T>(value: T, ms: number): T {
     return () => {
       clearTimeout(timerId);
     };
-  }, [value]);
+  }, [value, ms]);
 
   return debounced; // replace
 }
@@ -66,27 +66,35 @@ export function useSearch<T>(
   const [searchState, setSearchState] = useState<SearchState<T>>(initialState);
 
   useEffect(() => {
-    async function apiCall() {
-      try {
-        setSearchState((prev) => ({ ...prev, loading: true }));
-        const dt = await fetcher(query);
-
-        if (isCurrent) {
-          setSearchState((prev) => ({ ...prev, data: dt }));
-        }
-      } catch (_err: unknown) {
-        setSearchState((prev) => ({
-          ...prev,
-          loading: false,
-          error: _err as Error,
-        }));
-      }
+    if (!query) {
+      setSearchState((prev) => initialState);
+      return;
     }
 
     let isCurrent = true;
 
-    if (!query) {
-      setSearchState(initialState);
+    async function apiCall() {
+      setSearchState((prev) => ({ ...prev, loading: true }));
+      try {
+        const dt = await fetcher(query);
+
+        if (isCurrent) {
+          setSearchState((prev) => ({
+            ...prev,
+            data: dt,
+            error: null,
+            loading: false,
+          }));
+        }
+      } catch (_err: unknown) {
+        if (isCurrent) {
+          setSearchState((prev) => ({
+            ...prev,
+            loading: false,
+            error: _err as Error,
+          }));
+        }
+      }
     }
 
     apiCall();

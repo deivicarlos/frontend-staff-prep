@@ -92,7 +92,7 @@ Alongside it sits the one knowledge axis still billing real minutes: **mechanica
 - 10-15: preflight held 2/2 overnight, CSP rollout 3/3 on re-ask, internals/INP 2.5/7 cold →
   ~2.5/4 re-asked (LR-0017).
 
-## Paused 2026-10-17 for the GR loop (restore to STATE when GR ends)
+## Paused 2026-10-17 for the GR loop (restored to STATE 2026-10-26)
 
 ### Security lesson S1, next when resumed
 
@@ -164,3 +164,75 @@ LeetCode) was replaced by a Tue–Fri plan built from the recruiter's round-2 li
 Kept: 0007, the 6 s story, the AI-review answer. The JS drill was folded into the promises lesson
 and the Thu cold drill. Dropped for this round: the Vite fetch build and the Redux-to-TanStack
 answer.
+
+## GR loop closed 2026-10-26 (moved from STATE)
+
+Round 2 done 10-23. Result: offer at **Senior**, not Staff. He doesn't want to discuss the interview (his rule, 10-26): never raise it.
+
+### Next session (Thu 10-22 afternoon)
+
+**Thursday, in order (about 3 h 10):** C (70) → D (20) → B (30) → F (40) → E (30). G only if
+time is left. Say each item's length up front. (His Wednesday session ran past midnight; no day
+was lost. Earlier entries dated "Wed 10-22" mean that same night.)
+
+**A2 done 10-22: 3/6** (coached mid-attempt, so not clean; `EVALUATION.md`). He rates #2 (comment)
+and #5 (empty-on-load) minor. Brief defect he called out: requirement 1 never said "build a
+separate Phrase input". In future briefs, name every element to build in the requirement text.
+**C drills graded 10-22: 1/4 on mechanism** (10/10 on the original checks, 10/13 after I added 3
+for the gaps; `exercises/0009-promise-drills/EVALUATION.md`). The failures were all stop
+conditions: `promiseAll` used a sparse `results.length`, `withTimeout` drops the input's
+rejection, `retry` setInterval is never cleared (LR-0019 pattern). Attempt 2: 11/13, he moved on;
+`withTimeout` still drops rejections. Cold-check in E. **Next:
+C's predictions + quiz skipped (his call). D built 10-22: `lessons/0010-which-declaration-wins.html`
+(5 drills + retrieval check, verified in Chrome); he did it, no review (his call).
+**B graded 10-22: 1/3** (LR-0021: missed that the `[ticketId]` cleanup already drops stale responses; no model of when cleanup
+runs). E must cold-check cleanup timing and a stale-response sequence.
+**He skipped F for now (10-22) and asked for no-boilerplate drills. Built: `exercises/0010-hook-drills`
+(30 min, 13 vitest tests) and `exercises/0011-string-drills` (50 min, LC 125/680/3/5, 12 checks; this is G).
+Both verified red on stubs, green on a reference, brute force fails timing. Next: 0010 → 0011 → grade → E/F.**
+**0010 at bedtime 10-22: 5/13.** #1 right. #2 had no fn ref and no timer (returned raw `fn`). #3 had no
+guard in `catch`, no `return` after the empty-query branch, and loading never cleared. He got the fixed
+version in chat. Fri warm-up: rewrite #2 and #3 cold (10 min), then the 5 cold questions. He proposed dropping D. His own CSS answer (10-22)
+showed two misconceptions: `div .selected` read as "divs with the class" (it's descendant), and
+cascade conflated with inheritance. No specificity tuple. So D stays, shortened to those gaps.
+
+Taught 10-21 after grading. Cold-check one at A2 grading and the rest in E:
+- Big-O by counting loops, including hidden ones (spread, `includes`, `str = ch + str`).
+- `while (i < j)`: the pointers cross on even lengths; move only the pointer that skips punctuation.
+- Local mutation is fine (`acc.push` on an array you just made). Don't mutate state or props.
+- `useDeferredValue` isn't a debounce (no delay; interruptible background render). It needs `memo`.
+- Not Actions: `onChange`, `onSubmit`. Actions are the `action`/`formAction` prop or a
+  `startTransition` callback. Never put controlled-input state in a transition (react.dev);
+  defer the list, not the checkbox. (This closes the cheat-sheet `onSubmit` item.)
+- Module-level compute works only for static data; otherwise `useMemo` keyed on the data.
+
+### Global Relay round 2: **Fri 2026-10-23**
+
+Round 1 done 10-16 ([LR-0018](learning-records/0018-gr-round-1-was-js-fundamentals.md)).
+**Recruiter's list (10-20, from a past candidate in this round):** experience walkthrough; React
+principles with code; JS Promises with code; CSS selector specificity; a palindrome problem in React
+with performance and Big-O. Topics: React, JS, CSS, AWS, UI libraries, AI-assisted coding,
+Java/Python, accessibility. The round-1 interviewer said: a screen-shared React code review, maybe
+a small build, maybe LeetCode from an AI-team interviewer. Prepare for both.
+Pay CAD 180-200k + 4%. Debrief: `career/private/2026-10-16-global-relay-debrief.md`.
+
+**Sprint to Friday (re-planned 10-20).** Tell him each item's length up front. He takes slots as
+they open.
+
+| When | Item | Length | How |
+| --- | --- | --- | --- |
+| Tue | A. 0008 palindrome feed: **done 10-21, 1/6** | 50 | |
+| Wed (done) | A2. 0008 from scratch again, timed | 50 | `grade-exercise` |
+| Thu 3 | B. 0007 review rep 2 (built 10-18; matches the interviewer's own description). Make him state the A-then-B outcome before he edits. At grading, cold-check why `useOptimistic` needs a transition outside actions | 30 | `grade-exercise` |
+| Thu 1 | C. Promises from zero: event loop, microtasks, states, chaining, error propagation, `all`/`allSettled`/`race`/`any`, async/await. Then code: write `Promise.all`, `sleep`, timeout via `race`, retry, and predict output order (closes LR-0011) | 40 + 30 | built: `lessons/0009-the-microtask-queue.html` |
+| Thu 2 | D. CSS cascade from zero: origin and `!important`, `@layer`, specificity (id, class, type), `:is`/`:not`/`:has` vs `:where`, inline styles, order, inheritance. Predict-the-colour drill. Cut to his two misconceptions plus the specificity tuple | 20 | `/teach css specificity` |
+| Thu 5 | E. Cold mixed drill, retention check (LR-0017): the Big-O of idiomatic JS snippets (`reduce`+spread, string `+=`, `includes` in a loop) (LR-0020); the 10-21 list above; React principles with code (render/commit, key, snapshot, batching, effect timing, memo), promise output order, specificity, `this`/`==` | 30 | build it Thu, not before |
+| Thu 4 | F. Out loud, about 10 min each: a 2-min experience walkthrough mapped to their list (React, AWS, a11y, AI-assisted coding, the JS-to-React migration); the 6 s → 3 s story with a causal chain that holds (TTI was removed in Lighthouse 10); his AI-written-code review policy; honest Java/Python/AWS depth | 40 | `career-session` |
+| Thu, if time | G. two LeetCode string problems at 25 min each (valid palindrome II, longest substring without repeats) | 50 | `build-exercise` |
+| Fri | Warm-up only: 5 cold questions, no new material | 15 | |
+
+Dropped for this round: see `HISTORY.md` (re-planned 10-20). Hooks sheet: `reference/react-hooks.html`.
+
+Open recall items (LR-0016/17): INP phase 2 (processing); useEffect usually runs after paint
+(before it when an interaction caused it); RUM behind login. Fold into reps; no more CSP drilling.
+
