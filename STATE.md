@@ -14,8 +14,8 @@ the Staff roadmap: the tracks paused 10-17 are restored below.
 Lesson 11 graded 10-26: check **1/5** (lesson 6 drill; 2/5 on 10-07), jar 2/6, origin 4/6, traces
 ~3/8. He applies preflight/CORS to every request (simple GET, same-origin, forms, curl) and places it
 before the server. Repair in chat, no reading: rapid verdicts on (1) when a preflight happens,
-(2) the server runs before the read check. Rapid round 1 was given in chat 10-26: grade his answers if
-he brings them. Then retest lesson 11's check cold on a later day, target 4/5. S2 waits.
+(2) the server runs before the read check. Repair round 1 (10-26): preflight 4/6. He preflighted a same-origin DELETE and a string-body POST
+(fetch sets text/plain); he skipped "does the server run it". Round 2 (4 items) was given in chat. Then retest lesson 11's check cold on a later day, target 4/5. S2 waits.
 
 ## Security, AuthN and AuthZ: zero to hero (his ask, 2026-10-08)
 
