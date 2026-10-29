@@ -59,7 +59,9 @@ Then Phase 2, engineering with AI (`MISSION.md`).
 
 ## Carry-over from GR (fold into reps as warm-ups, 5 min, cold)
 
-- Hook drills 0010 #2 (debounce: fn ref + timer) and #3 (guard in `catch`, return, clear loading): 5/13 at bedtime.
+- Hook drills 0010 #2/#3 cold 10-28: 6/13 (no guard in #3; #2 timer in an effect, raw `fn` returned).
+  Coached to 13/13. Gaps taught: hook args are initial-only after mount; guard after the `await`;
+  timer goes in the returned fn; don't write refs during render. Retest #2 cold in a week.
 - `withTimeout` drops the input's rejection; clear every timer you start (LR-0019 stop conditions).
 - Cleanup timing and a stale-response sequence (LR-0021).
 - CSS: `div .selected` is descendant; cascade ≠ inheritance; specificity tuple.

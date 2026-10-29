@@ -29,15 +29,29 @@ export function useDebouncedCallback<A extends unknown[]>(
   fn: (...args: A) => void,
   ms: number,
 ): (...args: A) => void {
-  const _fn = useCallback(
-    (...args: A) => {
-      return () => setTimeout(() => fn(...args), ms);
-    },
-    [fn, ms],
-  );
   const ref = useRef(fn);
+  const timeRef = useRef(0);
 
-  return ref.current; // replace
+  useEffect(() => {
+    ref.current = fn;
+  });
+
+  const debouncedFunction = useCallback(
+    (...args: A) => {
+      clearTimeout(timeRef.current);
+
+      timeRef.current = setTimeout(() => {
+        ref.current(...args);
+      }, ms);
+    },
+    [ms],
+  );
+
+  useEffect(() => {
+    return () => clearTimeout(timeRef.current);
+  }, []);
+
+  return debouncedFunction; // replace
 }
 
 // 3 · useSearch(query, fetcher)
@@ -65,39 +79,37 @@ export function useSearch<T>(
 
   const [searchState, setSearchState] = useState<SearchState<T>>(initialState);
 
+  const _fetcher = useCallback((q: string) => fetcher(q), [fetcher]);
+
   useEffect(() => {
     if (!query) {
-      setSearchState((prev) => initialState);
+      setSearchState(initialState);
       return;
     }
 
     let isCurrent = true;
 
-    async function apiCall() {
-      setSearchState((prev) => ({ ...prev, loading: true }));
+    async function performFetch() {
       try {
-        const dt = await fetcher(query);
+        setSearchState((prev) => ({ ...prev, loading: true, error: null }));
+
+        const dt = await _fetcher(query);
 
         if (isCurrent) {
-          setSearchState((prev) => ({
-            ...prev,
-            data: dt,
-            error: null,
-            loading: false,
-          }));
+          setSearchState((prev) => ({ ...prev, data: dt, loading: false }));
         }
-      } catch (_err: unknown) {
+      } catch (err) {
         if (isCurrent) {
           setSearchState((prev) => ({
             ...prev,
+            error: err as Error,
             loading: false,
-            error: _err as Error,
           }));
         }
       }
     }
 
-    apiCall();
+    performFetch();
 
     return () => {
       isCurrent = false;
