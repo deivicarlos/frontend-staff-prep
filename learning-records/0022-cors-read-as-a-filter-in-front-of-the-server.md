@@ -44,3 +44,12 @@ The rounds drilled fetch() cases; the check is forms, links and images. Next rep
 from the initiator (navigation/subresource vs script) and the attacker's goal (side effect vs read).
 He says he misread (2) as a script GET, not a link. Scored out of 4 that's 1/4, and his rule for (2)
 ("cookies added, CORS blocks") is still the read-block error from (3).
+
+## Repair round 4, 10-28 (initiator + attacker goal)
+
+Cross-site/same-site fetch, 3/3: names the server running before the read and the side effect.
+Form POST with SameSite=None: "deleted" right, but "response not read because of CORS" (skipped
+the initiator; a navigation never meets CORS). `<img>` GET with Lax: "cookie added, basic GET",
+wrong (Lax = top-level navigation + safe method). Then a/img/iframe/window.location: 4/4 verdicts;
+iframe reasoned as "same as img", window.location as "new tab". Held: CORS out of non-script
+requests, read ≠ side effect. Shaky: Lax's top-level rule. Retest §5 cold on a later day.
