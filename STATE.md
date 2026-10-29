@@ -70,6 +70,8 @@ Then Phase 2, engineering with AI (`MISSION.md`).
 
 ## How to work with him now
 
+**Teach-back works (10-28):** concepts clicked when he restated them in his own analogy (effect runs as
+"parallel timelines", hooks as a class constructor) and I corrected the analogy. Ask him to say it back.
 He may answer by voice dictation (macOS), so expect mistranscribed terms. Typed mocks are dropped
 (his call, 10-15): he rehearses out loud alone. Don't end turns with "move on?". He says when.
 Never remind him of the clock or prompt him for interview recall; he manages his time and brings
