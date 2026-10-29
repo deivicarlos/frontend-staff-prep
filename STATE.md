@@ -17,7 +17,7 @@ CSRF even when his own trace had the delete run; a relative fetch inside app.exa
 cross-origin. Rounds 1–3 drilled fetch() only, so they didn't transfer. Round 4, rapid verdicts, no
 reading, two questions per case: (a) who starts it: navigation (form, link), subresource (img) or
 script (fetch)? Only a cross-origin script request meets CORS. (b) What does the attacker need: a side
-effect or a read? CSRF needs only the side effect. Mix in same-origin relative fetches. Retest §5 cold
+effect or a read? CSRF needs only the side effect. Mix in same-origin relative fetches.
 Round 4 done 10-28: fetch cases clean, Lax top-level rule shaky (LR-0022). Retest §5 cold
 on a later day (clear it from the **lesson tab's** console: `p=JSON.parse(localStorage["fsp:predictions"]);delete p["0011-check"];delete p["0011-check:revealed"];localStorage["fsp:predictions"]=JSON.stringify(p);location.reload()`).
 
