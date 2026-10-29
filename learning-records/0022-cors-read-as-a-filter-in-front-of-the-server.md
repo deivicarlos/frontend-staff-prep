@@ -30,3 +30,15 @@ script request that is cross-origin **and** does something a form couldn't. Form
 same-origin requests and curl never get one. (2) The server runs before the read check, so CORS
 can't stop side effects of a sent request. Drill it as rapid verdicts, then retest lesson 11's
 check cold on another day (target 4/5) before S2.
+
+## Cold retest, 10-28: 1/5 (target 4/5), (6) unanswered
+
+Repair round 3 (5/5 preflight, fetch-only cases) didn't transfer. Every answer ran preflight + CORS:
+- (1) Right verdict and rule (Lax keeps the cookie home), plus "does preflight, no request to backend".
+- (2) and (4): form/link "blocked by CORS". Neither is a script request, so CORS never runs.
+- (3) "Cookies added, request goes to backend, CORS blocks read" → "blocked". The delete ran by his
+  own trace, so he scored a read block as a stopped attack. New: he doesn't ask what the attacker needs.
+- (5) A relative `fetch` inside app.example.com read as "cross-origin same site".
+
+The rounds drilled fetch() cases; the check is forms, links and images. Next repair has to start
+from the initiator (navigation/subresource vs script) and the attacker's goal (side effect vs read).

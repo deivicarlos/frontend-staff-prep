@@ -1,6 +1,6 @@
 # State
 
-_Updated 2026-10-26. Plan re-set 2026-09-24 ([LR-0012](learning-records/0012-reweight-to-what-screens-grade.md));
+_Updated 2026-10-28. Plan re-set 2026-09-24 ([LR-0012](learning-records/0012-reweight-to-what-screens-grade.md));
 decisions in `MISSION.md` and `career/CAREER.md`. Scores and closed items: `HISTORY.md`._
 
 ## GR loop closed (10-26)
@@ -9,18 +9,16 @@ Global Relay round 2 done 10-23; offer at **Senior**, not Staff. **Never raise t
 ask about it** (his rule, 10-26). The sprint record is in `HISTORY.md` → "GR loop closed". Back on
 the Staff roadmap: the tracks paused 10-17 are restored below.
 
-## Next session: S1 repair, then retest (LR-0022)
+## Next session: S1 repair round 4, then retest on another day (LR-0022)
 
-Lesson 11 graded 10-26: check **1/5** (lesson 6 drill; 2/5 on 10-07), jar 2/6, origin 4/6, traces
-~3/8. He applies preflight/CORS to every request (simple GET, same-origin, forms, curl) and places it
-before the server. Repair in chat, no reading: rapid verdicts on (1) when a preflight happens,
-(2) the server runs before the read check. Repair round 1 (10-26): preflight 4/6. He preflighted a same-origin DELETE and a string-body POST
-(fetch sets text/plain); he skipped "does the server run it". Round 2: preflight 1/4. He had believed preflight runs on every request (his words), then
-overcorrected: app.shop.com → api.shop.com read as same-origin (subdomain = same origin, also jar #6),
-and thought fetch defaults to `include`. Round 3: origin 4/5 (`www.shop.com` read as same-origin as `shop.com`), preflight 5/5. Still says
-"cookies included because of Lax": SameSite only removes; fetch defaults to `same-origin`.
-**Next session opens with lesson 11 §5 cold** (fresh tab, answers cleared:
-in the console: `p=JSON.parse(localStorage["fsp:predictions"]);delete p["0011-check"];delete p["0011-check:revealed"];localStorage["fsp:predictions"]=JSON.stringify(p)`), target 4/5, then S2 if it holds.
+Cold retest of lesson 11 §5 on 10-28: **1/5** (target 4/5), (6) unanswered. Same pattern as 10-26:
+preflight + CORS applied to forms, links and `<img>`; "CORS blocks the read" counted as a blocked
+CSRF even when his own trace had the delete run; a relative fetch inside app.example.com called
+cross-origin. Rounds 1–3 drilled fetch() only, so they didn't transfer. Round 4, rapid verdicts, no
+reading, two questions per case: (a) who starts it: navigation (form, link), subresource (img) or
+script (fetch)? Only a cross-origin script request meets CORS. (b) What does the attacker need: a side
+effect or a read? CSRF needs only the side effect. Mix in same-origin relative fetches. Retest §5 cold
+on a later day (clear it from the **lesson tab's** console: `p=JSON.parse(localStorage["fsp:predictions"]);delete p["0011-check"];delete p["0011-check:revealed"];localStorage["fsp:predictions"]=JSON.stringify(p);location.reload()`).
 
 ## Security, AuthN and AuthZ: zero to hero (his ask, 2026-10-08)
 
@@ -30,7 +28,7 @@ OWASP API Top 10 before S5 and S7.
 
 | # | Lesson | Status |
 |---|---|---|
-| S1 | How the browser talks to servers: origins, cookies, SOP, CORS, the two gates | lesson 11: 1/5 (LR-0022), repair |
+| S1 | How the browser talks to servers: origins, cookies, SOP, CORS, the two gates | lesson 11: 1/5, retest 10-28 1/5 (LR-0022), repair |
 | S2 | AuthN from zero: password hashing, server sessions (ID, store, fixation, timeouts, logout), MFA/passkeys | |
 | S3 | Attacks on a logged-in user: XSS, CSRF, cookie flags, CSP. [Lesson 6](lessons/0006-the-browser-attaches-the-cookie.html) exists: retake or rebuild after S1–S2 | lesson 6: 2/5 (LR-0014) |
 | S4 | Tokens: JWT, signing and validation, sessions vs JWT, access + refresh, revocation | |
