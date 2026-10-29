@@ -42,3 +42,5 @@ Repair round 3 (5/5 preflight, fetch-only cases) didn't transfer. Every answer r
 
 The rounds drilled fetch() cases; the check is forms, links and images. Next repair has to start
 from the initiator (navigation/subresource vs script) and the attacker's goal (side effect vs read).
+He says he misread (2) as a script GET, not a link. Scored out of 4 that's 1/4, and his rule for (2)
+("cookies added, CORS blocks") is still the read-block error from (3).
