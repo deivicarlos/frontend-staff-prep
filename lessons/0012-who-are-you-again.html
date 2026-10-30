@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lesson 12 — Who Are You, Again?</title>
+<link rel="stylesheet" href="../assets/course.css">
+<style>
+  /* Prose in every column (same override as lessons 6 and 11). */
+  main table { display: block; overflow-x: auto; }
+  main tbody td:first-child,
+  main tbody td:last-child { white-space: normal; text-align: left; font-size: inherit; color: inherit; }
+  main td { min-width: 6rem; }
+  pre.http { font-size: 0.85rem; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Who are you, again?</h1>
+  <p class="subtitle">Logging in proves who you are once. After that, a random session ID stands in for
+  you on every request. Learn how each half works: how the password is stored, and how the session ID is
+  issued, checked and killed. Each choice exists to stop one specific attack.</p>
+  <p class="meta">Lesson 12 · Security track S2 · ~35 min · have a timer ready ·
+  <a href="0011-the-request-pipeline.html">← Lesson 11</a></p>
+</header>
+
+<main>
+
+<div class="predict" data-predict data-key="0012-warmup">
+  <span class="predict-label">Warm-up from S1, 2 minutes</span>
+  <p class="predict-prompt">evil.com shows a link to <code>https://app.example.com/api/projects/42/delete</code> (a GET),
+  and the user clicks it. In two sentences: does CORS take part in this request? Who sees the response?</p>
+  <textarea class="predict-input" placeholder="CORS … The response …"></textarea>
+  <button class="predict-btn">Reveal</button>
+  <div class="predict-answer" hidden>
+    <p>No. A clicked link is a <strong>navigation</strong>, not a script request, so CORS never runs. The
+    response loads in the tab and the user sees it. CORS only decides whether a <em>script</em> may read a
+    cross-origin response.</p>
+  </div>
+</div>
+
+<div class="predict" data-predict data-key="0012-cold">
+  <span class="predict-label">Cold, 3 minutes, before reading</span>
+  <p class="predict-prompt">You're building login for a Node server from scratch. (a) What do you write in the
+  users table for the password? (b) After a correct password, what does the server send back, and what
+  does it keep? (c) What does logout do, on the server and in the browser?</p>
+  <textarea class="predict-input" placeholder="(a) … (b) … (c) …"></textarea>
+  <button class="predict-btn">Lock it</button>
+  <div class="predict-answer" hidden>
+    <p>Locked. Sections 2–3 answer each part. Compare when you get there.</p>
+  </div>
+</div>
+
+<h2>1 · The mechanism: one proof, then a stand-in</h2>
+
+<p>HTTP is <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Cookies">stateless</a>: the server
+keeps no memory between requests (lesson 11, §1). Checking a password on every request would be slow, and it
+would mean keeping the password in the browser. So authentication is split into two moments:</p>
+
+<table>
+  <thead><tr><th>Moment</th><th>What happens</th><th>The secret being checked</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Login</strong>, once</td><td>The user sends a password (or signs a challenge with a passkey). The server checks it, creates a session, and sends its ID back in <code>Set-Cookie</code>.</td><td>The password</td></tr>
+    <tr><td><strong>Every request after</strong></td><td>The browser attaches the cookie (lesson 11's stop 2). The server looks the ID up in its session store and finds the user.</td><td>The session ID</td></tr>
+  </tbody>
+</table>
+
+<p>Where each thing lives:</p>
+
+<table>
+  <thead><tr><th>Place</th><th>Holds</th><th>Never holds</th></tr></thead>
+  <tbody>
+    <tr><td>Users table</td><td>User ID, email, a <strong>password hash</strong></td><td>The password</td></tr>
+    <tr><td>Session store (Redis, a DB table)</td><td>Session ID → { user ID, created at, last seen }</td><td>The password</td></tr>
+    <tr><td>Browser cookie</td><td>The session ID, nothing else</td><td>User data, the password</td></tr>
+  </tbody>
+</table>
+
+<p>The consequence that drives the rest of the lesson: <strong>after login, the session ID <em>is</em> the
+credential.</strong> Anyone who presents it is that user, and the server can't tell them apart. It's a
+<em>bearer</em> secret. Every session rule below protects that ID.
+<a href="https://github.com/expressjs/session">express-session</a> works exactly this way: "Session data is
+not saved in the cookie itself, just the session ID."</p>
+
+<div class="predict" data-predict data-key="0012-mech">
+  <span class="predict-label">Apply, 2 minutes</span>
+  <p class="predict-prompt">(1) An attacker copies your session cookie value out of a shared laptop's browser. They
+  don't know your password. Can they act as you? (2) You change your password. Should the server do anything to
+  your existing sessions? (3) Why don't we just put <code>userId=42</code> in the cookie?</p>
+  <textarea class="predict-input" placeholder="(1) … (2) … (3) …"></textarea>
+  <button class="predict-btn">Reveal</button>
+  <div class="predict-answer" hidden>
+    <p>(1) <strong>Yes.</strong> After login the ID is the credential. The password isn't checked again.</p>
+    <p>(2) <strong>Yes, kill them.</strong> Otherwise a session the attacker already holds outlives the reset. A
+    password change is a privilege-level change, and OWASP says to renew the session ID after one.</p>
+    <p>(3) The client controls the cookie, so anyone could write <code>userId=43</code>. A session ID is
+    random and only means something because the server looks it up.</p>
+  </div>
+</div>
+
+<h2>2 · Storing the password</h2>
+
+<p>Assume the users table <em>will</em> leak. The question is what the attacker can do with it.</p>
+
+<table>
+  <thead><tr><th>You store</th><th>Attacker with the dump</th><th>Verdict</th></tr></thead>
+  <tbody>
+    <tr><td>Plaintext</td><td>Logs in as everyone, and tries the same passwords on other sites.</td><td>Never</td></tr>
+    <tr><td>Encrypted</td><td>Steals the key from the same server, then decrypts. Encryption is reversible by design.</td><td>Never for passwords</td></tr>
+    <tr><td>Fast hash, e.g. <code>sha256(pw)</code></td><td>Hashes billions of guesses offline. Identical passwords give identical hashes, and precomputed tables work.</td><td>Broken</td></tr>
+    <tr><td>Fast hash + per-user salt</td><td>Precomputed tables die, but each guess is still cheap.</td><td>Not enough</td></tr>
+    <tr><td><strong>Slow, salted hash</strong> (Argon2id)</td><td>Each guess costs real time and memory, so cracking is slow, per user.</td><td><strong>Do this</strong></td></tr>
+  </tbody>
+</table>
+
+<p>The three ideas, per the <a href="https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html">OWASP
+Password Storage Cheat Sheet</a>:</p>
+<ul>
+  <li><strong>Hash, don't encrypt.</strong> A hash is one-way. At login, hash the attempt and compare.</li>
+  <li><strong>Salt</strong>: a unique random value per password, stored next to the hash. It "forces attackers to crack each hash individually."
+    Argon2id and bcrypt generate it for you and put it inside the output string.</li>
+  <li><strong>Slow on purpose</strong> (the work factor). Pick, in order: <strong>Argon2id</strong> (minimum m=19 MiB, t=2, p=1);
+    scrypt if that's unavailable; bcrypt for legacy systems only (cost ≥10, and its input stops at 72 bytes);
+    PBKDF2-HMAC-SHA256 at 600,000 iterations when FIPS-140 compliance is required. Rule of thumb: hashing should take
+    under a second. Make it too slow and login becomes a way to exhaust your server's CPU.</li>
+</ul>
+<p>A <strong>pepper</strong> is an optional secret shared by every password and kept <em>outside</em> the database (in
+a secrets manager), so a DB-only leak isn't enough to crack anything.</p>
+
+<p>What you're allowed to demand of the password itself has changed. <a href="https://pages.nist.gov/800-63-4/sp800-63b.html">NIST SP 800-63B-4</a>:
+at least <strong>15 characters</strong> when the password is the only factor, or 8 if it's part of MFA. Accept at least 64.
+<strong>No</strong> composition rules (no "one symbol, one digit"), <strong>no</strong> forced periodic changes, but force a
+change on evidence of compromise. <strong>Do</strong> check new passwords against a blocklist of common and breached ones.</p>
+
+<div class="predict" data-predict data-key="0012-hash">
+  <span class="predict-label">Apply, 3 minutes</span>
+  <p class="predict-prompt">A legacy app stores <code>sha256(password)</code>, with no salt. The table leaks. (1) Why do 4,000
+  users share the same hash, and what does the attacker learn from that? (2) You add a random per-user salt but keep
+  SHA-256. What did that fix, and what didn't it fix? (3) How do you move existing users to Argon2id without knowing
+  their passwords?</p>
+  <textarea class="predict-input" placeholder="(1) … (2) … (3) …"></textarea>
+  <button class="predict-btn">Reveal</button>
+  <div class="predict-answer" hidden>
+    <p>(1) Same input, same hash: they all chose the same password (probably <code>123456</code>). Crack it once and
+    you have 4,000 accounts. Precomputed tables crack the common ones instantly.</p>
+    <p>(2) Fixed: identical passwords now hash differently, and precomputed tables are useless. Not fixed: SHA-256 is
+    built to be fast, so guessing each user's password is still cheap.</p>
+    <p>(3) On each user's next successful login you have the plaintext for a moment: verify it against the old hash,
+    rehash it with Argon2id, store the new hash. To protect everyone else right away, wrap the old hashes now:
+    <code>argon2id(sha256(pw))</code>, and replace each with a direct hash at that user's next login. Or expire long-inactive
+    accounts and force a reset. These are the methods in OWASP's "Upgrading Legacy Hashes".</p>
+  </div>
+</div>
+
+<h2>3 · The session: issue it, check it, kill it</h2>
+
+<p>The ID is the credential, so each rule closes one way of getting or keeping someone else's ID. All of these come
+from the <a href="https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html">OWASP Session Management Cheat Sheet</a>.</p>
+
+<table>
+  <thead><tr><th>Rule</th><th>Attack it stops</th></tr></thead>
+  <tbody>
+    <tr><td>The ID comes from a CSPRNG, with <strong>≥64 bits of entropy</strong>. No user IDs, no timestamps.</td><td><strong>Guessing.</strong> The attacker enumerates IDs until one works.</td></tr>
+    <tr><td><strong>Issue a new ID at login</strong>, and on any privilege change (password change, role change). In express-session: <code>req.session.regenerate()</code>.</td><td><strong>Session fixation.</strong> The attacker gets a pre-login ID, plants it in your browser, and waits for you to log in. If the ID survives login, they now hold a logged-in session.</td></tr>
+    <tr><td>The <strong>server</strong> enforces an idle timeout (15–30 min for low risk, 2–5 for high value) and an absolute timeout (e.g. 4–8 h for an office workday). The cookie's expiry is a hint, not enforcement.</td><td><strong>A stolen or abandoned ID that lives forever.</strong> Client-side timers can be edited, so they don't count.</td></tr>
+    <tr><td><strong>Logout deletes the session on the server</strong> (<code>req.session.destroy()</code>), then clears the cookie.</td><td><strong>A copied ID still working after "logout".</strong> Clearing only the cookie removes your copy and leaves the attacker's valid.</td></tr>
+    <tr><td>Cookie: <code>__Host-</code> prefix, <code>HttpOnly</code>, <code>Secure</code>, <code>SameSite=Strict</code> or <code>Lax</code>.</td><td>Theft by script (HttpOnly), sending over plain HTTP (Secure), subdomain overwrite (<code>__Host-</code>, lesson 11), CSRF as defence in depth (SameSite, S3).</td></tr>
+    <tr><td>A real store (Redis, a DB), not express-session's default MemoryStore.</td><td>Not an attack: MemoryStore "is not designed for a production environment". It leaks memory and doesn't scale past one process.</td></tr>
+  </tbody>
+</table>
+
+<p>Fixation, step by step, because it's the one people can't reconstruct:</p>
+<pre class="http"><code>1. Attacker visits app.com            → gets sid=AAA (anonymous)
+2. Attacker gets sid=AAA into your browser (e.g. a subdomain sets the cookie)
+3. You log in. Server marks session AAA as "user 42"
+4. Attacker sends Cookie: sid=AAA     → is user 42
+   Fix: at step 3 the server issues sid=BBB and deletes AAA. The attacker's AAA is dead.</code></pre>
+
+<div class="predict" data-predict data-key="0012-session">
+  <span class="predict-label">Apply, 4 minutes. Name the rule broken and the attack, or say "fine"</span>
+  <p class="predict-prompt">(1) Logout runs <code>res.clearCookie("sid")</code> and returns 200.<br>
+  (2) Login sets <code>req.session.userId = user.id</code> on the existing session and saves it.<br>
+  (3) Session IDs are <code>`${userId}-${Date.now()}`</code>.<br>
+  (4) The SPA logs the user out after 30 idle minutes with a <code>setTimeout</code>; the server's session never expires.<br>
+  (5) Login calls <code>regenerate()</code>, the session lives in Redis with a 30-minute idle and 8-hour absolute timeout, and logout calls <code>destroy()</code>.</p>
+  <textarea class="predict-input" placeholder="(1) … (5) …"></textarea>
+  <button class="predict-btn">Reveal</button>
+  <div class="predict-answer" hidden>
+    <p>(1) <strong>Broken:</strong> logout must invalidate on the server. A copied ID still works.</p>
+    <p>(2) <strong>Broken:</strong> no new ID at login, so it's open to <strong>session fixation</strong>.</p>
+    <p>(3) <strong>Broken:</strong> guessable, nowhere near 64 random bits. Anyone who knows a user ID and roughly when they logged in can <strong>guess</strong> it.</p>
+    <p>(4) <strong>Broken:</strong> the timeout is client-side. A stolen ID never expires, because the attacker doesn't run your SPA.</p>
+    <p>(5) <strong>Fine.</strong></p>
+  </div>
+</div>
+
+<h2>4 · A second factor, and why passkeys are different</h2>
+
+<p>A password is a secret the user <em>types</em>, so a convincing fake page can collect it. A one-time code from an app
+or an SMS is also typed, so the fake page collects that too and relays both to the real site within seconds. NIST: "Passwords are not
+phishing-resistant", and OTP and out-of-band authenticators "SHALL NOT be considered phishing-resistant"
+(<a href="https://pages.nist.gov/800-63-4/sp800-63b.html">SP 800-63B-4</a>). Phishing resistance needs cryptographic
+authentication.</p>
+
+<p>A <strong>passkey</strong> is a <a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Authentication_API">WebAuthn</a> credential.
+Nothing is typed:</p>
+<table>
+  <thead><tr><th>Step</th><th>What happens</th></tr></thead>
+  <tbody>
+    <tr><td>Register</td><td>The device makes a key pair <strong>for this site</strong> (the relying party ID, e.g. <code>example.com</code>). The server stores only the <strong>public key</strong>.</td></tr>
+    <tr><td>Log in</td><td>The server sends a random challenge. The device signs it with the private key, which never leaves the device. The server checks the signature with the stored public key, and checks the challenge and the origin.</td></tr>
+  </tbody>
+</table>
+<p>Two consequences. <strong>Phishing fails:</strong> the browser ties the credential to the site's origin, so a fake
+<code>examp1e.com</code> can't get a signature that <code>example.com</code> will accept ("the signature changes with the
+origin of the website", MDN). And <strong>a server breach leaks only public keys</strong>, which can't be used to log in.
+After a passkey login, everything in §3 still applies: the server still issues a session ID.</p>
+
+<div class="predict" data-predict data-key="0012-mfa">
+  <span class="predict-label">Apply, 2 minutes</span>
+  <p class="predict-prompt">A phishing page proxies everything you type to the real site in real time. Say what the
+  attacker ends up with when you use (1) password only, (2) password + authenticator-app code, (3) a passkey.</p>
+  <textarea class="predict-input" placeholder="(1) … (2) … (3) …"></textarea>
+  <button class="predict-btn">Reveal</button>
+  <div class="predict-answer" hidden>
+    <p>(1) Your password, which they can use whenever they like.</p>
+    <p>(2) A logged-in session. They relay the code within its 30-second window, and the real site hands
+    <em>them</em> the session ID. The code only raised the bar against stolen password lists.</p>
+    <p>(3) Nothing. The browser won't use the real site's credential on the phishing origin, and a signature it
+    produced for the fake origin fails the real server's origin check.</p>
+  </div>
+</div>
+
+<h2>Retrieval check · 5 minutes, cold, no scrolling</h2>
+
+<div class="predict" data-predict data-key="0012-check">
+  <span class="predict-label">Without scrolling up</span>
+  <p class="predict-prompt">Say it out loud first, then write it. An interviewer asks: "Walk me through
+  authentication for a web app with server sessions, and what each choice protects against." Cover: (1) what's
+  stored for the password and why each property; (2) what the browser holds after login, and why that's the thing
+  to protect; (3) three session rules, each with the attack it stops; (4) why a passkey beats password + OTP.</p>
+  <textarea class="predict-input" placeholder="(1) … (2) … (3) … (4) …"></textarea>
+  <button class="predict-btn">Reveal</button>
+  <div class="predict-answer" hidden>
+    <p>(1) A slow, salted, one-way hash (Argon2id). One-way, so a leak doesn't give back passwords. Salted, so equal
+    passwords differ and precomputed tables don't work. Slow, so offline guessing is expensive per user.</p>
+    <p>(2) Only a random session ID in an HttpOnly, Secure cookie. After login the ID <em>is</em> the credential: whoever
+    presents it is the user.</p>
+    <p>(3) Any three: ≥64-bit CSPRNG IDs (guessing); new ID at login (fixation); server-enforced idle and absolute
+    timeouts (a stolen ID living forever); logout destroys the server session (a copied ID outliving logout).</p>
+    <p>(4) The private key never leaves the device and its signature is bound to the real origin, so a phishing page
+    gets nothing usable. A typed code can be relayed in real time.</p>
+  </div>
+</div>
+
+<div class="note">
+  <p><strong>Sentence to have ready:</strong> <em>"Login proves identity once. After that, a random session ID in an
+  HttpOnly, Secure cookie stands in for the user, so that ID is the credential. Passwords are stored as Argon2id hashes,
+  salted and deliberately slow, because the table will leak someday. The ID is regenerated at login against fixation,
+  timed out on the server, and destroyed on the server at logout. If I want phishing resistance I add passkeys, because
+  the signature is bound to the origin and nothing typed can be relayed."</em></p>
+</div>
+
+<div class="ask">
+  <p><strong>Ask me.</strong> Paste the cold answer from the top and the retrieval check, exactly as first written.
+  Then say §3's fixation trace back to me in your own words.</p>
+</div>
+
+<h2>Read this</h2>
+<p><strong>Primary source:</strong> <a href="https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html">OWASP
+Session Management Cheat Sheet</a> (15 minutes: "Session ID Properties", "Renew the Session ID After Any Privilege Level
+Change", "Session Expiration").</p>
+
+<h2>Sources</h2>
+<ul>
+  <li>MDN, <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Cookies">Using HTTP cookies</a>. HTTP is stateless by default, and cookies are used for session management.</li>
+  <li>OWASP, <a href="https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html">Password Storage Cheat Sheet</a>. Hashing vs encryption, salt, pepper, Argon2id/scrypt/bcrypt/PBKDF2 parameters, the 72-byte bcrypt limit, "less than one second", upgrading legacy hashes.</li>
+  <li>OWASP, <a href="https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html">Session Management Cheat Sheet</a>. ≥64 bits from a CSPRNG, renewal after privilege change, idle (2–5 / 15–30 min) and absolute (4–8 h) timeouts enforced server-side, server-side invalidation on logout, cookie attributes and the <code>__Host-</code> prefix.</li>
+  <li>NIST, <a href="https://pages.nist.gov/800-63-4/sp800-63b.html">SP 800-63B-4</a>. Password length 15 (single factor) or 8 (MFA), max ≥64, no composition rules, no periodic change, blocklist; passwords, OTP and out-of-band aren't phishing-resistant; phishing resistance needs cryptographic authentication.</li>
+  <li>MDN, <a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Authentication_API">Web Authentication API</a>. Key pair per relying party, the server stores the public key, challenge signing, origin and RP ID checks, phishing protection.</li>
+  <li><a href="https://github.com/expressjs/session">express-session README</a>. Only the ID is in the cookie; <code>regenerate()</code>, <code>destroy()</code>; MemoryStore isn't for production.</li>
+</ul>
+
+<footer class="nav">
+  <p><strong>This lesson targets:</strong> S2 from zero (LR-0015), with the S1 residual as the warm-up (LR-0022).
+  Next: S3, attacks on a logged-in user (XSS, CSRF, CSP), retaking <a href="0006-the-browser-attaches-the-cookie.html">lesson 6</a>.</p>
+  <ul>
+    <li><a href="0011-the-request-pipeline.html">← Lesson 11</a></li>
+  </ul>
+</footer>
+
+</main>
+
+<script src="../assets/predict.js"></script>
+</body>
+</html>

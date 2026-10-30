@@ -9,11 +9,12 @@ Global Relay round 2 done 10-23; offer at **Senior**, not Staff. **Never raise t
 ask about it** (his rule, 10-26). The sprint record is in `HISTORY.md` → "GR loop closed". Back on
 the Staff roadmap: the tracks paused 10-17 are restored below.
 
-## Next session: S2, AuthN from zero
+## Next session: grade lesson 12 (S2, AuthN from zero)
 
-S1 cleared 10-29: lesson 11 §5 cold **5/5** (LR-0022). Open S2 with a 2-minute warm-up on the
-residual: in (2) and (4) he wrote "CORS blocks the response" on a link and a form. A navigation
-never meets CORS; the response loads in the tab. Ask him to say the rule back in his own words first. Build S2 with `/teach` + `build-lesson`.
+[Lesson 12](lessons/0012-who-are-you-again.html) built 10-29: S1 warm-up (navigations never meet CORS),
+then password storage, sessions (fixation, timeouts, logout), passkeys. He pastes the cold answer and the
+retrieval check (key `0012-check`) and says the fixation trace back in his own words. Grade with
+`grade-exercise`'s rigour, log in a new LR, then S3 (retake/rebuild lesson 6).
 
 ## Security, AuthN and AuthZ: zero to hero (his ask, 2026-10-08)
 
@@ -24,7 +25,7 @@ OWASP API Top 10 before S5 and S7.
 | # | Lesson | Status |
 |---|---|---|
 | S1 | How the browser talks to servers: origins, cookies, SOP, CORS, the two gates | lesson 11: 1/5; retests 10-28 1/5, 10-29 5/5 (LR-0022). Cleared |
-| S2 | AuthN from zero: password hashing, server sessions (ID, store, fixation, timeouts, logout), MFA/passkeys | |
+| S2 | AuthN from zero: password hashing, server sessions (ID, store, fixation, timeouts, logout), MFA/passkeys | lesson 12 built 10-29 |
 | S3 | Attacks on a logged-in user: XSS, CSRF, cookie flags, CSP. [Lesson 6](lessons/0006-the-browser-attaches-the-cookie.html) exists: retake or rebuild after S1–S2 | lesson 6: 2/5 (LR-0014) |
 | S4 | Tokens: JWT, signing and validation, sessions vs JWT, access + refresh, revocation | |
 | S5 | OAuth 2 and OIDC: delegation, roles, Code + PKCE, ID vs access token, SSO | |
