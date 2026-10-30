@@ -11,10 +11,9 @@ the Staff roadmap: the tracks paused 10-17 are restored below.
 
 ## Next session: S2, AuthN from zero
 
-S1 cleared 10-29: lesson 11 §5 cold **4/5** (LR-0022). Open S2 with a 2-minute warm-up on the
-residual: (2) said "CORS blocks it but it is actioned" → "blocked". A link or form is a navigation
-and never meets CORS, and if the side effect ran the attacker won. (4) also tacked CORS onto a form.
-Ask him to say the rule back in his own words first. Build S2 with `/teach` + `build-lesson`.
+S1 cleared 10-29: lesson 11 §5 cold **5/5** (LR-0022). Open S2 with a 2-minute warm-up on the
+residual: in (2) and (4) he wrote "CORS blocks the response" on a link and a form. A navigation
+never meets CORS; the response loads in the tab. Ask him to say the rule back in his own words first. Build S2 with `/teach` + `build-lesson`.
 
 ## Security, AuthN and AuthZ: zero to hero (his ask, 2026-10-08)
 
@@ -24,7 +23,7 @@ OWASP API Top 10 before S5 and S7.
 
 | # | Lesson | Status |
 |---|---|---|
-| S1 | How the browser talks to servers: origins, cookies, SOP, CORS, the two gates | lesson 11: 1/5; retests 10-28 1/5, 10-29 4/5 (LR-0022). Cleared |
+| S1 | How the browser talks to servers: origins, cookies, SOP, CORS, the two gates | lesson 11: 1/5; retests 10-28 1/5, 10-29 5/5 (LR-0022). Cleared |
 | S2 | AuthN from zero: password hashing, server sessions (ID, store, fixation, timeouts, logout), MFA/passkeys | |
 | S3 | Attacks on a logged-in user: XSS, CSRF, cookie flags, CSP. [Lesson 6](lessons/0006-the-browser-attaches-the-cookie.html) exists: retake or rebuild after S1–S2 | lesson 6: 2/5 (LR-0014) |
 | S4 | Tokens: JWT, signing and validation, sessions vs JWT, access + refresh, revocation | |

@@ -248,4 +248,4 @@ script (fetch)? Only a cross-origin script request meets CORS. (b) What does the
 effect or a read? CSRF needs only the side effect. Mix in same-origin relative fetches.
 Round 4 done 10-28: fetch cases clean, Lax top-level rule shaky (LR-0022). Retest §5 cold
 on a later day (clear it from the **lesson tab's** console: `p=JSON.parse(localStorage["fsp:predictions"]);delete p["0011-check"];delete p["0011-check:revealed"];localStorage["fsp:predictions"]=JSON.stringify(p);location.reload()`).
-Retest 10-29: 4/5, target met. Detail in LR-0022.
+Retest 10-29: 5/5, target met. Detail in LR-0022.
