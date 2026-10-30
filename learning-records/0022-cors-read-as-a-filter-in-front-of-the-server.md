@@ -53,3 +53,18 @@ the initiator; a navigation never meets CORS). `<img>` GET with Lax: "cookie add
 wrong (Lax = top-level navigation + safe method). Then a/img/iframe/window.location: 4/4 verdicts;
 iframe reasoned as "same as img", window.location as "new tab". Held: CORS out of non-script
 requests, read ≠ side effect. Shaky: Lax's top-level rule. Retest §5 cold on a later day.
+
+## Cold retest, 10-29: 4/5 (target met), (6) half
+
+The answers don't match the 10-28 log, so they are graded as a fresh cold take.
+- (1), (3), (5) right, with the right stops: no cookie on a cross-site POST or an `<img>`, and
+  relative fetch read as same-origin. Preflight now appears nowhere, which is the 10-26 fix holding.
+- (4) Right verdict and rule (same site, so SameSite never applies), plus "CORS will block the
+  response". It's a form, so CORS never runs.
+- (2) **Miss.** Lax top-level GET sends the cookie (right), "CORS blocks it but it is actioned", then
+  the verdict "blocked". Two of the old errors in one answer: CORS attached to a navigation, and a
+  read block counted as a stopped attack even though his own trace has the delete running.
+- (6) Half: CORS doesn't stop CSRF, and simple requests get through. "Good cookie policy prevents
+  it" is wrong by his own (4) and (5). The server needs its own authN/authZ, CSRF tokens or Fetch Metadata.
+Residual: "CORS blocks the response" still gets attached to forms and links. S2 can start; open
+with a 2-minute warm-up (navigation vs script, who won when the side effect ran).

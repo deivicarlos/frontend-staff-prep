@@ -1,6 +1,6 @@
 # State
 
-_Updated 2026-10-28. Plan re-set 2026-09-24 ([LR-0012](learning-records/0012-reweight-to-what-screens-grade.md));
+_Updated 2026-10-29. Plan re-set 2026-09-24 ([LR-0012](learning-records/0012-reweight-to-what-screens-grade.md));
 decisions in `MISSION.md` and `career/CAREER.md`. Scores and closed items: `HISTORY.md`._
 
 ## GR loop closed (10-26)
@@ -9,17 +9,12 @@ Global Relay round 2 done 10-23; offer at **Senior**, not Staff. **Never raise t
 ask about it** (his rule, 10-26). The sprint record is in `HISTORY.md` → "GR loop closed". Back on
 the Staff roadmap: the tracks paused 10-17 are restored below.
 
-## Next session: S1 repair round 4, then retest on another day (LR-0022)
+## Next session: S2, AuthN from zero
 
-Cold retest of lesson 11 §5 on 10-28: **1/5** (target 4/5), (6) unanswered. Same pattern as 10-26:
-preflight + CORS applied to forms, links and `<img>`; "CORS blocks the read" counted as a blocked
-CSRF even when his own trace had the delete run; a relative fetch inside app.example.com called
-cross-origin. Rounds 1–3 drilled fetch() only, so they didn't transfer. Round 4, rapid verdicts, no
-reading, two questions per case: (a) who starts it: navigation (form, link), subresource (img) or
-script (fetch)? Only a cross-origin script request meets CORS. (b) What does the attacker need: a side
-effect or a read? CSRF needs only the side effect. Mix in same-origin relative fetches.
-Round 4 done 10-28: fetch cases clean, Lax top-level rule shaky (LR-0022). Retest §5 cold
-on a later day (clear it from the **lesson tab's** console: `p=JSON.parse(localStorage["fsp:predictions"]);delete p["0011-check"];delete p["0011-check:revealed"];localStorage["fsp:predictions"]=JSON.stringify(p);location.reload()`).
+S1 cleared 10-29: lesson 11 §5 cold **4/5** (LR-0022). Open S2 with a 2-minute warm-up on the
+residual: (2) said "CORS blocks it but it is actioned" → "blocked". A link or form is a navigation
+and never meets CORS, and if the side effect ran the attacker won. (4) also tacked CORS onto a form.
+Ask him to say the rule back in his own words first. Build S2 with `/teach` + `build-lesson`.
 
 ## Security, AuthN and AuthZ: zero to hero (his ask, 2026-10-08)
 
@@ -29,7 +24,7 @@ OWASP API Top 10 before S5 and S7.
 
 | # | Lesson | Status |
 |---|---|---|
-| S1 | How the browser talks to servers: origins, cookies, SOP, CORS, the two gates | lesson 11: 1/5, retest 10-28 1/5 (LR-0022), repair |
+| S1 | How the browser talks to servers: origins, cookies, SOP, CORS, the two gates | lesson 11: 1/5; retests 10-28 1/5, 10-29 4/5 (LR-0022). Cleared |
 | S2 | AuthN from zero: password hashing, server sessions (ID, store, fixation, timeouts, logout), MFA/passkeys | |
 | S3 | Attacks on a logged-in user: XSS, CSRF, cookie flags, CSP. [Lesson 6](lessons/0006-the-browser-attaches-the-cookie.html) exists: retake or rebuild after S1–S2 | lesson 6: 2/5 (LR-0014) |
 | S4 | Tokens: JWT, signing and validation, sessions vs JWT, access + refresh, revocation | |

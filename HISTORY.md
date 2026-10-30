@@ -236,3 +236,16 @@ Dropped for this round: see `HISTORY.md` (re-planned 10-20). Hooks sheet: `refer
 Open recall items (LR-0016/17): INP phase 2 (processing); useEffect usually runs after paint
 (before it when an interaction caused it); RUM behind login. Fold into reps; no more CSP drilling.
 
+
+## S1 repair closed 2026-10-29 (moved from STATE)
+
+Cold retest of lesson 11 §5 on 10-28: **1/5** (target 4/5), (6) unanswered. Same pattern as 10-26:
+preflight + CORS applied to forms, links and `<img>`; "CORS blocks the read" counted as a blocked
+CSRF even when his own trace had the delete run; a relative fetch inside app.example.com called
+cross-origin. Rounds 1–3 drilled fetch() only, so they didn't transfer. Round 4, rapid verdicts, no
+reading, two questions per case: (a) who starts it: navigation (form, link), subresource (img) or
+script (fetch)? Only a cross-origin script request meets CORS. (b) What does the attacker need: a side
+effect or a read? CSRF needs only the side effect. Mix in same-origin relative fetches.
+Round 4 done 10-28: fetch cases clean, Lax top-level rule shaky (LR-0022). Retest §5 cold
+on a later day (clear it from the **lesson tab's** console: `p=JSON.parse(localStorage["fsp:predictions"]);delete p["0011-check"];delete p["0011-check:revealed"];localStorage["fsp:predictions"]=JSON.stringify(p);location.reload()`).
+Retest 10-29: 4/5, target met. Detail in LR-0022.
