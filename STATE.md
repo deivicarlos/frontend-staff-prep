@@ -13,7 +13,7 @@ the Staff roadmap: the tracks paused 10-17 are restored below.
 
 Frontend Engineering Lead, IKEA Kreativ, CAD 170–215k, remote Canada. ~6–8 h prep Thu–Mon.
 Security track paused until after Monday; lesson 12 (S2) built 10-29, still unworked.
-Prep doc: `career/private/2026-11-19-geomagical-prep.md` (to build once the format is known).
+Hiring manager screen (Dustin Jones), no coding. Prep doc: `career/private/2026-11-19-geomagical-prep.md`. Thu: use Kreativ, why-this-role. Fri: stories out loud. Sat: technical depth on his own projects. Sun: run-through.
 
 ## After the interview: grade lesson 12 (S2, AuthN from zero)
 
