@@ -9,7 +9,13 @@ Global Relay round 2 done 10-23; offer at **Senior**, not Staff. **Never raise t
 ask about it** (his rule, 10-26). The sprint record is in `HISTORY.md` → "GR loop closed". Back on
 the Staff roadmap: the tracks paused 10-17 are restored below.
 
-## Next session: grade lesson 12 (S2, AuthN from zero)
+## Now: Geomagical Labs interview prep (first interview Mon 2026-11-23)
+
+Frontend Engineering Lead, IKEA Kreativ, CAD 170–215k, remote Canada. ~6–8 h prep Thu–Mon.
+Security track paused until after Monday; lesson 12 (S2) built 10-29, still unworked.
+Prep doc: `career/private/2026-11-19-geomagical-prep.md` (to build once the format is known).
+
+## After the interview: grade lesson 12 (S2, AuthN from zero)
 
 [Lesson 12](lessons/0012-who-are-you-again.html) built 10-29: S1 warm-up (navigations never meet CORS),
 then password storage, sessions (fixation, timeouts, logout), passkeys. He pastes the cold answer and the
