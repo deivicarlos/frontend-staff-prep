@@ -1,6 +1,6 @@
 # State
 
-_Updated 2026-10-29. Plan re-set 2026-09-24 ([LR-0012](learning-records/0012-reweight-to-what-screens-grade.md));
+_Updated 2026-11-22. Plan re-set 2026-09-24 ([LR-0012](learning-records/0012-reweight-to-what-screens-grade.md));
 decisions in `MISSION.md` and `career/CAREER.md`. Scores and closed items: `HISTORY.md`._
 
 ## GR loop closed (10-26)
@@ -13,7 +13,9 @@ the Staff roadmap: the tracks paused 10-17 are restored below.
 
 Frontend Engineering Lead, IKEA Kreativ, CAD 170–215k, remote Canada. ~6–8 h prep Thu–Mon.
 Security track paused until after Monday; lesson 12 (S2) built 10-29, still unworked.
-Hiring manager screen (Dustin Jones), no coding. Prep doc: `career/private/2026-11-19-geomagical-prep.md`. Thu: use Kreativ, why-this-role. Fri: stories out loud. Sat: technical depth on his own projects. Sun: run-through.
+Hiring manager screen (Dustin Jones), no coding. Prep doc: `career/private/2026-11-19-geomagical-prep.md`.
+Done: Kreativ used (multi-select line in §2), stories out loud Fri, story 1 TTI causality fixed 11-22
+(load-time re-render storm, not code splitting). Left: one timed full run-through Sun. No new material Mon.
 
 ## After the interview: grade lesson 12 (S2, AuthN from zero)
 
