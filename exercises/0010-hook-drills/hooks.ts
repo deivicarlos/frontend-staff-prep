@@ -1,6 +1,6 @@
 // Write the three hooks. No libraries. Run `npm test` after each one (`npm run watch` reruns on save).
 // Done when every test passes. With the stubs, most fail.
-import { ErrorInfo, useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 // 1 · useDebouncedValue(value, ms)
 // Returns `value`, but only once it has stopped changing for `ms`. The first render returns
@@ -9,12 +9,12 @@ export function useDebouncedValue<T>(value: T, ms: number): T {
   const [debounced, setDebounced] = useState(value);
 
   useEffect(() => {
-    const timerId = setTimeout(() => {
+    const id = setTimeout(() => {
       setDebounced(value);
     }, ms);
 
     return () => {
-      clearTimeout(timerId);
+      clearTimeout(id);
     };
   }, [value, ms]);
 
@@ -29,31 +29,25 @@ export function useDebouncedCallback<A extends unknown[]>(
   fn: (...args: A) => void,
   ms: number,
 ): (...args: A) => void {
-  const ref = useRef(fn);
-  const timeRef = useRef(0);
+  // const refFn = useRef<(...args: A) => void>(fn);
 
-  useEffect(() => {
-    ref.current = fn;
-  });
+  const _fn = useCallback((...args: A) => fn(...args), [fn]);
 
-  const debouncedFunction = useCallback(
+  const debouncedFn: (...args: A) => void = useCallback(
     (...args: A) => {
-      clearTimeout(timeRef.current);
-
-      timeRef.current = setTimeout(() => {
-        ref.current(...args);
+      const id = setTimeout(() => {
+        _fn(...args);
       }, ms);
+
+      return () => {
+        clearTimeout(id);
+      };
     },
-    [ms],
+    [_fn, ms],
   );
 
-  useEffect(() => {
-    return () => clearTimeout(timeRef.current);
-  }, []);
-
-  return debouncedFunction; // replace
+  return debouncedFn;
 }
-
 // 3 · useSearch(query, fetcher)
 // Fetches `fetcher(query)` whenever `query` changes. Returns { data, error, loading }.
 // - query "" → no request; { data: null, error: null, loading: false }.
@@ -71,36 +65,31 @@ export function useSearch<T>(
   query: string,
   fetcher: (q: string) => Promise<T>,
 ): SearchState<T> {
-  const initialState: SearchState<T> = {
+  const [state, setState] = useState<{
+    data: T | null;
+    error: Error | null;
+    loading: boolean;
+  }>({
     data: null,
     error: null,
     loading: false,
-  };
-
-  const [searchState, setSearchState] = useState<SearchState<T>>(initialState);
-
-  const _fetcher = useCallback((q: string) => fetcher(q), [fetcher]);
+  });
 
   useEffect(() => {
-    if (!query) {
-      setSearchState(initialState);
-      return;
-    }
+    let inFlight = true;
 
-    let isCurrent = true;
-
-    async function performFetch() {
+    async function fetch() {
       try {
-        setSearchState((prev) => ({ ...prev, loading: true, error: null }));
+        setState((prev) => ({ ...prev, loading: true, error: null }));
 
-        const dt = await _fetcher(query);
+        const data: T = await fetcher(query);
 
-        if (isCurrent) {
-          setSearchState((prev) => ({ ...prev, data: dt, loading: false }));
+        if (inFlight) {
+          setState((prev) => ({ ...prev, loading: false, data }));
         }
       } catch (err) {
-        if (isCurrent) {
-          setSearchState((prev) => ({
+        if (inFlight) {
+          setState((prev) => ({
             ...prev,
             error: err as Error,
             loading: false,
@@ -109,14 +98,14 @@ export function useSearch<T>(
       }
     }
 
-    performFetch();
+    fetch();
 
     return () => {
-      isCurrent = false;
+      inFlight = false;
     };
   }, [query]);
 
-  return { ...searchState }; // replace
+  return { ...state }; // replace
 }
 
 // Then say out loud: why does #2 need a ref, and which line of #3 is the guard that #3's
