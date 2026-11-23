@@ -16,6 +16,8 @@ Security track paused until after Monday; lesson 12 (S2) built 10-29, still unwo
 Hiring manager screen (Dustin Jones), no coding. Prep doc: `career/private/2026-11-19-geomagical-prep.md`.
 Done: Kreativ used (multi-select line in §2), stories out loud Fri, story 1 TTI causality fixed 11-22
 (load-time re-render storm, not code splitting). Left: one timed full run-through Sun. No new material Mon.
+11-22 he chose technical work over more interview talk (never failed a first round; fails technical ones).
+Next technical: lesson 5 (RADIO).
 
 ## After the interview: grade lesson 12 (S2, AuthN from zero)
 
@@ -62,9 +64,8 @@ Then Phase 2, engineering with AI (`MISSION.md`).
 
 ## Carry-over from GR (fold into reps as warm-ups, 5 min, cold)
 
-- Hook drills 0010 #2/#3 cold 10-28: 6/13 (no guard in #3; #2 timer in an effect, raw `fn` returned).
-  Coached to 13/13. Gaps taught: hook args are initial-only after mount; guard after the `await`;
-  timer goes in the returned fn; don't write refs during render. Retest #2 cold in a week.
+- Hook drills 0010 cold retest 11-22: 9/13 (#3 guard held; #2 1/4, returned cleanup nobody calls),
+  coached to 13/13 (LR-0023). **Retest #2 cold ~11-29**, from the stub; ask who calls a returned fn.
 - `withTimeout` drops the input's rejection; clear every timer you start (LR-0019 stop conditions).
 - Cleanup timing and a stale-response sequence (LR-0021).
 - CSS: `div .selected` is descendant; cascade ≠ inheritance; specificity tuple.

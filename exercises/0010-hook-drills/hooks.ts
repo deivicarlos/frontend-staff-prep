@@ -29,21 +29,28 @@ export function useDebouncedCallback<A extends unknown[]>(
   fn: (...args: A) => void,
   ms: number,
 ): (...args: A) => void {
-  // const refFn = useRef<(...args: A) => void>(fn);
+  const fnRef = useRef(fn);
+  const timerRef = useRef(0);
 
-  const _fn = useCallback((...args: A) => fn(...args), [fn]);
+  useEffect(() => {
+    fnRef.current = fn;
+  });
 
-  const debouncedFn: (...args: A) => void = useCallback(
+  useEffect(() => {
+    return () => {
+      clearTimeout(timerRef.current);
+    };
+  }, []);
+
+  const debouncedFn = useCallback(
     (...args: A) => {
-      const id = setTimeout(() => {
-        _fn(...args);
-      }, ms);
+      clearTimeout(timerRef.current);
 
-      return () => {
-        clearTimeout(id);
-      };
+      timerRef.current = setTimeout(() => {
+        fnRef.current(...args);
+      }, ms);
     },
-    [_fn, ms],
+    [ms],
   );
 
   return debouncedFn;
@@ -79,6 +86,8 @@ export function useSearch<T>(
     let inFlight = true;
 
     async function fetch() {
+      if (!query.length) return;
+
       try {
         setState((prev) => ({ ...prev, loading: true, error: null }));
 

@@ -23,3 +23,10 @@ The "latest fn" test passes only because identity isn't stable.
 Teach #2 as four requirements → four mechanisms (timer id in a ref, clear before set; fn in a ref
 updated after render; `useCallback` with `[ms]`; unmount effect). Rewrite #2 cold the same day, then
 cold again in a week. Ask him who calls a function he returns.
+
+## Same day, after teaching
+
+Cold rewrite of #2: 3/4. Both refs, clear-before-set and `[ms]` right; still returned a cleanup from
+the callback and had no unmount effect. After one more pointer ("where does React call what you
+return?") he moved the clear into a `[]` effect and deleted the dead return: 13/13. The returned
+cleanup survived one round of explicit teaching, so the cold retest in a week is the real check.
