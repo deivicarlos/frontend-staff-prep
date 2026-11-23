@@ -16,6 +16,11 @@ Pod lead, ~50/50 code/lead, owns frontend architecture + technical roadmap. Debr
 LeetCode) · 3 architecture whiteboard · 4 product (measuring the right feature) · 5 CTO.
 Prep in round order: practical timed builds talking out loud → RADIO lesson 5 + Kreativ-style
 design drills → one product/metrics career session → MCP explained correctly in 60 s.
+Round 2 setup (his guess): shared browser IDE (CoderPad-style), likely no AI, docs/MDN fine, he can
+ask the engineer. Build round-2 reps in that shape: docs allowed, no AI, an ambiguous requirement
+that only resolves if he asks (answers in a file he opens by asking).
+MCP: verified explanation given 11-23 (spec + Bedrock Converse docs). His ask: a separate Q&A on it,
+cold teach-back, then a 60 s interview version. Confirm his system's real flow first.
 Security track stays paused until the loop ends.
 
 ## After the interview: grade lesson 12 (S2, AuthN from zero)
