@@ -20,7 +20,9 @@ Round 2 setup (his guess): shared browser IDE (CoderPad-style), likely no AI, do
 ask the engineer. Build round-2 reps in that shape: docs allowed, no AI, an ambiguous requirement
 that only resolves if he asks (answers in a file he opens by asking).
 MCP: verified explanation given 11-23 (spec + Bedrock Converse docs). His ask: a separate Q&A on it,
-cold teach-back, then a 60 s interview version. Confirm his system's real flow first.
+cold teach-back, then a 60 s interview version. 11-23: his team's review PDF confirms one Python service
+(orchestrator runs the loop + tool handlers); tools call the backend REST API, not Mongo; viewer tools return
+`viewer_command` the frontend runs via the viewer SDK. 60 s version given; he says it back next.
 Security track stays paused until the loop ends.
 
 ## After the interview: grade lesson 12 (S2, AuthN from zero)
