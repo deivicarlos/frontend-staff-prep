@@ -9,15 +9,14 @@ Global Relay round 2 done 10-23; offer at **Senior**, not Staff. **Never raise t
 ask about it** (his rule, 10-26). The sprint record is in `HISTORY.md` → "GR loop closed". Back on
 the Staff roadmap: the tracks paused 10-17 are restored below.
 
-## Now: Geomagical Labs interview prep (first interview Mon 2026-11-23)
+## Now: Geomagical Labs loop (screen done 11-23, felt good; awaiting invite)
 
-Frontend Engineering Lead, IKEA Kreativ, CAD 170–215k, remote Canada. ~6–8 h prep Thu–Mon.
-Security track paused until after Monday; lesson 12 (S2) built 10-29, still unworked.
-Hiring manager screen (Dustin Jones), no coding. Prep doc: `career/private/2026-11-19-geomagical-prep.md`.
-Done: Kreativ used (multi-select line in §2), stories out loud Fri, story 1 TTI causality fixed 11-22
-(load-time re-render storm, not code splitting). Left: one timed full run-through Sun. No new material Mon.
-11-22 he chose technical work over more interview talk (never failed a first round; fails technical ones).
-Next technical: lesson 5 (RADIO).
+Pod lead, ~50/50 code/lead, owns frontend architecture + technical roadmap. Debrief:
+`career/private/2026-11-23-geomagical-debrief.md`. Rounds left: 2 pair programming (practical, not
+LeetCode) · 3 architecture whiteboard · 4 product (measuring the right feature) · 5 CTO.
+Prep in round order: practical timed builds talking out loud → RADIO lesson 5 + Kreativ-style
+design drills → one product/metrics career session → MCP explained correctly in 60 s.
+Security track stays paused until the loop ends.
 
 ## After the interview: grade lesson 12 (S2, AuthN from zero)
 
