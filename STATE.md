@@ -23,6 +23,8 @@ MCP: verified explanation given 11-23 (spec + Bedrock Converse docs). His ask: a
 cold teach-back, then a 60 s interview version. 11-23: his team's review PDF confirms one Python service
 (orchestrator runs the loop + tool handlers); tools call the backend REST API, not Mongo; viewer tools return
 `viewer_command` the frontend runs via the viewer SDK. 60 s version given; he says it back next.
+**Next: exercise 0012 room planner** (round-2 rep, 45 min, built 11-23). I play the pairing engineer
+in chat; R5's room-bound rules are deliberately unstated (answers in its AFTER-THE-TIMER). Grade asked-or-not.
 Security track stays paused until the loop ends.
 
 ## After the interview: grade lesson 12 (S2, AuthN from zero)
