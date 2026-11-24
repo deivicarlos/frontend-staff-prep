@@ -1,6 +1,6 @@
 # State
 
-_Updated 2026-11-22. Plan re-set 2026-09-24 ([LR-0012](learning-records/0012-reweight-to-what-screens-grade.md));
+_Updated 2026-11-24. Plan re-set 2026-09-24 ([LR-0012](learning-records/0012-reweight-to-what-screens-grade.md));
 decisions in `MISSION.md` and `career/CAREER.md`. Scores and closed items: `HISTORY.md`._
 
 ## GR loop closed (10-26)
@@ -9,25 +9,14 @@ Global Relay round 2 done 10-23; offer at **Senior**, not Staff. **Never raise t
 ask about it** (his rule, 10-26). The sprint record is in `HISTORY.md` → "GR loop closed". Back on
 the Staff roadmap: the tracks paused 10-17 are restored below.
 
-## Now: Geomagical Labs loop (screen done 11-23, felt good; awaiting invite)
+## Geomagical closed (11-24): rejected after the HM screen
 
-Pod lead, ~50/50 code/lead, owns frontend architecture + technical roadmap. Debrief:
-`career/private/2026-11-23-geomagical-debrief.md`. Rounds left: 2 pair programming (practical, not
-LeetCode) · 3 architecture whiteboard · 4 product (measuring the right feature) · 5 CTO.
-Prep in round order: practical timed builds talking out loud → RADIO lesson 5 + Kreativ-style
-design drills → one product/metrics career session → MCP explained correctly in 60 s.
-Round 2 setup (his guess): shared browser IDE (CoderPad-style), likely no AI, docs/MDN fine, he can
-ask the engineer. Build round-2 reps in that shape: docs allowed, no AI, an ambiguous requirement
-that only resolves if he asks (answers in a file he opens by asking).
-MCP: verified explanation given 11-23 (spec + Bedrock Converse docs). His ask: a separate Q&A on it,
-cold teach-back, then a 60 s interview version. 11-23: confirmed one Python service
-(orchestrator runs the loop + tool handlers); tools call the backend REST API, not Mongo; viewer tools return
-`viewer_command` the frontend runs via the viewer SDK. 60 s version given; he says it back next.
-**Next: exercise 0012 room planner** (round-2 rep, 45 min, built 11-23). I play the pairing engineer
-in chat; R5's room-bound rules are deliberately unstated (answers in its AFTER-THE-TIMER). Grade asked-or-not.
-Security track stays paused until the loop ends.
+Detail in `HISTORY.md` → "Geomagical loop closed". Likely factor (unconfirmed): he couldn't explain
+his own MCP chatbot's architecture to an HM hiring an architecture owner. Corrected 60 s version is in
+the debrief; it becomes the project deep dive (queue item 4), pulled forward. Exercise 0012 room
+planner (45 min pairing rep, built 11-23) stays as a generic round-2 rep for the next loop.
 
-## After the interview: grade lesson 12 (S2, AuthN from zero)
+## Next: grade lesson 12 (S2, AuthN from zero)
 
 [Lesson 12](lessons/0012-who-are-you-again.html) built 10-29: S1 warm-up (navigations never meet CORS),
 then password storage, sessions (fixation, timeouts, logout), passkeys. He pastes the cold answer and the

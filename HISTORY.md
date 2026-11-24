@@ -249,3 +249,25 @@ effect or a read? CSRF needs only the side effect. Mix in same-origin relative f
 Round 4 done 10-28: fetch cases clean, Lax top-level rule shaky (LR-0022). Retest §5 cold
 on a later day (clear it from the **lesson tab's** console: `p=JSON.parse(localStorage["fsp:predictions"]);delete p["0011-check"];delete p["0011-check:revealed"];localStorage["fsp:predictions"]=JSON.stringify(p);location.reload()`).
 Retest 10-29: 5/5, target met. Detail in LR-0022.
+
+## Geomagical loop closed 2026-11-24 (moved from STATE)
+
+Rejection email 11-24 after round 1 (HM screen, 11-23, which he felt went well). Reason not given.
+
+### State block at close
+
+Pod lead, ~50/50 code/lead, owns frontend architecture + technical roadmap. Debrief:
+`career/private/2026-11-23-geomagical-debrief.md`. Rounds left: 2 pair programming (practical, not
+LeetCode) · 3 architecture whiteboard · 4 product (measuring the right feature) · 5 CTO.
+Prep in round order: practical timed builds talking out loud → RADIO lesson 5 + Kreativ-style
+design drills → one product/metrics career session → MCP explained correctly in 60 s.
+Round 2 setup (his guess): shared browser IDE (CoderPad-style), likely no AI, docs/MDN fine, he can
+ask the engineer. Build round-2 reps in that shape: docs allowed, no AI, an ambiguous requirement
+that only resolves if he asks (answers in a file he opens by asking).
+MCP: verified explanation given 11-23 (spec + Bedrock Converse docs). His ask: a separate Q&A on it,
+cold teach-back, then a 60 s interview version. 11-23: confirmed one Python service
+(orchestrator runs the loop + tool handlers); tools call the backend REST API, not Mongo; viewer tools return
+`viewer_command` the frontend runs via the viewer SDK. 60 s version given; he says it back next.
+**Next: exercise 0012 room planner** (round-2 rep, 45 min, built 11-23). I play the pairing engineer
+in chat; R5's room-bound rules are deliberately unstated (answers in its AFTER-THE-TIMER). Grade asked-or-not.
+Security track stays paused until the loop ends.
