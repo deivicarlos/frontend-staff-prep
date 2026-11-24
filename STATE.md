@@ -96,6 +96,9 @@ the debrief himself (his rule, 10-16).
 
 ## Open, not yet scheduled
 
+- Reading Khononov, *Learning DDD* (O'Reilly), spare time, his pick 11-24. Not on the plan; tie strategic
+  design (bounded contexts) into a system design drill when he reaches it.
+
 - Request state as a discriminated union is unmeasured.
 - Generics (Q14): fold into a component-API exercise.
 - `invalidateQueries` prefix matching missed in 0005 (LR-0013).
