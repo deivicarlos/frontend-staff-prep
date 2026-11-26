@@ -40,5 +40,5 @@ origin binding defeats a proxy (Apply 4, retrieval 4). Cold (b), (c) right from 
    Teach-back 2/3: the server keeps the planted ID at login, and the fix is regenerate. He left out that
    the attacker obtained the ID first, so already holds it. Retest it cold in the ~12-02 S2 retest.
 2. S3 opens with links/forms never meeting CORS as CSRF's mechanism, not as a warm-up.
-3. Every security check from now asks rule → attack pairs; score the attack, not the rule.
+3. Every security check asks rule → what the attacker does. Score the mechanism, never the attack's name (his rule, 11-25).
 4. Cold S2 retest ~12-02: the three properties of a password hash, and four session rules with attacks.

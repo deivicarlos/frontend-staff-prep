@@ -21,7 +21,7 @@ planner (45 min pairing rep, built 11-23) stays as a generic round-2 rep for the
 Lesson 12 graded 11-25: check 2/4 (LR-0024). Rules without attacks; S1 link-vs-CORS decayed.
 1. Fixation re-taught 11-25, teach-back 2/3 (missed: the attacker holds the same ID). Retest 12-02.
 2. Build S3 (rebuild lesson 6): open with "links and forms never meet CORS" as CSRF's mechanism.
-   Every check asks rule → attack; score the attack.
+   Every check asks rule → what the attacker does; score the mechanism, never the name (his rule, 11-25).
 3. Cold S2 retest ~12-02: hash properties (one-way, salted, slow) + four session rules with attacks.
 
 ## Security, AuthN and AuthZ: zero to hero (his ask, 2026-10-08)
