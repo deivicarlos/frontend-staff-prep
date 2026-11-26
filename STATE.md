@@ -16,12 +16,13 @@ his own MCP chatbot's architecture to an HM hiring an architecture owner. Correc
 the debrief; it becomes the project deep dive (queue item 4), pulled forward. Exercise 0012 room
 planner (45 min pairing rep, built 11-23) stays as a generic round-2 rep for the next loop.
 
-## Next: fixation trace, then S3
+## Next: lesson 13 (S3)
 
 Lesson 12 graded 11-25: check 2/4 (LR-0024). Rules without attacks; S1 link-vs-CORS decayed.
 1. Fixation re-taught 11-25, teach-back 2/3 (missed: the attacker holds the same ID). Retest 12-02.
-2. Build S3 (rebuild lesson 6): open with "links and forms never meet CORS" as CSRF's mechanism.
-   Every check asks rule → what the attacker does; score the mechanism, never the name (his rule, 11-25).
+2. **Next: he works [lesson 13](lessons/0013-the-browser-works-for-anyone.html)** (S3, built 11-25, replaces
+   lesson 6). He pastes cold, four Applies, check (key `0013-check`). Score the mechanism, never the name
+   (his rule, 11-25). Watch the warm-up (form.submit) and Apply 1 (3) (CORS read vs CSRF action).
 3. Cold S2 retest ~12-02: hash properties (one-way, salted, slow) + four session rules with attacks.
 
 ## Security, AuthN and AuthZ: zero to hero (his ask, 2026-10-08)
@@ -34,7 +35,7 @@ OWASP API Top 10 before S5 and S7.
 |---|---|---|
 | S1 | How the browser talks to servers: origins, cookies, SOP, CORS, the two gates | lesson 11: 1/5; retests 10-28 1/5, 10-29 5/5 (LR-0022). Cleared |
 | S2 | AuthN from zero: password hashing, server sessions (ID, store, fixation, timeouts, logout), MFA/passkeys | lesson 12: 2/4 (LR-0024); retest ~12-02 |
-| S3 | Attacks on a logged-in user: XSS, CSRF, cookie flags, CSP. [Lesson 6](lessons/0006-the-browser-attaches-the-cookie.html) exists: retake or rebuild after S1–S2 | lesson 6: 2/5 (LR-0014) |
+| S3 | Attacks on a logged-in user: XSS, CSRF, cookie flags, CSP. [Lesson 6](lessons/0006-the-browser-attaches-the-cookie.html) exists: retake or rebuild after S1–S2 | lesson 6: 2/5 (LR-0014); lesson 13 built 11-25 |
 | S4 | Tokens: JWT, signing and validation, sessions vs JWT, access + refresh, revocation | |
 | S5 | OAuth 2 and OIDC: delegation, roles, Code + PKCE, ID vs access token, SSO | |
 | S6 | SPA login architectures: BFF, token-mediating backend, browser client, server sessions | |

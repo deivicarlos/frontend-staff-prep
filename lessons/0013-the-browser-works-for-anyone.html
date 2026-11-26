@@ -1,0 +1,370 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lesson 13 — The Browser Works for Anyone</title>
+<link rel="stylesheet" href="../assets/course.css">
+<style>
+  /* Prose in every column (same override as lessons 6, 11, 12). */
+  main table { display: block; overflow-x: auto; }
+  main tbody td:first-child,
+  main tbody td:last-child { white-space: normal; text-align: left; font-size: inherit; color: inherit; }
+  main td { min-width: 6rem; }
+  pre.http { font-size: 0.85rem; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>The browser works for anyone</h1>
+  <p class="subtitle">Once you're logged in, your browser holds the credential and attaches it to every request
+  that goes to your app. Two attacks use that without ever seeing the credential: CSRF gets your browser to send
+  a request, and XSS gets code running inside your page. Learn the browser behaviour each one uses, and the
+  defence that takes it away.</p>
+  <p class="meta">Lesson 13 · Security track S3 · ~35 min · have a timer ready ·
+  <a href="0012-who-are-you-again.html">← Lesson 12</a> · replaces
+  <a href="0006-the-browser-attaches-the-cookie.html">lesson 6</a></p>
+</header>
+
+<main>
+
+<div class="predict" data-predict data-key="0013-warmup">
+  <span class="predict-label">Warm-up from S1 and S2, 3 minutes</span>
+  <p class="predict-prompt">(1) evil.com has a hidden <code>&lt;form method="POST" action="https://app.example.com/transfer"&gt;</code>
+  and calls <code>form.submit()</code>. Does CORS run? Does the request reach the server?
+  (2) In one line: in session fixation, what does the attacker already hold before you log in, and what does
+  the server change at login to stop it?</p>
+  <textarea class="predict-input" placeholder="(1) … (2) …"></textarea>
+  <button class="predict-btn">Reveal</button>
+  <div class="predict-answer" hidden>
+    <p>(1) No CORS: <code>form.submit()</code> is a navigation, not a script request. The request reaches the server.
+    Whether it arrives logged in depends only on whether the browser attaches the cookie.</p>
+    <p>(2) The attacker holds the session ID they planted in your browser. At login the server issues a new ID and
+    deletes the old one, so the ID the attacker holds never becomes logged in.</p>
+  </div>
+</div>
+
+<div class="predict" data-predict data-key="0013-cold">
+  <span class="predict-label">Cold, 2 minutes, before reading</span>
+  <p class="predict-prompt">Your app keeps the login in an <code>HttpOnly</code> session cookie. Without knowing the
+  password or the session ID, describe two different ways an attacker can get your server to act as the logged-in
+  user.</p>
+  <textarea class="predict-input" placeholder="Way 1 … Way 2 …"></textarea>
+  <button class="predict-btn">Lock it</button>
+  <div class="predict-answer" hidden>
+    <p>Locked. Sections 2 and 3 are the two ways. Compare when you get there.</p>
+  </div>
+</div>
+
+<h2>1 · The mechanism: two things the browser does for you</h2>
+
+<p>Lesson 12 ended with this: after login, the session ID is the credential, and it lives in a cookie. The
+browser handles that cookie on its own, through two behaviours:</p>
+
+<table>
+  <thead><tr><th>The browser…</th><th>Which means</th><th>The attack that uses it</th></tr></thead>
+  <tbody>
+    <tr><td><strong>A.</strong> attaches a cookie based on <strong>where the request goes</strong>, not which page started it
+      (lesson 11, stop 2)</td>
+      <td>Any page on the internet can make your logged-in browser send a request to your app, and the cookie goes
+      with it.</td>
+      <td><strong>CSRF</strong> (cross-site request forgery): the attacker's page sends the request.</td></tr>
+    <tr><td><strong>B.</strong> gives every script in a page that page's <strong>full powers</strong>: read the DOM,
+      send same-origin requests with cookies, read the responses</td>
+      <td>Whoever gets a script into your page can do anything your own code can.</td>
+      <td><strong>XSS</strong> (cross-site scripting): the attacker's code runs inside your page.</td></tr>
+  </tbody>
+</table>
+
+<p>Neither attack needs the session ID itself. That's why <code>HttpOnly</code>, which only stops scripts from
+<em>reading</em> the cookie, isn't a defence against either one. MDN: an HttpOnly cookie "will still be sent with
+JavaScript-initiated requests" (<a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Set-Cookie">Set-Cookie</a>).</p>
+
+<table>
+  <thead><tr><th></th><th>CSRF</th><th>XSS</th></tr></thead>
+  <tbody>
+    <tr><td>Attacker's code runs</td><td>On their own site</td><td>Inside your origin</td></tr>
+    <tr><td>Can send requests as the user</td><td>Yes, the kinds a page may send without permission (form, link, image, simple fetch)</td><td>Yes, any request your own code could send</td></tr>
+    <tr><td>Can read your responses</td><td>No. The same-origin policy blocks the read, but the action already happened</td><td>Yes</td></tr>
+    <tr><td>Relies on</td><td>Cookie-based auth (behaviour A)</td><td>Your app running attacker data as code (behaviour B)</td></tr>
+  </tbody>
+</table>
+
+<p>Phishing (lesson 12, §4) is the third industry-standard attack, and it's different: there, the attacker gets
+the user to hand over the credential itself.</p>
+
+<div class="predict" data-predict data-key="0013-mech">
+  <span class="predict-label">Apply, 2 minutes. CSRF, XSS or neither, and what the attacker gets</span>
+  <p class="predict-prompt">The user is logged in to app.example.com.<br>
+  (1) A comment saved as <code>&lt;img src=x onerror="fetch('/api/transfer', …)"&gt;</code> is shown as HTML to
+  everyone who opens the thread.<br>
+  (2) evil.com contains <code>&lt;img src="https://app.example.com/api/logout"&gt;</code>, and logout is a GET.<br>
+  (3) evil.com runs <code>fetch("https://app.example.com/api/me", { credentials: "include" })</code> to read the
+  user's email. The app sends no CORS headers.<br>
+  (4) The search page writes <code>?q=</code> into the HTML unescaped, and the attacker emails the user a search
+  link.</p>
+  <textarea class="predict-input" placeholder="(1) … (4) …"></textarea>
+  <button class="predict-btn">Reveal</button>
+  <div class="predict-answer" hidden>
+    <p>(1) XSS. The attacker's code runs inside your page for every reader, and its <code>fetch</code> goes out with
+    the cookie.</p>
+    <p>(2) CSRF. The browser loads the image, attaches the cookie (if SameSite lets it, §2), and the server logs the
+    user out. The attacker never sees the response and doesn't need to.</p>
+    <p>(3) Neither. The request is sent, but it's a script request, so CORS applies: with no
+    <code>Access-Control-Allow-Origin</code>, the browser won't hand the response to evil.com's script. Reading data
+    across origins is what the same-origin policy stops. CSRF is about actions, not reads.</p>
+    <p>(4) XSS. The link carries the script, the server echoes it into the page, and it runs in your origin.</p>
+  </div>
+</div>
+
+<h2>2 · CSRF: what the forged request needs</h2>
+
+<p>For a forged request to work, three things must be true. Each defence takes one away:</p>
+
+<table>
+  <thead><tr><th>The attacker needs</th><th>Defence that removes it</th><th>How</th></tr></thead>
+  <tbody>
+    <tr><td>The browser to attach the cookie to a request from their site</td>
+      <td><code>SameSite=Lax</code> or <code>Strict</code> on the cookie</td>
+      <td>Strict: cookie only on requests started from the same site. Lax: same, plus cross-site <strong>top-level
+      navigations with a safe method</strong> (a link click, <code>location</code> change, or GET form). Cross-site
+      POSTs, <code>fetch</code>, <code>&lt;img&gt;</code> and iframes get no cookie.</td></tr>
+    <tr><td>A request the browser sends without asking the server first</td>
+      <td>Require a custom header, e.g. <code>X-CSRF-Token</code></td>
+      <td>A page can't add a custom header with a form or link. A script can, but then the browser sends a
+      preflight, and your CORS policy only lets your own origins through.</td></tr>
+    <tr><td>To know every value in the request</td>
+      <td>A CSRF token</td>
+      <td>The server puts a random secret, tied to the session, in the page (hidden field or JSON, "should not be
+      transmitted in a cookie") and checks it on every state-changing request. The attacker can't read your page, so
+      they can't know it.</td></tr>
+    <tr><td>The server not to check who started the request</td>
+      <td>Fetch Metadata</td>
+      <td>The browser adds <code>Sec-Fetch-Site</code> (<code>same-origin</code>, <code>same-site</code>,
+      <code>cross-site</code>, <code>none</code>). The server rejects POST/PUT/PATCH/DELETE marked
+      <code>cross-site</code>. Fall back to checking <code>Origin</code> for old browsers.</td></tr>
+  </tbody>
+</table>
+
+<p>Three rules from the <a href="https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html">OWASP
+CSRF Prevention Cheat Sheet</a> that the table doesn't show:</p>
+<ul>
+  <li><strong>"Do not use GET requests for state changing operations."</strong> Lax sends the cookie on a
+  cross-site link click, so a state-changing GET is reachable by anyone who can show the user a link.</li>
+  <li><strong>SameSite is defence in depth, not the defence.</strong> Two reasons. "Same site" means the same
+  registrable domain (<a href="https://developer.mozilla.org/en-US/docs/Glossary/Site">MDN, Site</a>), so
+  <code>blog.example.com</code> and <code>app.example.com</code> are the same site, and SameSite does nothing
+  between them. And when <code>SameSite</code> is left unset, only "some browsers" default to Lax, and that default
+  still sends the cookie on cross-site POSTs for two minutes after it was set
+  (<a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Set-Cookie">MDN</a>). Set it
+  explicitly, and add a token or Fetch Metadata.</li>
+  <li><strong>"Cross-Site Scripting (XSS) can defeat all CSRF mitigation techniques!"</strong> Code inside your page
+  can read the token, add the header, and is same-origin. That's §3.</li>
+</ul>
+
+<div class="predict" data-predict data-key="0013-csrf">
+  <span class="predict-label">Apply, 4 minutes. Succeeds or blocked, and what decides it</span>
+  <p class="predict-prompt">The session cookie on app.example.com is <code>sid=…; HttpOnly; Secure; SameSite=Lax; Path=/</code>.
+  There's no other CSRF defence. For each attack, say whether it succeeds and what the browser or server does that
+  decides it.<br>
+  (1) evil.com calls <code>form.submit()</code> on a POST form to <code>/api/transfer</code>.<br>
+  (2) The API also deletes a project on <code>GET /api/projects/42/delete</code>, and evil.com shows a link to it
+  that the user clicks.<br>
+  (3) The same GET URL, in an <code>&lt;img src&gt;</code> on evil.com.<br>
+  (4) A stored XSS on <code>blog.example.com</code> (another team's app) submits the POST form from (1).<br>
+  (5) You add Fetch Metadata to the server, rejecting state-changing requests marked <code>cross-site</code> or
+  <code>same-site</code>. Replay (4).</p>
+  <textarea class="predict-input" placeholder="(1) … (5) …"></textarea>
+  <button class="predict-btn">Reveal</button>
+  <div class="predict-answer" hidden>
+    <p>(1) Blocked. A cross-site POST isn't a safe method, so Lax keeps the cookie home. The request arrives
+    without a session.</p>
+    <p>(2) Succeeds. A link click is a top-level navigation with GET, exactly what Lax still allows. The bug is
+    the state-changing GET.</p>
+    <p>(3) Blocked. An image load is a subresource request, not a top-level navigation, so Lax withholds the
+    cookie.</p>
+    <p>(4) Succeeds. blog.example.com and app.example.com share a registrable domain, so the request is same-site
+    and Lax sends the cookie.</p>
+    <p>(5) Blocked. The browser marks the request <code>Sec-Fetch-Site: same-site</code>, and the server refuses
+    it. (A CSRF token would also stop it: the blog's script can't read app.example.com's page.)</p>
+    <p>Score the mechanism, not the verdict alone.</p>
+  </div>
+</div>
+
+<h2>3 · XSS: the app runs attacker data as code</h2>
+
+<p>XSS happens when attacker-controlled text ends up somewhere the browser treats as code. The three kinds differ
+only in where the payload sits (<a href="https://owasp.org/www-community/attacks/xss/">OWASP, XSS</a>):</p>
+
+<table>
+  <thead><tr><th>Kind</th><th>Where the payload lives</th><th>Example</th></tr></thead>
+  <tbody>
+    <tr><td>Stored</td><td>Saved on your server, served to everyone who views it</td><td>A comment, a profile name</td></tr>
+    <tr><td>Reflected</td><td>In the request; the server echoes it into the response</td><td>A search term in an emailed link</td></tr>
+    <tr><td>DOM-based</td><td>Never in the server response; your client JS writes it into the DOM</td><td><code>el.innerHTML = location.hash</code></td></tr>
+  </tbody>
+</table>
+
+<p><strong>In React.</strong> Text you render with <code>{value}</code> is escaped: it becomes text, never
+markup. OWASP: "Many frameworks escape every value they render by default… We recommend this approach." XSS gets in
+through the escape hatches, which the
+<a href="https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html">XSS
+Prevention Cheat Sheet</a> lists:</p>
+<ul>
+  <li><code>dangerouslySetInnerHTML</code>. React: "If the HTML inside isn't trusted (for example, if it's based on
+  user data), you risk introducing an XSS vulnerability"
+  (<a href="https://react.dev/reference/react-dom/components/common">react.dev</a>). Rendered markdown and rich text
+  land here. Sanitize with a vetted HTML sanitizer (e.g. DOMPurify) first.</li>
+  <li>User URLs in <code>href</code>/<code>src</code>. <code>javascript:…</code> runs code when clicked. React 19
+  errors on <code>javascript:</code> URLs in <code>src</code> and <code>href</code>
+  (<a href="https://react.dev/blog/2024/04/25/react-19-upgrade-guide">upgrade guide changelog</a>); earlier
+  versions only warned. OWASP: this "does not replace application-specific URL validation". Allow
+  <code>https:</code> only.</li>
+  <li>Anything outside React's rendering: <code>ref.current.innerHTML</code>, <code>eval</code>, a server template
+  that builds HTML.</li>
+</ul>
+
+<p><strong>What the script can do once it runs</strong> (behaviour B): send any request as the user, with the cookie;
+read the page, including your CSRF token, so every CSRF defence is gone; read any token in
+<code>localStorage</code> or a non-HttpOnly cookie and take it away. <code>HttpOnly</code> changes only that last
+part: the attacker can <em>use</em> the session while the tab is open but can't <em>take</em> it. That's why it
+matters, and why it isn't enough.</p>
+
+<div class="predict" data-predict data-key="0013-xss">
+  <span class="predict-label">Apply, 3 minutes. Review each line: safe or XSS, and what the attacker gets</span>
+  <p class="predict-prompt">(1) <code>&lt;p&gt;{comment.body}&lt;/p&gt;</code><br>
+  (2) <code>&lt;div dangerouslySetInnerHTML={{ __html: marked(comment.body) }} /&gt;</code> (a markdown renderer that
+  passes raw HTML through)<br>
+  (3) <code>&lt;a href={user.website}&gt;</code>, where a user sets their website to <code>javascript:fetch(…)</code>,
+  on React 18<br>
+  (4) A PR description: "Not a concern: the session cookie is HttpOnly, so XSS can't do anything with it."</p>
+  <textarea class="predict-input" placeholder="(1) … (4) …"></textarea>
+  <button class="predict-btn">Reveal</button>
+  <div class="predict-answer" hidden>
+    <p>(1) Safe. React escapes it, so <code>&lt;script&gt;</code> shows up as text.</p>
+    <p>(2) Stored XSS. The comment's <code>&lt;img onerror&gt;</code> becomes real markup for every reader.
+    Sanitize the HTML before inserting it.</p>
+    <p>(3) XSS on click. React 18 only warns and renders the link; React 19 throws instead. On either, validate the
+    scheme yourself (<code>https:</code> only).</p>
+    <p>(4) Wrong. The script calls <code>fetch("/api/transfer", …)</code> from inside the page: same-origin, cookie
+    attached, CSRF token readable. HttpOnly only stops it from taking the ID elsewhere.</p>
+  </div>
+</div>
+
+<h2>4 · CSP: a second layer for when XSS gets in</h2>
+
+<p>A Content Security Policy is a response header that tells the browser which scripts it may run. The strict
+policy OWASP recommends (<a href="https://cheatsheetseries.owasp.org/cheatsheets/Content_Security_Policy_Cheat_Sheet.html">CSP
+Cheat Sheet</a>):</p>
+
+<pre class="http"><code>Content-Security-Policy: script-src 'nonce-{RANDOM}' 'strict-dynamic'; object-src 'none'; base-uri 'none'</code></pre>
+
+<table>
+  <thead><tr><th>Part</th><th>What the browser does</th></tr></thead>
+  <tbody>
+    <tr><td><code>'nonce-{RANDOM}'</code></td><td>Runs only <code>&lt;script nonce="…"&gt;</code> tags whose nonce matches. The server
+      generates a fresh one "for each HTTP response", so an attacker can't predict it. Injected inline scripts and
+      inline handlers (<code>onerror=</code>, <code>onclick=</code>) are blocked.</td></tr>
+    <tr><td><code>'strict-dynamic'</code></td><td>Scripts that a trusted script loads are trusted too, so your bundle
+      can load its chunks.</td></tr>
+    <tr><td><code>object-src 'none'</code>, <code>base-uri 'none'</code></td><td>Close two older ways to load code
+      (plugins, rewriting relative script URLs).</td></tr>
+  </tbody>
+</table>
+
+<p>Use nonces or hashes, not a list of allowed domains: OWASP calls the strict form "more secure as it is less
+likely to be bypassed". And CSP "should not be relied upon as the only defensive mechanism against XSS": it limits
+what an injection can run, it doesn't fix the injection.</p>
+
+<div class="predict" data-predict data-key="0013-csp">
+  <span class="predict-label">Apply, 2 minutes. With the strict CSP above, does it run?</span>
+  <p class="predict-prompt">(1) The stored comment <code>&lt;img src=x onerror="fetch(…)"&gt;</code> from §3, via
+  <code>dangerouslySetInnerHTML</code>.<br>
+  (2) An injected <code>&lt;script src="https://evil.com/x.js"&gt;&lt;/script&gt;</code>.<br>
+  (3) A compromised npm package inside your own bundle.<br>
+  (4) Your server adds the nonce with a middleware that stamps every <code>&lt;script&gt;</code> tag in the HTML it
+  sends.</p>
+  <textarea class="predict-input" placeholder="(1) … (4) …"></textarea>
+  <button class="predict-btn">Reveal</button>
+  <div class="predict-answer" hidden>
+    <p>(1) Blocked. Inline event handlers don't run under a nonce policy.</p>
+    <p>(2) Blocked. The tag has no matching nonce.</p>
+    <p>(3) Runs. It's part of your script, which carries the nonce. CSP stops injected code, not code you
+    shipped.</p>
+    <p>(4) Injected scripts run. The middleware stamps the attacker's tag too; OWASP warns against exactly this. Put
+    the nonce in your templates, not on whatever HTML goes out.</p>
+  </div>
+</div>
+
+<h2>Retrieval check · 5 minutes, cold, no scrolling</h2>
+
+<div class="predict" data-predict data-key="0013-check">
+  <span class="predict-label">Without scrolling up</span>
+  <p class="predict-prompt">Say it out loud first, then write it. An interviewer asks: "Your app uses a session
+  cookie. Walk me through XSS and CSRF: how each one attacks a logged-in user, and what you'd do about each."
+  Cover: (1) the browser behaviour each attack relies on; (2) what each attacker can and can't do; (3) two CSRF
+  defences, each with what it takes away from the attacker; (4) where XSS gets into a React app, and what CSP adds.</p>
+  <textarea class="predict-input" placeholder="(1) … (2) … (3) … (4) …"></textarea>
+  <button class="predict-btn">Reveal</button>
+  <div class="predict-answer" hidden>
+    <p>(1) CSRF: the browser attaches cookies by where a request goes, not who started it. XSS: any script in your
+    page has your page's full powers.</p>
+    <p>(2) CSRF sends requests as the user but can't read responses, and only works against cookie auth. XSS can
+    send any request and read everything, including CSRF tokens.</p>
+    <p>(3) Any two: SameSite=Lax/Strict (the cookie stays off cross-site requests; not across sibling subdomains,
+    not on a GET link with Lax); a CSRF token (the attacker can't know a value the request needs); Fetch Metadata
+    (the server rejects state-changing requests the browser marks cross-site); a required custom header (forces a
+    preflight your CORS policy refuses). Plus: never change state on GET.</p>
+    <p>(4) Through escape hatches: <code>dangerouslySetInnerHTML</code> with unsanitized HTML, user URLs in
+    <code>href</code>, direct DOM writes. A strict nonce CSP stops injected scripts and inline handlers from running,
+    as a second layer, not a fix.</p>
+  </div>
+</div>
+
+<div class="note">
+  <p><strong>Sentence to have ready:</strong> <em>"Both attacks use the fact that the browser holds the user's login.
+  CSRF gets the browser to send a request from another site, and the cookie goes with it, so I set SameSite, never
+  change state on GET, and check a CSRF token or Fetch Metadata on writes. XSS gets code into our page, where it can
+  do anything the user can, including bypassing those CSRF defences. So the main defence is not having it: React
+  escapes by default, and I treat dangerouslySetInnerHTML and user URLs as the risk points. A strict nonce CSP is the
+  second layer, and HttpOnly means a successful XSS can use the session but can't take it."</em></p>
+</div>
+
+<div class="ask">
+  <p><strong>Ask me.</strong> Paste the cold answer, each Apply answer and the retrieval check, exactly as first
+  written. Anything unclear, ask: I'm your teacher for this.</p>
+</div>
+
+<h2>Read this</h2>
+<p><strong>Primary source:</strong> <a href="https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html">OWASP
+CSRF Prevention Cheat Sheet</a> (15 minutes: the intro list, "Synchronizer Token Pattern", "Fetch Metadata headers",
+"SameSite Cookie Attribute").</p>
+
+<h2>Sources</h2>
+<ul>
+  <li>MDN, <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Set-Cookie">Set-Cookie</a>. SameSite Strict/Lax/None; Lax's top-level navigation and safe-method rule; "some browsers" default to Lax; the two-minute POST allowance for a defaulted Lax; HttpOnly cookies "still sent with JavaScript-initiated requests".</li>
+  <li>MDN, <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Sec-Fetch-Site">Sec-Fetch-Site</a>. Values <code>cross-site</code>, <code>same-site</code>, <code>same-origin</code>, <code>none</code>.</li>
+  <li>MDN, <a href="https://developer.mozilla.org/en-US/docs/Glossary/Site">Site</a>. Same site = same registrable domain, with the scheme.</li>
+  <li>OWASP, <a href="https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html">CSRF Prevention Cheat Sheet</a>. Synchronizer token (not in a cookie), signed double-submit, Fetch Metadata policy and Origin fallback, custom headers, SameSite as defence in depth, no state change on GET, "XSS can defeat all CSRF mitigation techniques".</li>
+  <li>OWASP, <a href="https://owasp.org/www-community/attacks/xss/">Cross Site Scripting</a>. Stored, reflected and DOM-based XSS.</li>
+  <li>OWASP, <a href="https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html">XSS Prevention Cheat Sheet</a>. Frameworks escape by default; escape hatches incl. <code>dangerouslySetInnerHTML</code>; React 19 and <code>javascript:</code> URLs.</li>
+  <li>OWASP, <a href="https://cheatsheetseries.owasp.org/cheatsheets/Content_Security_Policy_Cheat_Sheet.html">CSP Cheat Sheet</a>. The strict nonce policy, per-response nonces, inline handlers blocked, the nonce-stamping middleware warning, not the only defence.</li>
+  <li>React, <a href="https://react.dev/reference/react-dom/components/common">Common components</a> (<code>dangerouslySetInnerHTML</code> warning) and <a href="https://react.dev/blog/2024/04/25/react-19-upgrade-guide">React 19 upgrade guide</a> ("Error for javascript URLs in src and href").</li>
+</ul>
+
+<footer class="nav">
+  <p><strong>This lesson targets:</strong> S3 from zero (LR-0014: CSRF had no browser model under it), rule → what the
+  attacker does (LR-0024), and <code>form.submit()</code> as a navigation (LR-0024). Next: S4, tokens (JWT, access +
+  refresh, revocation).</p>
+  <ul>
+    <li><a href="0012-who-are-you-again.html">← Lesson 12</a></li>
+    <li><a href="0006-the-browser-attaches-the-cookie.html">Lesson 6 (the earlier version)</a></li>
+  </ul>
+</footer>
+
+</main>
+
+<script src="../assets/predict.js"></script>
+</body>
+</html>
