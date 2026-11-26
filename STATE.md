@@ -1,6 +1,6 @@
 # State
 
-_Updated 2026-11-24. Plan re-set 2026-09-24 ([LR-0012](learning-records/0012-reweight-to-what-screens-grade.md));
+_Updated 2026-11-25. Plan re-set 2026-09-24 ([LR-0012](learning-records/0012-reweight-to-what-screens-grade.md));
 decisions in `MISSION.md` and `career/CAREER.md`. Scores and closed items: `HISTORY.md`._
 
 ## GR loop closed (10-26)
@@ -16,12 +16,13 @@ his own MCP chatbot's architecture to an HM hiring an architecture owner. Correc
 the debrief; it becomes the project deep dive (queue item 4), pulled forward. Exercise 0012 room
 planner (45 min pairing rep, built 11-23) stays as a generic round-2 rep for the next loop.
 
-## Next: grade lesson 12 (S2, AuthN from zero)
+## Next: fixation trace, then S3
 
-[Lesson 12](lessons/0012-who-are-you-again.html) built 10-29: S1 warm-up (navigations never meet CORS),
-then password storage, sessions (fixation, timeouts, logout), passkeys. He pastes the cold answer and the
-retrieval check (key `0012-check`) and says the fixation trace back in his own words. Grade with
-`grade-exercise`'s rigour, log in a new LR, then S3 (retake/rebuild lesson 6).
+Lesson 12 graded 11-25: check 2/4 (LR-0024). Rules without attacks; S1 link-vs-CORS decayed.
+1. He says §3's fixation trace in his own words (owed). Grade against the 4 steps.
+2. Build S3 (rebuild lesson 6): open with "links and forms never meet CORS" as CSRF's mechanism.
+   Every check asks rule → attack; score the attack.
+3. Cold S2 retest ~12-02: hash properties (one-way, salted, slow) + four session rules with attacks.
 
 ## Security, AuthN and AuthZ: zero to hero (his ask, 2026-10-08)
 
@@ -32,7 +33,7 @@ OWASP API Top 10 before S5 and S7.
 | # | Lesson | Status |
 |---|---|---|
 | S1 | How the browser talks to servers: origins, cookies, SOP, CORS, the two gates | lesson 11: 1/5; retests 10-28 1/5, 10-29 5/5 (LR-0022). Cleared |
-| S2 | AuthN from zero: password hashing, server sessions (ID, store, fixation, timeouts, logout), MFA/passkeys | lesson 12 built 10-29 |
+| S2 | AuthN from zero: password hashing, server sessions (ID, store, fixation, timeouts, logout), MFA/passkeys | lesson 12: 2/4 (LR-0024); retest ~12-02 |
 | S3 | Attacks on a logged-in user: XSS, CSRF, cookie flags, CSP. [Lesson 6](lessons/0006-the-browser-attaches-the-cookie.html) exists: retake or rebuild after S1–S2 | lesson 6: 2/5 (LR-0014) |
 | S4 | Tokens: JWT, signing and validation, sessions vs JWT, access + refresh, revocation | |
 | S5 | OAuth 2 and OIDC: delegation, roles, Code + PKCE, ID vs access token, SSO | |
@@ -84,7 +85,7 @@ the debrief himself (his rule, 10-16).
 - Review finds bugs on a line, misses bugs that need a sequence simulated (LR-0019, held on rep 2).
 - Reads the effect `ignore` flag as noise; no model of when cleanup runs (LR-0021).
 - Knows complexity in the abstract, doesn't apply it to his own JS (`reduce`+spread) (LR-0020).
-- Recalls what a tool does, omits when it fails (lesson 7 cold check, 10-17).
+- Recalls what a tool does, omits when it fails (lesson 7, 10-17); security rules without their attacks (LR-0024).
 - Placement of request-effect parts holds under a clock (LR-0013).
 - Finishes what he starts, but starts too few things (LR-0010). Protocol in `build-exercise`.
 - A constraint he states doesn't carry into later design decisions (LR-0007).

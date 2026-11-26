@@ -28,3 +28,4 @@ new record is written.
 | [0021](0021-ignore-flag-read-as-noise.md) | code review, effects, cleanup | 0007: 1/3. Asked for abort to fix the race it already prevents. No model of when cleanup runs. Reached 3 of 6 blocks. |
 | [0022](0022-cors-read-as-a-filter-in-front-of-the-server.md) | CORS, preflight, cookies | Lesson 11: check 1/5, cold retest 10-28 1/5, 10-29 5/5 (S1 cleared). Preflight applied to every request, CORS placed before the server. LR-0016's preflight close didn't hold. Repair before S2. |
 | [0023](0023-a-returned-cleanup-nobody-calls.md) | hooks, refs, cleanup | 0010 cold retest: 9/13 (10-28: 6/13). #3 guard held. #2 1/4 again: returns a cleanup from a plain callback; ref pattern not retrieved. |
+| [0024](0024-session-rules-without-their-attacks.md) | AuthN, sessions, password storage, CORS | Lesson 12: check 2/4. Rules recalled without attacks (0/4 named); fixation never named; salt/one-way dropped. S1 link-vs-CORS decayed (warm-up 0/1). |
