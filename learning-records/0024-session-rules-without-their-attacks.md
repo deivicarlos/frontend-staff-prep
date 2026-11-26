@@ -23,7 +23,10 @@ Apply 2 (2): salt's fix right, its limit (SHA-256 still fast) missed. (3) legacy
 
 Warm-up (corrected for a typo, 11-25): "CORS doesn't take part on the request, only on the response,
 and it is blocked". Request half right; but he still runs CORS on a navigation's response, which the
-user sees in the tab. Cleared 5/5 on 10-29 (LR-0022); CORS is still applied to navigations. S3 (CSRF) is built on exactly
+user sees in the tab. Cleared 5/5 on 10-29 (LR-0022); CORS is still applied to navigations.
+Coached same day: he restated "only fetch/XHR". Then read `form.submit()` as a `fetch` POST
+("submitted by JavaScript" = script request); coached that the test is whether a script reads the
+response, not whether JS triggered it. He restated it. S3: test `form.submit()` and `img.src` cold. S3 (CSRF) is built on exactly
 this distinction.
 
 ## What held
