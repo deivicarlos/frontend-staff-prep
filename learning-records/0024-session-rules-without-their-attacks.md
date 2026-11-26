@@ -36,7 +36,9 @@ origin binding defeats a proxy (Apply 4, retrieval 4). Cold (b), (c) right from 
 
 ## What to do
 
-1. He owes the fixation trace in his own words; grade it against the 4-step trace.
+1. Fixation: unknown after the lesson ("I don't know what that is"); re-taught from zero 11-25.
+   Teach-back 2/3: the server keeps the planted ID at login, and the fix is regenerate. He left out that
+   the attacker obtained the ID first, so already holds it. Retest it cold in the ~12-02 S2 retest.
 2. S3 opens with links/forms never meeting CORS as CSRF's mechanism, not as a warm-up.
 3. Every security check from now asks rule → attack pairs; score the attack, not the rule.
 4. Cold S2 retest ~12-02: the three properties of a password hash, and four session rules with attacks.

@@ -19,7 +19,7 @@ planner (45 min pairing rep, built 11-23) stays as a generic round-2 rep for the
 ## Next: fixation trace, then S3
 
 Lesson 12 graded 11-25: check 2/4 (LR-0024). Rules without attacks; S1 link-vs-CORS decayed.
-1. He says §3's fixation trace in his own words (owed). Grade against the 4 steps.
+1. Fixation re-taught 11-25, teach-back 2/3 (missed: the attacker holds the same ID). Retest 12-02.
 2. Build S3 (rebuild lesson 6): open with "links and forms never meet CORS" as CSRF's mechanism.
    Every check asks rule → attack; score the attack.
 3. Cold S2 retest ~12-02: hash properties (one-way, salted, slow) + four session rules with attacks.
