@@ -21,8 +21,9 @@ Apply 2 (2): salt's fix right, its limit (SHA-256 still fast) missed. (3) legacy
 
 ## Finding 3: S1 decayed in 27 days
 
-Warm-up: a clicked cross-site link "is blocked as CORS blocks cross origin". Cleared 5/5 on 10-29
-(LR-0022); the one-gate model ("CORS checks every request") is back. S3 (CSRF) is built on exactly
+Warm-up (corrected for a typo, 11-25): "CORS doesn't take part on the request, only on the response,
+and it is blocked". Request half right; but he still runs CORS on a navigation's response, which the
+user sees in the tab. Cleared 5/5 on 10-29 (LR-0022); CORS is still applied to navigations. S3 (CSRF) is built on exactly
 this distinction.
 
 ## What held
