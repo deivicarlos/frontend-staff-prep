@@ -14,7 +14,7 @@ dive (queue 4, pulled forward). Detail in `HISTORY.md`.
 1. Warm-up, 5 min cold: hook drill #2 from the stub (due 11-29, see carry-over). Ask who calls a returned fn.
 2. Project deep dive, pulled forward (skill `career-session`): he says the MCP chatbot 60 s version back
    cold (corrected text in `career/private/2026-11-23-geomagical-debrief.md`), grade it, then the rest
-   of his recent work at that depth. Teach the field, never VEERUM's code.
+   of his recent work at that depth. It's his interview story, not a lesson on VEERUM's code.
 3. Unscheduled: exercise 0012 room planner (45 min pairing rep), next weekday slot before 12-02.
 
 ## Then: cold S2 + S3 retest ~12-02, then S4
