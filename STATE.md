@@ -9,7 +9,15 @@ GR: offer at Senior (10-26). **Never raise that interview or ask about it** (his
 rejected after the HM screen (11-24); his MCP answer is the likely cause, fixed by the project deep
 dive (queue 4, pulled forward). Detail in `HISTORY.md`.
 
-## Next: cold S2 + S3 retest ~12-02, then S4
+## Next session (Sun 11-29, a career day)
+
+1. Warm-up, 5 min cold: hook drill #2 from the stub (due 11-29, see carry-over). Ask who calls a returned fn.
+2. Project deep dive, pulled forward (skill `career-session`): he says the MCP chatbot 60 s version back
+   cold (corrected text in `career/private/2026-11-23-geomagical-debrief.md`), grade it, then the rest
+   of his recent work at that depth. Teach the field, never VEERUM's code.
+3. Unscheduled: exercise 0012 room planner (45 min pairing rep), next weekday slot before 12-02.
+
+## Then: cold S2 + S3 retest ~12-02, then S4
 
 Lesson 12: 2/4 (LR-0024). Lesson 13: 3/4 (LR-0025). All repairs done in chat 11-28, same-day only:
 response destinations + preflight + `credentials` 3/4, XSS from payloads 4/4, CSP 4/4, Fetch Metadata 4/4.
@@ -29,7 +37,7 @@ OWASP API Top 10 before S5 and S7.
 |---|---|---|
 | S1 | How the browser talks to servers: origins, cookies, SOP, CORS, the two gates | lesson 11: 1/5; retests 10-28 1/5, 10-29 5/5 (LR-0022). Cleared |
 | S2 | AuthN from zero: password hashing, server sessions (ID, store, fixation, timeouts, logout), MFA/passkeys | lesson 12: 2/4 (LR-0024); retest ~12-02 |
-| S3 | Attacks on a logged-in user: XSS, CSRF, cookie flags, CSP. [Lesson 6](lessons/0006-the-browser-attaches-the-cookie.html) exists: retake or rebuild after S1–S2 | lesson 6: 2/5 (LR-0014); lesson 13: 3/4 (LR-0025); repair + retest ~12-02 |
+| S3 | Attacks on a logged-in user: XSS, CSRF, cookie flags, CSP. [Lesson 6](lessons/0006-the-browser-attaches-the-cookie.html) exists: retake or rebuild after S1–S2 | lesson 6: 2/5 (LR-0014); lesson 13: 3/4 (LR-0025); repaired 11-28; retest ~12-02 |
 | S4 | Tokens: JWT, signing and validation, sessions vs JWT, access + refresh, revocation | |
 | S5 | OAuth 2 and OIDC: delegation, roles, Code + PKCE, ID vs access token, SSO | |
 | S6 | SPA login architectures: BFF, token-mediating backend, browser client, server sessions | |
