@@ -3,18 +3,11 @@
 _Updated 2026-11-28. Plan re-set 2026-09-24 ([LR-0012](learning-records/0012-reweight-to-what-screens-grade.md));
 decisions in `MISSION.md` and `career/CAREER.md`. Scores and closed items: `HISTORY.md`._
 
-## GR loop closed (10-26)
+## Closed loops
 
-Global Relay round 2 done 10-23; offer at **Senior**, not Staff. **Never raise the interview or
-ask about it** (his rule, 10-26). The sprint record is in `HISTORY.md` → "GR loop closed". Back on
-the Staff roadmap: the tracks paused 10-17 are restored below.
-
-## Geomagical closed (11-24): rejected after the HM screen
-
-Detail in `HISTORY.md` → "Geomagical loop closed". Likely factor (unconfirmed): he couldn't explain
-his own MCP chatbot's architecture to an HM hiring an architecture owner. Corrected 60 s version is in
-the debrief; it becomes the project deep dive (queue item 4), pulled forward. Exercise 0012 room
-planner (45 min pairing rep, built 11-23) stays as a generic round-2 rep for the next loop.
+GR: offer at Senior (10-26). **Never raise that interview or ask about it** (his rule). Geomagical:
+rejected after the HM screen (11-24); his MCP answer is the likely cause, fixed by the project deep
+dive (queue 4, pulled forward). Detail in `HISTORY.md`.
 
 ## Next: cold S2 + S3 retest ~12-02, then S4
 

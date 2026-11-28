@@ -271,3 +271,18 @@ cold teach-back, then a 60 s interview version. 11-23: confirmed one Python serv
 **Next: exercise 0012 room planner** (round-2 rep, 45 min, built 11-23). I play the pairing engineer
 in chat; R5's room-bound rules are deliberately unstated (answers in its AFTER-THE-TIMER). Grade asked-or-not.
 Security track stays paused until the loop ends.
+
+## Moved from STATE 2026-11-28
+
+## GR loop closed (10-26)
+
+Global Relay round 2 done 10-23; offer at **Senior**, not Staff. **Never raise the interview or
+ask about it** (his rule, 10-26). The sprint record is in `HISTORY.md` → "GR loop closed". Back on
+the Staff roadmap: the tracks paused 10-17 are restored below.
+
+## Geomagical closed (11-24): rejected after the HM screen
+
+Detail in `HISTORY.md` → "Geomagical loop closed". Likely factor (unconfirmed): he couldn't explain
+his own MCP chatbot's architecture to an HM hiring an architecture owner. Corrected 60 s version is in
+the debrief; it becomes the project deep dive (queue item 4), pulled forward. Exercise 0012 room
+planner (45 min pairing rep, built 11-23) stays as a generic round-2 rep for the next loop.
