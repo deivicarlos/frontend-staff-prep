@@ -1,6 +1,6 @@
 # State
 
-_Updated 2026-11-25. Plan re-set 2026-09-24 ([LR-0012](learning-records/0012-reweight-to-what-screens-grade.md));
+_Updated 2026-11-28. Plan re-set 2026-09-24 ([LR-0012](learning-records/0012-reweight-to-what-screens-grade.md));
 decisions in `MISSION.md` and `career/CAREER.md`. Scores and closed items: `HISTORY.md`._
 
 ## GR loop closed (10-26)
@@ -16,14 +16,15 @@ his own MCP chatbot's architecture to an HM hiring an architecture owner. Correc
 the debrief; it becomes the project deep dive (queue item 4), pulled forward. Exercise 0012 room
 planner (45 min pairing rep, built 11-23) stays as a generic round-2 rep for the next loop.
 
-## Next: lesson 13 (S3)
+## Next: repair S3 gaps in chat (LR-0025)
 
-Lesson 12 graded 11-25: check 2/4 (LR-0024). Rules without attacks; S1 link-vs-CORS decayed.
-1. Fixation re-taught 11-25, teach-back 2/3 (missed: the attacker holds the same ID). Retest 12-02.
-2. **Next: he works [lesson 13](lessons/0013-the-browser-works-for-anyone.html)** (S3, built 11-25, replaces
-   lesson 6). He pastes cold, four Applies, check (key `0013-check`). Score the mechanism, never the name
-   (his rule, 11-25). Watch the warm-up (form.submit) and Apply 1 (3) (CORS read vs CSRF action).
-3. Cold S2 retest ~12-02: hash properties (one-way, salted, slow) + four session rules with attacks.
+Lesson 13 graded 11-28: check 3/4. Lesson 12: 2/4 (LR-0024).
+1. Who receives the response: navigation → tab, script → CORS gate, iframe → SOP. "Blocked by CORS" on
+   a navigation 3x. By application, then a cold mixed set another day.
+2. CSP (nonce, inline handlers, nonce middleware) and Fetch Metadata from zero; rerun Apply 4, Apply 2 (5).
+3. XSS from payloads (stored `onerror`, reflected `?q=`), not from React APIs.
+4. Cold retest ~12-02, S2 + S3: hash properties, session rules → attacks, fixation, CSRF defences →
+   what each removes. Score the mechanism, never the name (his rule, 11-25). Then S4.
 
 ## Security, AuthN and AuthZ: zero to hero (his ask, 2026-10-08)
 
@@ -35,7 +36,7 @@ OWASP API Top 10 before S5 and S7.
 |---|---|---|
 | S1 | How the browser talks to servers: origins, cookies, SOP, CORS, the two gates | lesson 11: 1/5; retests 10-28 1/5, 10-29 5/5 (LR-0022). Cleared |
 | S2 | AuthN from zero: password hashing, server sessions (ID, store, fixation, timeouts, logout), MFA/passkeys | lesson 12: 2/4 (LR-0024); retest ~12-02 |
-| S3 | Attacks on a logged-in user: XSS, CSRF, cookie flags, CSP. [Lesson 6](lessons/0006-the-browser-attaches-the-cookie.html) exists: retake or rebuild after S1–S2 | lesson 6: 2/5 (LR-0014); lesson 13 built 11-25 |
+| S3 | Attacks on a logged-in user: XSS, CSRF, cookie flags, CSP. [Lesson 6](lessons/0006-the-browser-attaches-the-cookie.html) exists: retake or rebuild after S1–S2 | lesson 6: 2/5 (LR-0014); lesson 13: 3/4 (LR-0025); repair + retest ~12-02 |
 | S4 | Tokens: JWT, signing and validation, sessions vs JWT, access + refresh, revocation | |
 | S5 | OAuth 2 and OIDC: delegation, roles, Code + PKCE, ID vs access token, SSO | |
 | S6 | SPA login architectures: BFF, token-mediating backend, browser client, server sessions | |
