@@ -12,7 +12,7 @@ dive (queue 4, pulled forward). Detail in `HISTORY.md`.
 ## Next: cold S2 + S3 retest ~12-02, then S4
 
 Lesson 12: 2/4 (LR-0024). Lesson 13: 3/4 (LR-0025). All repairs done in chat 11-28, same-day only:
-response destinations + preflight + `credentials` 3/4, XSS from payloads 4/4, CSP 4/4, Fetch Metadata 3/4.
+response destinations + preflight + `credentials` 3/4, XSS from payloads 4/4, CSP 4/4, Fetch Metadata 4/4.
 Retest cold, mixed, ~12-02: hash properties; session rules → what the attacker does; fixation; who
 receives a response (tab / iframe SOP / fetch CORS); preflight only for what a form can't send;
 cross-origin fetch omits cookies without `include`; CSRF defences → what each removes; XSS from a

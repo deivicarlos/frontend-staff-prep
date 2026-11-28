@@ -55,6 +55,6 @@ cold). Fixation warm-up 1/1: the attacker already holds the ID (LR-0024's miss c
 - XSS from payloads: 4/4 verdicts (`onmouseover` via innerHTML, React text, reflected `?q=`, look-alike
   domain = phishing); reason given only on (1).
 - CSP from zero (nonce per response, inline handlers, npm package, fixed nonce): 4/4.
-- Fetch Metadata from zero: 3/4. (2) unsure whether a relative `fetch("/api/…")` from app.example.com is
+- Fetch Metadata from zero: 4/4 (re-scored: mechanism right). (2) unsure whether a relative `fetch("/api/…")` from app.example.com is
   same-origin; his conditional rule was right. (4) XSS passes: right, no reason.
 All same-day after teaching. The ~12-02 cold retest decides whether the S3 repairs held.
