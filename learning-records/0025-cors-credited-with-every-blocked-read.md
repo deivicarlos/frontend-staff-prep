@@ -47,3 +47,8 @@ cold). Fixation warm-up 1/1: the attacker already holds the ID (LR-0024's miss c
 - Check: `fetch` POST with a `URLSearchParams` body and `SameSite=None` → "needs a preflight, CORS stops it,
   no transfer". Wrong: form-urlencoded is a simple request, so the transfer runs. LR-0022's "preflight on every
   POST" is back. Taught the rule: without a preflight, a script may send only what a form could.
+- `credentials`: didn't know a cross-origin `fetch` omits cookies by default (LR-0022 finding 2, again).
+  Taught: navigations/subresources attach by default; cross-origin fetch needs `include`; SameSite decides last.
+- Preflight verdicts after the rule: 3/4. String body sent, DELETE and JSON preflight. FormData "sent if
+  text/plain": verdict right, reason wrong (FormData is always multipart/form-data, a simple type).
+  Same-day result; retest cold ~12-02.

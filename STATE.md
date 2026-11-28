@@ -20,7 +20,7 @@ planner (45 min pairing rep, built 11-23) stays as a generic round-2 rep for the
 
 Lesson 13 graded 11-28: check 3/4. Lesson 12: 2/4 (LR-0024).
 1. Who receives the response: navigation → tab, script → CORS gate, iframe → SOP. "Blocked by CORS" on
-   a navigation 3x. By application, then a cold mixed set another day.
+   a navigation 3x. Taught 11-28 with preflight + `credentials` (3/4 same day). Cold mixed set ~12-02.
 2. CSP (nonce, inline handlers, nonce middleware) and Fetch Metadata from zero; rerun Apply 4, Apply 2 (5).
 3. XSS from payloads (stored `onerror`, reflected `?q=`), not from React APIs.
 4. Cold retest ~12-02, S2 + S3: hash properties, session rules → attacks, fixation, CSRF defences →
