@@ -16,15 +16,15 @@ his own MCP chatbot's architecture to an HM hiring an architecture owner. Correc
 the debrief; it becomes the project deep dive (queue item 4), pulled forward. Exercise 0012 room
 planner (45 min pairing rep, built 11-23) stays as a generic round-2 rep for the next loop.
 
-## Next: repair S3 gaps in chat (LR-0025)
+## Next: cold S2 + S3 retest ~12-02, then S4
 
-Lesson 13 graded 11-28: check 3/4. Lesson 12: 2/4 (LR-0024).
-1. Who receives the response: navigation → tab, script → CORS gate, iframe → SOP. "Blocked by CORS" on
-   a navigation 3x. Taught 11-28 with preflight + `credentials` (3/4 same day). Cold mixed set ~12-02.
-2. CSP (nonce, inline handlers, nonce middleware) and Fetch Metadata from zero; rerun Apply 4, Apply 2 (5).
-3. XSS from payloads (stored `onerror`, reflected `?q=`), not from React APIs.
-4. Cold retest ~12-02, S2 + S3: hash properties, session rules → attacks, fixation, CSRF defences →
-   what each removes. Score the mechanism, never the name (his rule, 11-25). Then S4.
+Lesson 12: 2/4 (LR-0024). Lesson 13: 3/4 (LR-0025). All repairs done in chat 11-28, same-day only:
+response destinations + preflight + `credentials` 3/4, XSS from payloads 4/4, CSP 4/4, Fetch Metadata 3/4.
+Retest cold, mixed, ~12-02: hash properties; session rules → what the attacker does; fixation; who
+receives a response (tab / iframe SOP / fetch CORS); preflight only for what a form can't send;
+cross-origin fetch omits cookies without `include`; CSRF defences → what each removes; XSS from a
+payload; CSP verdicts; Fetch Metadata verdicts incl. a relative fetch. Score the mechanism, never the
+name (his rule, 11-25). Pass ≥80% → S4 (tokens). Fetch RFC 9700 before S5.
 
 ## Security, AuthN and AuthZ: zero to hero (his ask, 2026-10-08)
 
