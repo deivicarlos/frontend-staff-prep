@@ -38,3 +38,12 @@ cold). Fixation warm-up 1/1: the attacker already holds the ID (LR-0024's miss c
 2. Re-teach CSP (nonce, inline handlers) and Fetch Metadata from zero in chat; rerun Apply 4 and (5) cold.
 3. XSS: drill from payloads, not code ("where does this text end up, and does the browser run it?").
 4. Cold S3 retest with the S2 retest ~12-02.
+
+## Repair in chat, 11-28
+
+- Response destinations taught (same tab / hidden iframe → SOP / fetch → CORS). He asked whether
+  `form.submit()` opens a new tab and whether `preventDefault` stops it: no model of submit() as a
+  same-tab navigation that fires no submit event.
+- Check: `fetch` POST with a `URLSearchParams` body and `SameSite=None` → "needs a preflight, CORS stops it,
+  no transfer". Wrong: form-urlencoded is a simple request, so the transfer runs. LR-0022's "preflight on every
+  POST" is back. Taught the rule: without a preflight, a script may send only what a form could.
