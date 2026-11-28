@@ -85,6 +85,7 @@ the debrief himself (his rule, 10-16).
 - Finishes what he starts, but starts too few things (LR-0010). Protocol in `build-exercise`.
 - A constraint he states doesn't carry into later design decisions (LR-0007).
 - Scenario-phrased requirements don't become tasks; he doesn't ask when stuck (LR-0009, LR-0013).
+- Skims prompts and drops stated setup (11-28, his words: "quick reading"). Have him restate the setup first.
 - No model of microtask ordering relative to effects (LR-0011).
 - A smooth rewrite isn't a checked one. Ask for evidence (LR-0011).
 - TypeScript strong, generics a miss (Q14). React 19 knowledge current.
